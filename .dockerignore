@@ -1,0 +1,10 @@
+*
+
+# project fonders and files
+!conf/.env.example
+!docker
+!taskiq_dashboard
+
+# dependencies and settings
+!pyproject.toml
+!uv.lock
