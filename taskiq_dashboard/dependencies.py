@@ -47,7 +47,7 @@ def get_server() -> litestar.Litestar:
     return app
 
 
-def get_session_provider() -> session_provider.AsyncPostgresSessionProvider:
+async def get_session_provider() -> session_provider.AsyncPostgresSessionProvider:
     global _session_provider
     if _session_provider is None:
         settings = get_settings()
@@ -57,7 +57,7 @@ def get_session_provider() -> session_provider.AsyncPostgresSessionProvider:
     return _session_provider
 
 
-def get_task_service(session_provider: session_provider.AsyncPostgresSessionProvider) -> TaskService:
+async def get_task_service(session_provider: session_provider.AsyncPostgresSessionProvider) -> TaskService:
     global _task_service
     if _task_service is None:
         _task_service = SqlAlchemyTaskService(

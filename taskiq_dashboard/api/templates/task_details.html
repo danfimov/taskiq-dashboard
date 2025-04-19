@@ -9,7 +9,7 @@
     <!-- Alpine.js -->
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
-<body class="bg-gray-100">
+<body">
     <div class="container mx-auto px-4 py-8">
         <!-- Header with back button -->
         <div class="flex items-center mb-6">
@@ -20,163 +20,149 @@
         </div>
 
         <!-- Task summary card -->
-        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="rounded border p-6 mb-6">
+            <div class="border-b mb-4 pb-4">
+                <h1 class="font-bold text-xl">General Information</h1>
+                <p class="font-light">Description and general information about the task</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4">
                 <div>
-                    <h2 class="text-xl font-semibold mb-4">Basic information</h2>
-
-                    <!-- Task ID -->
-                    <div class="mb-4">
-                        <h3 class="text-sm font-medium text-gray-500">Task ID</h3>
-                        <div class="flex items-center mt-1">
-                            <span class="text-gray-900">{{ task.id }}</span>
-                            <div
-                                x-data="{ copied: false }"
-                                x-on:click="
-                                    navigator.clipboard.writeText('{{ task.id }}');
-                                    copied = true;
-                                    setTimeout(() => copied = false, 1500);
-                                "
-                                class="ml-2 p-1 rounded hover:bg-gray-100 cursor-pointer inline-flex items-center text-gray-500 hover:text-primary transition-colors"
-                            >
-                                <!-- Copy icon (changes to check mark when copied) -->
-                                <img x-show="!copied" src="/static/icons/copy.svg" alt="Copy" class="h-4 w-4">
-                                <img x-show="copied" src="/static/icons/copy-check.svg" alt="Copy check" class="h-4 w-4">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Task Name -->
-                    <div class="mb-4">
-                        <h3 class="text-sm font-medium text-gray-500">Name</h3>
-                        <p class="text-gray-900 font-medium">{{ task.name }}</p>
-                    </div>
-
-                    <!-- Worker -->
-                    <div class="mb-4">
-                        <h3 class="text-sm font-medium text-gray-500">Worker</h3>
-                        <p class="text-gray-900">{{ task.worker }}</p>
-                    </div>
-
-                    <!-- Status -->
-                    <div class="mb-4">
-                        <h3 class="text-sm pb-1 font-medium text-gray-500">Status</h3>
-                        <span
-                            class="px-3 py-1 inline-flex text-sm leading-5 rounded
-                                {% if task.status == 0 %}bg-yellow-100 text-yellow-800
-                                {% elif task.status == 1 %}bg-green-100 text-green-800
-                                {% elif task.status == 2 %}bg-red-100 text-red-800
-                                {% elif task.status == 3 %}bg-gray-100 text-gray-800{% endif %}"
-                        >
-                            {% if task.status == 0 %}In progress
-                            {% elif task.status == 1 %}Completed
-                            {% elif task.status == 2 %}Failure
-                            {% elif task.status == 3 %}Abandoned
-                            {% else %}Unknown{% endif %}
-                        </span>
-                    </div>
+                    <h3 class="mb-2">Status</h3>
+                    <span
+                        class="px-3 py-1 inline-flex text-sm leading-5 rounded
+                            {% if task.status == 0 %}bg-yellow-100 text-yellow-800
+                            {% elif task.status == 1 %}bg-green-100 text-green-800
+                            {% elif task.status == 2 %}bg-red-100 text-red-800
+                            {% elif task.status == 3 %}bg-gray-100 text-gray-800{% endif %}"
+                    >
+                        {% if task.status == 0 %}In progress
+                        {% elif task.status == 1 %}Completed
+                        {% elif task.status == 2 %}Failure
+                        {% elif task.status == 3 %}Abandoned
+                        {% else %}Unknown{% endif %}
+                    </span>
                 </div>
-
                 <div>
-                    <h2 class="text-xl font-semibold mb-4">Timing information</h2>
+                    <h3 class="mb-2">Name</h3>
+                    <p class="font-light">{{ task.name }}</p>
 
-                    <!-- Started at -->
-                    <div class="mb-4">
-                        <h3 class="text-sm font-medium text-gray-500">Started at</h3>
-                        <p class="text-gray-900">{{ task.started_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
-                    </div>
+                </div>
+                <div>
+                    <h3 class="mb-2">Worker</h3>
+                    <p class="font-light">{{ task.worker }}</p>
+                </div>
+            </div>
 
-                    <!-- Finished at -->
-                    <div class="mb-4">
-                        <h3 class="text-sm font-medium text-gray-500">Finished at</h3>
-                        <p class="text-gray-900">
-                            {% if task.finished_at %}
-                                {{ task.finished_at.strftime('%Y-%m-%d %H:%M:%S') }}
-                            {% else %}
-                                <span class="text-gray-400">Not finished yet</span>
-                            {% endif %}
-                        </p>
-                    </div>
+            <div class="mb-4">
+                <h3>Task ID</h3>
+                <span class="font-light">{{ task.id }}</span>
+                <div
+                    x-data="{ copied: false }"
+                    x-on:click="
+                        navigator.clipboard.writeText('{{ task.id }}');
+                        copied = true;
+                        setTimeout(() => copied = false, 1500);
+                    "
+                    class="ml-2 p-1 rounded hover:bg-gray-100 cursor-pointer inline-flex items-center text-gray-500 hover:text-primary transition-colors"
+                >
+                    <!-- Copy icon (changes to check mark when copied) -->
+                    <img x-show="!copied" src="/static/icons/copy.svg" alt="Copy" class="h-4 w-4">
+                    <img x-show="copied" src="/static/icons/copy-check.svg" alt="Copy check" class="h-4 w-4">
+                </div>
+            </div>
 
-                    <!-- Duration (if finished) -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <div>
+                    <h3 class="mb-2">Started at</h3>
+                    <p class="font-light">{{ task.started_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                </div>
+                <div>
+                    <h3 class="mb-2">Finished at</h3>
+                    <p class="font-light">
+                        {% if task.finished_at %}
+                            {{ task.finished_at.strftime('%Y-%m-%d %H:%M:%S') }}
+                        {% else %}
+                            <span class="font-light">Not finished yet</span>
+                        {% endif %}
+                    </p>
+                </div>
+                <div>
+                    <h3 class="mb-2">Duration</h3>
                     {% if task.finished_at %}
-                    <div class="mb-4">
-                        <h3 class="text-sm font-medium text-gray-500">Duration</h3>
-                        <p class="text-gray-900">
-                            {{ (task.finished_at - task.started_at).total_seconds() | round(3) }} seconds
-                        </p>
-                    </div>
+                        <p class="font-light">{{ (task.finished_at - task.started_at).total_seconds() | round(3) }} seconds</p>
+                    {% else %}
+                        <p class="font-light">-</p>
                     {% endif %}
                 </div>
             </div>
         </div>
 
         <!-- Task arguments section -->
-        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-            <h2 class="text-xl font-semibold mb-4">Task arguments</h2>
+        <div class="rounded border p-6 mb-6">
+            <div class="border-b mb-4 pb-4">
+                <h2 class="font-bold text-xl">Task arguments</h2>
+                <p class="font-light">Information about positional and keywork arguments of task</p>
+            </div>
 
-            {% if task.args %}
-                <div class="bg-gray-50 rounded p-4 overflow-x-auto">
-                    <pre class="whitespace-pre-wrap text-sm">{{ task.args | tojson(indent=2) }}</pre>
-                </div>
-            {% else %}
-                <p class="text-gray-500">No arguments provided</p>
-            {% endif %}
+            <div class="mb-4">
+                <h3 class="mb-2 font-normal">Positional arguments</h3>
+                {% if task.args %}
+                    <div class="bg-gray-50 rounded p-4 overflow-x-auto">
+                        <pre class="whitespace-pre-wrap text-sm">{{ task.args | tojson(indent=2) }}</pre>
+                    </div>
+                {% else %}
+                    <p class="font-light">No arguments provided</p>
+                {% endif %}
+            </div>
+
+
+            <div class="mb-4">
+                <h3 class="mb-2 font-normal">Keyword arguments</h3>
+                {% if task.kwargs %}
+                    <div class="bg-gray-50 rounded p-4 overflow-x-auto">
+                        <pre class="whitespace-pre-wrap text-sm">{{ task.kwargs | tojson(indent=2) }}</pre>
+                    </div>
+                {% else %}
+                    <p class="text-gray-500">No keyword arguments provided</p>
+                {% endif %}
+            </div>
         </div>
 
-        <!-- Task keyword arguments section -->
-        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-            <h2 class="text-xl font-semibold mb-4">Task keyword arguments</h2>
-
-            {% if task.kwargs %}
-                <div class="bg-gray-50 rounded p-4 overflow-x-auto">
-                    <pre class="whitespace-pre-wrap text-sm">{{ task.kwargs | tojson(indent=2) }}</pre>
-                </div>
-            {% else %}
-                <p class="text-gray-500">No keyword arguments provided</p>
-            {% endif %}
-        </div>
 
         <!-- Task result section -->
-        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-            <h2 class="text-xl font-semibold mb-4">Task Result</h2>
+        <div class="rounded border p-6 mb-6">
+            <div class="border-b mb-4 pb-4">
+                <h2 class="font-bold text-xl">Task result</h2>
+                <p class="font-light">Information about result and errors of task</p>
+            </div>
 
-            {% if task.result %}
-                <div class="bg-gray-50 rounded p-4 overflow-x-auto">
-                    <pre class="whitespace-pre-wrap text-sm">{{ task.result | tojson(indent=2) }}</pre>
-                </div>
-            {% elif task.status == 0 %}
-                <p class="text-gray-500">Task is still in progress</p>
-            {% elif task.status == 3 %}
-                <p class="text-gray-500">Task was abandoned, no result available</p>
-            {% else %}
-                <p class="text-gray-500">No result data available</p>
-            {% endif %}
-        </div>
+            <div class="mb-4">
+                <h3 class="mb-2 font-normal">Result</h3>
+                {% if task.result %}
+                    <div class="bg-gray-50 rounded p-4 overflow-x-auto">
+                        <pre class="whitespace-pre-wrap text-sm">{{ task.result | tojson(indent=2) }}</pre>
+                    </div>
+                {% elif task.status == 0 %}
+                    <p class="font-light">Task is still in progress</p>
+                {% elif task.status == 3 %}
+                    <p class="font-light">Task was abandoned, no result available</p>
+                {% else %}
+                    <p class="font-light">No result data available</p>
+                {% endif %}
+            </div>
 
-        <!-- Error information (if task failed) -->
-        {% if task.status == 2 %}
-        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-            <h2 class="text-xl font-semibold mb-4">Error Information</h2>
-
-            {% if task.error %}
+            <div class="mb-4">
+                <h3 class="mb-2 font-normal">Error</h3>
+                {% if task.status == 2 %}
                 <div class="bg-red-50 rounded p-4 overflow-x-auto">
                     <pre class="whitespace-pre-wrap text-sm text-red-700">{{ task.error }}</pre>
                 </div>
-
-                {% if task.traceback %}
-                <div class="mt-4">
-                    <h3 class="font-medium text-red-800 mb-2">Traceback</h3>
-                    <div class="bg-red-50 rounded p-4 overflow-x-auto">
-                        <pre class="whitespace-pre text-sm text-red-700 overflow-auto max-h-96">{{ task.traceback }}</pre>
-                    </div>
-                </div>
+                {% else %}
+                    <p class="font-light">No error information available</p>
                 {% endif %}
-            {% else %}
-                <p class="text-gray-500">No error information available</p>
-            {% endif %}
+            </div>
         </div>
-        {% endif %}
     </div>
 </body>
 </html>
