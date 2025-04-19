@@ -1,19 +1,17 @@
-import typing as tp
 import uuid
 
 from sqlalchemy import select, func
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import or_
 
 from taskiq_dashboard.domain.dto.task import Task
 from taskiq_dashboard.domain.dto.task_status import TaskStatus
 from taskiq_dashboard.domain.services.task_service import TaskService
 from taskiq_dashboard.infrastructure.database.schemas import Task as TaskSchema
+from taskiq_dashboard.infrastructure.database.session_provider import AsyncPostgresSessionProvider
 
 
 class SqlAlchemyTaskService(TaskService):
-    def __init__(self, session: AsyncSession):
-        self.session = session
+    def __init__(self, session_provider: AsyncPostgresSessionProvider) -> None:
+        self._session_provider = session_provider
 
     async def get_tasks(
         self,
@@ -51,8 +49,10 @@ class SqlAlchemyTaskService(TaskService):
             count_query = count_query.where(TaskSchema.name.ilike(search_pattern))
 
         # Get total count with applied filters
-        total_count_result = await self.session.execute(count_query)
-        total_count = total_count_result.scalar()
+        async with self._session_provider.session() as session:
+            total_count_result = await session.execute(count_query)
+            total_count = total_count_result.scalar()
+            total_count = total_count or 0
 
         # Calculate offset
         offset = (page - 1) * per_page
@@ -64,8 +64,9 @@ class SqlAlchemyTaskService(TaskService):
             .limit(per_page)
             .offset(offset)
         )
-        result = await self.session.execute(query)
-        task_schemas = result.scalars().all()
+        async with self._session_provider.session() as session:
+            result = await session.execute(query)
+            task_schemas = result.scalars().all()
 
         # Convert to DTOs
         tasks = [
@@ -77,15 +78,11 @@ class SqlAlchemyTaskService(TaskService):
 
     async def get_task_by_id(self, task_id: uuid.UUID) -> Task | None:
         query = select(TaskSchema).where(TaskSchema.id == task_id)
-        result = await self.session.execute(query)
-        task = result.scalar_one_or_none()
+        async with self._session_provider.session() as session:
+            result = await session.execute(query)
+            task = result.scalar_one_or_none()
 
         if not task:
             return None
 
         return Task.model_validate(task)
-
-    async def get_all_tasks(self) -> list[Task]:
-        """Get all tasks without pagination."""
-        tasks, _ = await self.get_tasks(page=1, per_page=1000)  # Use a large number to get all tasks
-        return tasks

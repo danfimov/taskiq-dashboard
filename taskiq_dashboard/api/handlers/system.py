@@ -1,4 +1,5 @@
 import litestar
+from litestar import response
 
 
 @litestar.get("/ping")
@@ -8,9 +9,9 @@ async def ping() -> dict:
 
 
 @litestar.get("/")
-async def redirect_to_docs() -> litestar.response.Redirect:
+async def redirect_to_docs() -> response.Redirect:
     """Redirect to API documentation."""
-    return litestar.response.Redirect(path="/docs")
+    return response.Redirect(path="/docs")
 
 
 router = litestar.Router(

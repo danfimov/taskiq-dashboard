@@ -5,18 +5,11 @@ import typing as tp
 import uuid
 
 from litestar import Controller, get
-from litestar.di import Provide
 from litestar.params import Parameter
 from litestar.response import Template
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from taskiq_dashboard.infrastructure.services.task_service import SqlAlchemyTaskService
 from taskiq_dashboard.domain.services.task_service import TaskService
 from taskiq_dashboard.domain.dto.task_status import TaskStatus
-
-
-def provide_task_service(session: AsyncSession) -> TaskService:
-    return SqlAlchemyTaskService(session)
 
 
 # Create a human-readable status mapping for the UI
@@ -39,7 +32,6 @@ STATUS_MAPPING = {
 
 class DashboardController(Controller):
     path = "/dashboard"
-    dependencies = {"task_service": Provide(provide_task_service)}
 
     @get("/", name="dashboard")
     async def dashboard(
@@ -91,10 +83,11 @@ class DashboardController(Controller):
 
         # Generate the status options for the dropdown
         status_options = [
-            {"value": "all", "label": "All Statuses"},
-            {"value": "running", "label": "Running"},
-            {"value": "success", "label": "Success"},
-            {"value": "error", "label": "Error"},
+            {"value": StatusFilter.ALL.value, "label": "All statuses"},
+            {"value": StatusFilter.IN_PROGRESS.value, "label": "In progress"},
+            {"value": StatusFilter.COMPLETED.value, "label": "Completed"},
+            {"value": StatusFilter.FAILURE.value, "label": "Failure"},
+            {"value": StatusFilter.ABANDONED.value, "label": "Abandoned"},
         ]
 
         return Template(
