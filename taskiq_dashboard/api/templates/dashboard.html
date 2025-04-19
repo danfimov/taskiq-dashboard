@@ -6,18 +6,6 @@
     <title>Taskiq Dashboard</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: 'rgb(178.5, 0, 28.56)',
-                        'primary-hover': 'rgb(229.5, 0, 36.72)',
-                    }
-                }
-            }
-        }
-    </script>
     <!-- Alpine.js -->
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <!-- HTMX -->
@@ -48,40 +36,6 @@
             box-shadow: 0 0 0 2px rgba(178.5, 0, 28.56, 0.2);
         }
 
-        /* Button Styling */
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            height: 38px;
-            padding: 0 16px;
-            font-size: 0.875rem;
-            font-weight: 500;
-            border-radius: 0.375rem;
-            cursor: pointer;
-            user-select: none;
-            transition: all 0.2s;
-        }
-
-        .btn-outline {
-            border: 1px solid #d1d5db;
-            background-color: white;
-            color: #374151;
-        }
-
-        .btn-outline:hover {
-            background-color: #f3f4f6;
-        }
-
-        .btn-primary {
-            border: 1px solid rgb(178.5, 0, 28.56);
-            background-color: white;
-            color: rgb(178.5, 0, 28.56);
-        }
-
-        .btn-primary:hover {
-            background-color: rgba(178.5, 0, 28.56, 0.05);
-        }
     </style>
 </head>
 <body class="bg-gray-100">
@@ -208,17 +162,13 @@
                                class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
                                aria-label="Previous">
                                 <span class="sr-only">Previous</span>
-                                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                    <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
-                                </svg>
+                                <img src="/static/icons/chevron-left.svg" alt="Previous" class="h-4 w-4">
                             </a>
                         {% else %}
                             <span class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-gray-100 text-sm font-medium text-gray-400 cursor-not-allowed"
                                  aria-label="Previous disabled">
                                 <span class="sr-only">Previous</span>
-                                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                    <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
-                                </svg>
+                                <img src="/static/icons/chevron-left.svg" alt="Previous" class="h-4 w-4">
                             </span>
                         {% endif %}
 
@@ -244,17 +194,13 @@
                                class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
                                aria-label="Next">
                                 <span class="sr-only">Next</span>
-                                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
-                                </svg>
+                                <img src="/static/icons/chevron-right.svg" alt="Next" class="h-4 w-4">
                             </a>
                         {% else %}
                             <span class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-gray-100 text-sm font-medium text-gray-400 cursor-not-allowed"
                                 aria-label="Next disabled">
                                 <span class="sr-only">Next</span>
-                                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
-                                </svg>
+                                <img src="/static/icons/chevron-right.svg" alt="Next" class="h-4 w-4">
                             </span>
                         {% endif %}
                     </nav>

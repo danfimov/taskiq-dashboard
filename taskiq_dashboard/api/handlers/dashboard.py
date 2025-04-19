@@ -83,10 +83,11 @@ class DashboardController(Controller):
 
         # Generate the status options for the dropdown
         status_options = [
-            {"value": "all", "label": "All Statuses"},
-            {"value": "running", "label": "Running"},
-            {"value": "success", "label": "Success"},
-            {"value": "error", "label": "Error"},
+            {"value": StatusFilter.ALL.value, "label": "All statuses"},
+            {"value": StatusFilter.IN_PROGRESS.value, "label": "In progress"},
+            {"value": StatusFilter.COMPLETED.value, "label": "Completed"},
+            {"value": StatusFilter.FAILURE.value, "label": "Failure"},
+            {"value": StatusFilter.ABANDONED.value, "label": "Abandoned"},
         ]
 
         return Template(

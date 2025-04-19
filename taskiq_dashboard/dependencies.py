@@ -10,6 +10,7 @@ from taskiq_dashboard.infrastructure.database import session_provider
 from taskiq_dashboard.infrastructure.settings import Settings
 from taskiq_dashboard.domain.services.task_service import TaskService
 from taskiq_dashboard.infrastructure.services.task_service import SqlAlchemyTaskService
+from litestar.static_files import create_static_files_router
 
 _settings: Settings | None = None
 _session_provider: session_provider.AsyncPostgresSessionProvider | None = None
@@ -27,6 +28,7 @@ def get_settings() -> Settings:
 def get_server() -> litestar.Litestar:
     app = litestar.Litestar(
         route_handlers=[
+            create_static_files_router(path="/static", directories=["taskiq_dashboard/api/static"]),
             system_router,
             DashboardController,
         ],
