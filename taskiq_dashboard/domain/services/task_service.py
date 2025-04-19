@@ -1,4 +1,3 @@
-import typing as tp
 import uuid
 from abc import ABC, abstractmethod
 
