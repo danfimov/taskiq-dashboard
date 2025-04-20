@@ -46,3 +46,25 @@ pythonpath = [
 ]
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
+
+[tool.mypy]
+plugins = ["pydantic.mypy"]
+python_version = "3.12"
+platform = "linux"
+follow_imports = "normal"
+ignore_missing_imports = false
+mypy_path = "stubs"
+disallow_untyped_defs = true
+disallow_untyped_calls = true
+warn_return_any = true
+warn_unreachable = true
+warn_no_return = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+modules = ["speechkit"]
+
+[tool.pydantic-mypy]
+init_forbid_extra = true
+init_typed = true
+warn_required_dynamic_aliases = true
+warn_untyped_fields = true
