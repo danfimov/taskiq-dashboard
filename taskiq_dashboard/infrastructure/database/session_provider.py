@@ -17,11 +17,11 @@ class AsyncPostgresSessionProvider:
             echo=False,
             pool_size=connection_settings.min_pool_size,
             max_overflow=connection_settings.max_pool_size - connection_settings.min_pool_size,
-            execution_options={"prepare": False},
+            execution_options={'prepare': False},
             connect_args={  # for connection through pgbouncer
-                "statement_cache_size": 0,
-                "prepared_statement_cache_size": 0,
-                "prepared_statement_name_func": lambda: f"__asyncpg_{uuid.uuid4()}__",
+                'statement_cache_size': 0,
+                'prepared_statement_cache_size': 0,
+                'prepared_statement_name_func': lambda: f'__asyncpg_{uuid.uuid4()}__',
             },
         )
         self._session_factory = sa_async.async_sessionmaker(

@@ -1,8 +1,8 @@
 import uuid
 
-from sqlalchemy import select, func
+import sqlalchemy as sa
 
-from taskiq_dashboard.domain.dto.task import Task
+from taskiq_dashboard.domain.dto.task import ExecutedTask, QueuedTask, StartedTask, Task
 from taskiq_dashboard.domain.dto.task_status import TaskStatus
 from taskiq_dashboard.domain.services.task_service import TaskService
 from taskiq_dashboard.infrastructure.database.schemas import Task as TaskSchema
@@ -33,8 +33,8 @@ class SqlAlchemyTaskService(TaskService):
             Tuple of (tasks_list, total_count)
         """
         # Build base query with filters
-        query = select(TaskSchema)
-        count_query = select(func.count(TaskSchema.id))
+        query = sa.select(TaskSchema)
+        count_query = sa.select(sa.func.count(TaskSchema.id))
 
         # Apply status filter
         if status is not None:
@@ -44,7 +44,7 @@ class SqlAlchemyTaskService(TaskService):
         # Apply name search filter
         if name_search and name_search.strip():
             # Use ILIKE for case-insensitive pattern matching (PostgreSQL specific)
-            search_pattern = f"%{name_search.strip()}%"
+            search_pattern = f'%{name_search.strip()}%'
             query = query.where(TaskSchema.name.ilike(search_pattern))
             count_query = count_query.where(TaskSchema.name.ilike(search_pattern))
 
@@ -58,26 +58,18 @@ class SqlAlchemyTaskService(TaskService):
         offset = (page - 1) * per_page
 
         # Get tasks for current page
-        query = (
-            query
-            .order_by(TaskSchema.started_at.desc())
-            .limit(per_page)
-            .offset(offset)
-        )
+        query = query.order_by(TaskSchema.started_at.desc()).limit(per_page).offset(offset)
         async with self._session_provider.session() as session:
             result = await session.execute(query)
             task_schemas = result.scalars().all()
 
         # Convert to DTOs
-        tasks = [
-            Task.model_validate(task)
-            for task in task_schemas
-        ]
+        tasks = [Task.model_validate(task) for task in task_schemas]
 
         return tasks, total_count
 
     async def get_task_by_id(self, task_id: uuid.UUID) -> Task | None:
-        query = select(TaskSchema).where(TaskSchema.id == task_id)
+        query = sa.select(TaskSchema).where(TaskSchema.id == task_id)
         async with self._session_provider.session() as session:
             result = await session.execute(query)
             task = result.scalar_one_or_none()
@@ -86,3 +78,48 @@ class SqlAlchemyTaskService(TaskService):
             return None
 
         return Task.model_validate(task)
+
+    async def create_task(
+        self,
+        task_id: str,
+        task_arguments: QueuedTask,
+    ) -> None:
+        query = sa.insert(TaskSchema).values(
+            id=task_id,
+            name=task_arguments.task_name,
+            status=TaskStatus.QUEUED,
+            worker=task_arguments.worker,
+            args=task_arguments.args,
+            kwargs=task_arguments.kwargs,
+            queued_at=task_arguments.queued_at,
+        )
+        async with self._session_provider.session() as session:
+            await session.execute(query)
+
+    async def update_task(
+        self,
+        task_id: str,
+        task_arguments: StartedTask | ExecutedTask,
+    ) -> None:
+        query = sa.update(TaskSchema).where(TaskSchema.id == task_id)
+
+        if isinstance(task_arguments, StartedTask):
+            task_status = TaskStatus.IN_PROGRESS
+            query = query.values(
+                status=task_status,
+                started_at=task_arguments.started_at,
+                args=task_arguments.args,
+                kwargs=task_arguments.kwargs,
+                name=task_arguments.task_name,
+                worker=task_arguments.worker,
+            )
+        else:
+            task_status = TaskStatus.FAILURE if task_arguments.error is not None else TaskStatus.COMPLETED
+            query = query.values(
+                status=task_status,
+                finished_at=task_arguments.finished_at,
+                result=task_arguments.return_value.get('return_value'),
+                error=task_arguments.error,
+            )
+        async with self._session_provider.session() as session:
+            await session.execute(query)

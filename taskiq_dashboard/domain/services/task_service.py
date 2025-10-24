@@ -1,7 +1,7 @@
 import uuid
 from abc import ABC, abstractmethod
 
-from taskiq_dashboard.domain.dto.task import Task
+from taskiq_dashboard.domain.dto.task import ExecutedTask, QueuedTask, StartedTask, Task
 from taskiq_dashboard.domain.dto.task_status import TaskStatus
 
 
@@ -26,9 +26,23 @@ class TaskService(ABC):
         Returns:
             Tuple of (tasks, total_count)
         """
-        pass
+        ...
 
     @abstractmethod
     async def get_task_by_id(self, task_id: uuid.UUID) -> Task | None:
         """Retrieve a specific task by ID."""
-        pass
+        ...
+
+    @abstractmethod
+    async def create_task(
+        self,
+        task_id: str,
+        task_arguments: QueuedTask,
+    ) -> None: ...
+
+    @abstractmethod
+    async def update_task(
+        self,
+        task_id: str,
+        task_arguments: StartedTask | ExecutedTask,
+    ) -> None: ...

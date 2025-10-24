@@ -1,0 +1,2581 @@
+/*! tailwindcss v4.1.16 | MIT License | https://tailwindcss.com */
+@layer properties;
+@layer theme, base, components, utilities;
+@layer theme {
+  :root, :host {
+    --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+      "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+      "Courier New", monospace;
+    --color-red-50: oklch(97.1% 0.013 17.38);
+    --color-red-100: oklch(93.6% 0.032 17.717);
+    --color-red-700: oklch(50.5% 0.213 27.518);
+    --color-red-800: oklch(44.4% 0.177 26.899);
+    --color-yellow-100: oklch(97.3% 0.071 103.193);
+    --color-yellow-800: oklch(47.6% 0.114 61.907);
+    --color-green-100: oklch(96.2% 0.044 156.743);
+    --color-green-800: oklch(44.8% 0.119 151.328);
+    --color-gray-50: oklch(98.5% 0.002 247.839);
+    --color-gray-100: oklch(96.7% 0.003 264.542);
+    --color-gray-200: oklch(92.8% 0.006 264.531);
+    --color-gray-300: oklch(87.2% 0.01 258.338);
+    --color-gray-400: oklch(70.7% 0.022 261.325);
+    --color-gray-500: oklch(55.1% 0.027 264.364);
+    --color-gray-600: oklch(44.6% 0.03 256.802);
+    --color-gray-700: oklch(37.3% 0.034 259.733);
+    --color-gray-800: oklch(27.8% 0.033 256.848);
+    --color-white: #fff;
+    --spacing: 0.25rem;
+    --container-md: 28rem;
+    --container-2xl: 42rem;
+    --container-7xl: 80rem;
+    --text-sm: 0.875rem;
+    --text-sm--line-height: calc(1.25 / 0.875);
+    --text-lg: 1.125rem;
+    --text-lg--line-height: calc(1.75 / 1.125);
+    --text-xl: 1.25rem;
+    --text-xl--line-height: calc(1.75 / 1.25);
+    --text-2xl: 1.5rem;
+    --text-2xl--line-height: calc(2 / 1.5);
+    --text-3xl: 1.875rem;
+    --text-3xl--line-height: calc(2.25 / 1.875);
+    --text-7xl: 4.5rem;
+    --text-7xl--line-height: 1;
+    --text-8xl: 6rem;
+    --text-8xl--line-height: 1;
+    --text-9xl: 8rem;
+    --text-9xl--line-height: 1;
+    --font-weight-light: 300;
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+    --font-weight-extrabold: 800;
+    --tracking-tight: -0.025em;
+    --tracking-wider: 0.05em;
+    --radius-sm: 0.25rem;
+    --radius-md: 0.375rem;
+    --radius-lg: 0.5rem;
+    --radius-xl: 0.75rem;
+    --drop-shadow-2xl: 0 25px 25px rgb(0 0 0 / 0.15);
+    --default-transition-duration: 150ms;
+    --default-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    --default-font-family: var(--font-sans);
+    --default-mono-font-family: var(--font-mono);
+  }
+}
+@layer base {
+  *, ::after, ::before, ::backdrop, ::file-selector-button {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    border: 0 solid;
+  }
+  html, :host {
+    line-height: 1.5;
+    -webkit-text-size-adjust: 100%;
+    tab-size: 4;
+    font-family: var(--default-font-family, ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji");
+    font-feature-settings: var(--default-font-feature-settings, normal);
+    font-variation-settings: var(--default-font-variation-settings, normal);
+    -webkit-tap-highlight-color: transparent;
+  }
+  hr {
+    height: 0;
+    color: inherit;
+    border-top-width: 1px;
+  }
+  abbr:where([title]) {
+    -webkit-text-decoration: underline dotted;
+    text-decoration: underline dotted;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-size: inherit;
+    font-weight: inherit;
+  }
+  a {
+    color: inherit;
+    -webkit-text-decoration: inherit;
+    text-decoration: inherit;
+  }
+  b, strong {
+    font-weight: bolder;
+  }
+  code, kbd, samp, pre {
+    font-family: var(--default-mono-font-family, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace);
+    font-feature-settings: var(--default-mono-font-feature-settings, normal);
+    font-variation-settings: var(--default-mono-font-variation-settings, normal);
+    font-size: 1em;
+  }
+  small {
+    font-size: 80%;
+  }
+  sub, sup {
+    font-size: 75%;
+    line-height: 0;
+    position: relative;
+    vertical-align: baseline;
+  }
+  sub {
+    bottom: -0.25em;
+  }
+  sup {
+    top: -0.5em;
+  }
+  table {
+    text-indent: 0;
+    border-color: inherit;
+    border-collapse: collapse;
+  }
+  :-moz-focusring {
+    outline: auto;
+  }
+  progress {
+    vertical-align: baseline;
+  }
+  summary {
+    display: list-item;
+  }
+  ol, ul, menu {
+    list-style: none;
+  }
+  img, svg, video, canvas, audio, iframe, embed, object {
+    display: block;
+    vertical-align: middle;
+  }
+  img, video {
+    max-width: 100%;
+    height: auto;
+  }
+  button, input, select, optgroup, textarea, ::file-selector-button {
+    font: inherit;
+    font-feature-settings: inherit;
+    font-variation-settings: inherit;
+    letter-spacing: inherit;
+    color: inherit;
+    border-radius: 0;
+    background-color: transparent;
+    opacity: 1;
+  }
+  :where(select:is([multiple], [size])) optgroup {
+    font-weight: bolder;
+  }
+  :where(select:is([multiple], [size])) optgroup option {
+    padding-inline-start: 20px;
+  }
+  ::file-selector-button {
+    margin-inline-end: 4px;
+  }
+  ::placeholder {
+    opacity: 1;
+  }
+  @supports (not (-webkit-appearance: -apple-pay-button))  or (contain-intrinsic-size: 1px) {
+    ::placeholder {
+      color: currentcolor;
+      @supports (color: color-mix(in lab, red, red)) {
+        color: color-mix(in oklab, currentcolor 50%, transparent);
+      }
+    }
+  }
+  textarea {
+    resize: vertical;
+  }
+  ::-webkit-search-decoration {
+    -webkit-appearance: none;
+  }
+  ::-webkit-date-and-time-value {
+    min-height: 1lh;
+    text-align: inherit;
+  }
+  ::-webkit-datetime-edit {
+    display: inline-flex;
+  }
+  ::-webkit-datetime-edit-fields-wrapper {
+    padding: 0;
+  }
+  ::-webkit-datetime-edit, ::-webkit-datetime-edit-year-field, ::-webkit-datetime-edit-month-field, ::-webkit-datetime-edit-day-field, ::-webkit-datetime-edit-hour-field, ::-webkit-datetime-edit-minute-field, ::-webkit-datetime-edit-second-field, ::-webkit-datetime-edit-millisecond-field, ::-webkit-datetime-edit-meridiem-field {
+    padding-block: 0;
+  }
+  ::-webkit-calendar-picker-indicator {
+    line-height: 1;
+  }
+  :-moz-ui-invalid {
+    box-shadow: none;
+  }
+  button, input:where([type="button"], [type="reset"], [type="submit"]), ::file-selector-button {
+    appearance: button;
+  }
+  ::-webkit-inner-spin-button, ::-webkit-outer-spin-button {
+    height: auto;
+  }
+  [hidden]:where(:not([hidden="until-found"])) {
+    display: none !important;
+  }
+}
+@layer utilities {
+  .pointer-events-none {
+    pointer-events: none;
+  }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border-width: 0;
+  }
+  .absolute {
+    position: absolute;
+  }
+  .relative {
+    position: relative;
+  }
+  .static {
+    position: static;
+  }
+  .top-1 {
+    top: calc(var(--spacing) * 1);
+  }
+  .top-1\/2 {
+    top: calc(1/2 * 100%);
+  }
+  .right-2 {
+    right: calc(var(--spacing) * 2);
+  }
+  .right-4 {
+    right: calc(var(--spacing) * 4);
+  }
+  .left-4 {
+    left: calc(var(--spacing) * 4);
+  }
+  .z-0 {
+    z-index: 0;
+  }
+  .z-10 {
+    z-index: 10;
+  }
+  .col-span-1 {
+    grid-column: span 1 / span 1;
+  }
+  .container {
+    width: 100%;
+    @media (width >= 40rem) {
+      max-width: 40rem;
+    }
+    @media (width >= 48rem) {
+      max-width: 48rem;
+    }
+    @media (width >= 64rem) {
+      max-width: 64rem;
+    }
+    @media (width >= 80rem) {
+      max-width: 80rem;
+    }
+    @media (width >= 96rem) {
+      max-width: 96rem;
+    }
+  }
+  .mx-auto {
+    margin-inline: auto;
+  }
+  .mt-2 {
+    margin-top: calc(var(--spacing) * 2);
+  }
+  .mt-4 {
+    margin-top: calc(var(--spacing) * 4);
+  }
+  .mt-6 {
+    margin-top: calc(var(--spacing) * 6);
+  }
+  .mt-8 {
+    margin-top: calc(var(--spacing) * 8);
+  }
+  .mt-10 {
+    margin-top: calc(var(--spacing) * 10);
+  }
+  .mr-2 {
+    margin-right: calc(var(--spacing) * 2);
+  }
+  .mb-2 {
+    margin-bottom: calc(var(--spacing) * 2);
+  }
+  .mb-4 {
+    margin-bottom: calc(var(--spacing) * 4);
+  }
+  .mb-6 {
+    margin-bottom: calc(var(--spacing) * 6);
+  }
+  .mb-8 {
+    margin-bottom: calc(var(--spacing) * 8);
+  }
+  .ml-2 {
+    margin-left: calc(var(--spacing) * 2);
+  }
+  .contents {
+    display: contents;
+  }
+  .flex {
+    display: flex;
+  }
+  .grid {
+    display: grid;
+  }
+  .inline-flex {
+    display: inline-flex;
+  }
+  .table {
+    display: table;
+  }
+  .h-3 {
+    height: calc(var(--spacing) * 3);
+  }
+  .h-4 {
+    height: calc(var(--spacing) * 4);
+  }
+  .h-5 {
+    height: calc(var(--spacing) * 5);
+  }
+  .h-6 {
+    height: calc(var(--spacing) * 6);
+  }
+  .h-8 {
+    height: calc(var(--spacing) * 8);
+  }
+  .h-10 {
+    height: calc(var(--spacing) * 10);
+  }
+  .h-12 {
+    height: calc(var(--spacing) * 12);
+  }
+  .h-64 {
+    height: calc(var(--spacing) * 64);
+  }
+  .h-screen {
+    height: 100vh;
+  }
+  .min-h-\[70vh\] {
+    min-height: 70vh;
+  }
+  .w-3 {
+    width: calc(var(--spacing) * 3);
+  }
+  .w-4 {
+    width: calc(var(--spacing) * 4);
+  }
+  .w-5 {
+    width: calc(var(--spacing) * 5);
+  }
+  .w-6 {
+    width: calc(var(--spacing) * 6);
+  }
+  .w-12 {
+    width: calc(var(--spacing) * 12);
+  }
+  .w-64 {
+    width: calc(var(--spacing) * 64);
+  }
+  .w-full {
+    width: 100%;
+  }
+  .max-w-2xl {
+    max-width: var(--container-2xl);
+  }
+  .max-w-7xl {
+    max-width: var(--container-7xl);
+  }
+  .max-w-md {
+    max-width: var(--container-md);
+  }
+  .min-w-full {
+    min-width: 100%;
+  }
+  .border-collapse {
+    border-collapse: collapse;
+  }
+  .-translate-y-1 {
+    --tw-translate-y: calc(var(--spacing) * -1);
+    translate: var(--tw-translate-x) var(--tw-translate-y);
+  }
+  .-translate-y-1\/2 {
+    --tw-translate-y: calc(calc(1/2 * 100%) * -1);
+    translate: var(--tw-translate-x) var(--tw-translate-y);
+  }
+  .-translate-y-1\/3 {
+    --tw-translate-y: calc(calc(1/3 * 100%) * -1);
+    translate: var(--tw-translate-x) var(--tw-translate-y);
+  }
+  .-rotate-90 {
+    rotate: calc(90deg * -1);
+  }
+  .rotate-180 {
+    rotate: 180deg;
+  }
+  .transform {
+    transform: var(--tw-rotate-x,) var(--tw-rotate-y,) var(--tw-rotate-z,) var(--tw-skew-x,) var(--tw-skew-y,);
+  }
+  .cursor-not-allowed {
+    cursor: not-allowed;
+  }
+  .cursor-pointer {
+    cursor: pointer;
+  }
+  .resize {
+    resize: both;
+  }
+  .appearance-none {
+    appearance: none;
+  }
+  .grid-cols-1 {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+  .items-center {
+    align-items: center;
+  }
+  .justify-between {
+    justify-content: space-between;
+  }
+  .justify-center {
+    justify-content: center;
+  }
+  .gap-3 {
+    gap: calc(var(--spacing) * 3);
+  }
+  .gap-4 {
+    gap: calc(var(--spacing) * 4);
+  }
+  .gap-6 {
+    gap: calc(var(--spacing) * 6);
+  }
+  .-space-x-px {
+    :where(& > :not(:last-child)) {
+      --tw-space-x-reverse: 0;
+      margin-inline-start: calc(-1px * var(--tw-space-x-reverse));
+      margin-inline-end: calc(-1px * calc(1 - var(--tw-space-x-reverse)));
+    }
+  }
+  .divide-y {
+    :where(& > :not(:last-child)) {
+      --tw-divide-y-reverse: 0;
+      border-bottom-style: var(--tw-border-style);
+      border-top-style: var(--tw-border-style);
+      border-top-width: calc(1px * var(--tw-divide-y-reverse));
+      border-bottom-width: calc(1px * calc(1 - var(--tw-divide-y-reverse)));
+    }
+  }
+  .divide-ctp-base {
+    :where(& > :not(:last-child)) {
+      border-color: var(--catppuccin-color-base);
+    }
+  }
+  .divide-ctp-blue {
+    :where(& > :not(:last-child)) {
+      border-color: var(--catppuccin-color-blue);
+    }
+  }
+  .divide-ctp-blue\/20 {
+    :where(& > :not(:last-child)) {
+      border-color: var(--catppuccin-color-blue);
+      @supports (color: color-mix(in lab, red, red)) {
+        border-color: color-mix(in oklab, var(--catppuccin-color-blue) 20%, transparent);
+      }
+    }
+  }
+  .divide-gray-200 {
+    :where(& > :not(:last-child)) {
+      border-color: var(--color-gray-200);
+    }
+  }
+  .overflow-x-auto {
+    overflow-x: auto;
+  }
+  .rounded {
+    border-radius: 0.25rem;
+  }
+  .rounded-\[6px\] {
+    border-radius: 6px;
+  }
+  .rounded-full {
+    border-radius: calc(infinity * 1px);
+  }
+  .rounded-lg {
+    border-radius: var(--radius-lg);
+  }
+  .rounded-md {
+    border-radius: var(--radius-md);
+  }
+  .rounded-sm {
+    border-radius: var(--radius-sm);
+  }
+  .rounded-xl {
+    border-radius: var(--radius-xl);
+  }
+  .rounded-l {
+    border-top-left-radius: 0.25rem;
+    border-bottom-left-radius: 0.25rem;
+  }
+  .rounded-r {
+    border-top-right-radius: 0.25rem;
+    border-bottom-right-radius: 0.25rem;
+  }
+  .border {
+    border-style: var(--tw-border-style);
+    border-width: 1px;
+  }
+  .border-b {
+    border-bottom-style: var(--tw-border-style);
+    border-bottom-width: 1px;
+  }
+  .border-ctp-blue {
+    border-color: var(--catppuccin-color-blue);
+  }
+  .border-ctp-blue-600 {
+    border-color: var(--catppuccin-color-blue-600);
+  }
+  .border-ctp-blue-600\/20 {
+    border-color: var(--catppuccin-color-blue-600);
+    @supports (color: color-mix(in lab, red, red)) {
+      border-color: color-mix(in oklab, var(--catppuccin-color-blue-600) 20%, transparent);
+    }
+  }
+  .border-ctp-blue\/20 {
+    border-color: var(--catppuccin-color-blue);
+    @supports (color: color-mix(in lab, red, red)) {
+      border-color: color-mix(in oklab, var(--catppuccin-color-blue) 20%, transparent);
+    }
+  }
+  .border-ctp-mauve-100 {
+    border-color: var(--catppuccin-color-mauve-100);
+  }
+  .border-ctp-red-800 {
+    border-color: var(--catppuccin-color-red-800);
+  }
+  .border-ctp-sky-800 {
+    border-color: var(--catppuccin-color-sky-800);
+  }
+  .border-ctp-subtext0 {
+    border-color: var(--catppuccin-color-subtext0);
+  }
+  .border-gray-300 {
+    border-color: var(--color-gray-300);
+  }
+  .border-red-800 {
+    border-color: var(--color-red-800);
+  }
+  .bg-ctp-base {
+    background-color: var(--catppuccin-color-base);
+  }
+  .bg-ctp-blue {
+    background-color: var(--catppuccin-color-blue);
+  }
+  .bg-ctp-blue-100 {
+    background-color: var(--catppuccin-color-blue-100);
+  }
+  .bg-ctp-blue\/20 {
+    background-color: var(--catppuccin-color-blue);
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: color-mix(in oklab, var(--catppuccin-color-blue) 20%, transparent);
+    }
+  }
+  .bg-ctp-green {
+    background-color: var(--catppuccin-color-green);
+  }
+  .bg-ctp-green-100 {
+    background-color: var(--catppuccin-color-green-100);
+  }
+  .bg-ctp-green-200 {
+    background-color: var(--catppuccin-color-green-200);
+  }
+  .bg-ctp-lavender {
+    background-color: var(--catppuccin-color-lavender);
+  }
+  .bg-ctp-lavender-100 {
+    background-color: var(--catppuccin-color-lavender-100);
+  }
+  .bg-ctp-lavender-200 {
+    background-color: var(--catppuccin-color-lavender-200);
+  }
+  .bg-ctp-lavender\/10 {
+    background-color: var(--catppuccin-color-lavender);
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: color-mix(in oklab, var(--catppuccin-color-lavender) 10%, transparent);
+    }
+  }
+  .bg-ctp-peach-100 {
+    background-color: var(--catppuccin-color-peach-100);
+  }
+  .bg-ctp-red-50 {
+    background-color: var(--catppuccin-color-red-50);
+  }
+  .bg-ctp-red-100 {
+    background-color: var(--catppuccin-color-red-100);
+  }
+  .bg-ctp-red-200 {
+    background-color: var(--catppuccin-color-red-200);
+  }
+  .bg-ctp-sky-100 {
+    background-color: var(--catppuccin-color-sky-100);
+  }
+  .bg-ctp-teal-100 {
+    background-color: var(--catppuccin-color-teal-100);
+  }
+  .bg-ctp-teal-200 {
+    background-color: var(--catppuccin-color-teal-200);
+  }
+  .bg-ctp-yellow {
+    background-color: var(--catppuccin-color-yellow);
+  }
+  .bg-ctp-yellow-100 {
+    background-color: var(--catppuccin-color-yellow-100);
+  }
+  .bg-gray-50 {
+    background-color: var(--color-gray-50);
+  }
+  .bg-gray-100 {
+    background-color: var(--color-gray-100);
+  }
+  .bg-green-100 {
+    background-color: var(--color-green-100);
+  }
+  .bg-red-50 {
+    background-color: var(--color-red-50);
+  }
+  .bg-red-100 {
+    background-color: var(--color-red-100);
+  }
+  .bg-white {
+    background-color: var(--color-white);
+  }
+  .bg-yellow-100 {
+    background-color: var(--color-yellow-100);
+  }
+  .bg-linear-to-br {
+    --tw-gradient-position: to bottom right;
+    @supports (background-image: linear-gradient(in lab, red, red)) {
+      --tw-gradient-position: to bottom right in oklab;
+    }
+    background-image: linear-gradient(var(--tw-gradient-stops));
+  }
+  .bg-gradient-to-br {
+    --tw-gradient-position: to bottom right in oklab;
+    background-image: linear-gradient(var(--tw-gradient-stops));
+  }
+  .from-ctp-blue {
+    --tw-gradient-from: var(--catppuccin-color-blue);
+    --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
+  }
+  .from-ctp-green {
+    --tw-gradient-from: var(--catppuccin-color-green);
+    --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
+  }
+  .from-ctp-red {
+    --tw-gradient-from: var(--catppuccin-color-red);
+    --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
+  }
+  .from-ctp-teal {
+    --tw-gradient-from: var(--catppuccin-color-teal);
+    --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
+  }
+  .to-ctp-blue-600 {
+    --tw-gradient-to: var(--catppuccin-color-blue-600);
+    --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
+  }
+  .to-ctp-green-600 {
+    --tw-gradient-to: var(--catppuccin-color-green-600);
+    --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
+  }
+  .to-ctp-red-600 {
+    --tw-gradient-to: var(--catppuccin-color-red-600);
+    --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
+  }
+  .to-ctp-teal-600 {
+    --tw-gradient-to: var(--catppuccin-color-teal-600);
+    --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
+  }
+  .p-1 {
+    padding: calc(var(--spacing) * 1);
+  }
+  .p-2 {
+    padding: calc(var(--spacing) * 2);
+  }
+  .p-4 {
+    padding: calc(var(--spacing) * 4);
+  }
+  .p-5 {
+    padding: calc(var(--spacing) * 5);
+  }
+  .p-6 {
+    padding: calc(var(--spacing) * 6);
+  }
+  .p-8 {
+    padding: calc(var(--spacing) * 8);
+  }
+  .px-1 {
+    padding-inline: calc(var(--spacing) * 1);
+  }
+  .px-2 {
+    padding-inline: calc(var(--spacing) * 2);
+  }
+  .px-3 {
+    padding-inline: calc(var(--spacing) * 3);
+  }
+  .px-4 {
+    padding-inline: calc(var(--spacing) * 4);
+  }
+  .px-5 {
+    padding-inline: calc(var(--spacing) * 5);
+  }
+  .px-6 {
+    padding-inline: calc(var(--spacing) * 6);
+  }
+  .py-1 {
+    padding-block: calc(var(--spacing) * 1);
+  }
+  .py-2 {
+    padding-block: calc(var(--spacing) * 2);
+  }
+  .py-2\.5 {
+    padding-block: calc(var(--spacing) * 2.5);
+  }
+  .py-3 {
+    padding-block: calc(var(--spacing) * 3);
+  }
+  .py-4 {
+    padding-block: calc(var(--spacing) * 4);
+  }
+  .py-6 {
+    padding-block: calc(var(--spacing) * 6);
+  }
+  .py-8 {
+    padding-block: calc(var(--spacing) * 8);
+  }
+  .py-24 {
+    padding-block: calc(var(--spacing) * 24);
+  }
+  .pt-1 {
+    padding-top: calc(var(--spacing) * 1);
+  }
+  .pt-2 {
+    padding-top: calc(var(--spacing) * 2);
+  }
+  .pr-4 {
+    padding-right: calc(var(--spacing) * 4);
+  }
+  .pr-10 {
+    padding-right: calc(var(--spacing) * 10);
+  }
+  .pb-1 {
+    padding-bottom: calc(var(--spacing) * 1);
+  }
+  .pb-4 {
+    padding-bottom: calc(var(--spacing) * 4);
+  }
+  .pl-12 {
+    padding-left: calc(var(--spacing) * 12);
+  }
+  .text-center {
+    text-align: center;
+  }
+  .text-left {
+    text-align: left;
+  }
+  .text-2xl {
+    font-size: var(--text-2xl);
+    line-height: var(--tw-leading, var(--text-2xl--line-height));
+  }
+  .text-3xl {
+    font-size: var(--text-3xl);
+    line-height: var(--tw-leading, var(--text-3xl--line-height));
+  }
+  .text-7xl {
+    font-size: var(--text-7xl);
+    line-height: var(--tw-leading, var(--text-7xl--line-height));
+  }
+  .text-9xl {
+    font-size: var(--text-9xl);
+    line-height: var(--tw-leading, var(--text-9xl--line-height));
+  }
+  .text-lg {
+    font-size: var(--text-lg);
+    line-height: var(--tw-leading, var(--text-lg--line-height));
+  }
+  .text-sm {
+    font-size: var(--text-sm);
+    line-height: var(--tw-leading, var(--text-sm--line-height));
+  }
+  .text-xl {
+    font-size: var(--text-xl);
+    line-height: var(--tw-leading, var(--text-xl--line-height));
+  }
+  .leading-5 {
+    --tw-leading: calc(var(--spacing) * 5);
+    line-height: calc(var(--spacing) * 5);
+  }
+  .font-bold {
+    --tw-font-weight: var(--font-weight-bold);
+    font-weight: var(--font-weight-bold);
+  }
+  .font-extrabold {
+    --tw-font-weight: var(--font-weight-extrabold);
+    font-weight: var(--font-weight-extrabold);
+  }
+  .font-light {
+    --tw-font-weight: var(--font-weight-light);
+    font-weight: var(--font-weight-light);
+  }
+  .font-medium {
+    --tw-font-weight: var(--font-weight-medium);
+    font-weight: var(--font-weight-medium);
+  }
+  .font-normal {
+    --tw-font-weight: var(--font-weight-normal);
+    font-weight: var(--font-weight-normal);
+  }
+  .font-semibold {
+    --tw-font-weight: var(--font-weight-semibold);
+    font-weight: var(--font-weight-semibold);
+  }
+  .tracking-tight {
+    --tw-tracking: var(--tracking-tight);
+    letter-spacing: var(--tracking-tight);
+  }
+  .tracking-wider {
+    --tw-tracking: var(--tracking-wider);
+    letter-spacing: var(--tracking-wider);
+  }
+  .text-balance {
+    text-wrap: balance;
+  }
+  .text-wrap {
+    text-wrap: wrap;
+  }
+  .whitespace-nowrap {
+    white-space: nowrap;
+  }
+  .whitespace-pre-wrap {
+    white-space: pre-wrap;
+  }
+  .text-ctp-base {
+    color: var(--catppuccin-color-base);
+  }
+  .text-ctp-blue-600 {
+    color: var(--catppuccin-color-blue-600);
+  }
+  .text-ctp-green {
+    color: var(--catppuccin-color-green);
+  }
+  .text-ctp-green-800 {
+    color: var(--catppuccin-color-green-800);
+  }
+  .text-ctp-lavender-800 {
+    color: var(--catppuccin-color-lavender-800);
+  }
+  .text-ctp-mauve-100 {
+    color: var(--catppuccin-color-mauve-100);
+  }
+  .text-ctp-peach-800 {
+    color: var(--catppuccin-color-peach-800);
+  }
+  .text-ctp-red-500 {
+    color: var(--catppuccin-color-red-500);
+  }
+  .text-ctp-red-600 {
+    color: var(--catppuccin-color-red-600);
+  }
+  .text-ctp-red-700 {
+    color: var(--catppuccin-color-red-700);
+  }
+  .text-ctp-red-800 {
+    color: var(--catppuccin-color-red-800);
+  }
+  .text-ctp-subtext0 {
+    color: var(--catppuccin-color-subtext0);
+  }
+  .text-ctp-teal-800 {
+    color: var(--catppuccin-color-teal-800);
+  }
+  .text-ctp-text {
+    color: var(--catppuccin-color-text);
+  }
+  .text-ctp-yellow-800 {
+    color: var(--catppuccin-color-yellow-800);
+  }
+  .text-gray-200 {
+    color: var(--color-gray-200);
+  }
+  .text-gray-400 {
+    color: var(--color-gray-400);
+  }
+  .text-gray-500 {
+    color: var(--color-gray-500);
+  }
+  .text-gray-600 {
+    color: var(--color-gray-600);
+  }
+  .text-gray-700 {
+    color: var(--color-gray-700);
+  }
+  .text-gray-800 {
+    color: var(--color-gray-800);
+  }
+  .text-green-800 {
+    color: var(--color-green-800);
+  }
+  .text-red-700 {
+    color: var(--color-red-700);
+  }
+  .text-red-800 {
+    color: var(--color-red-800);
+  }
+  .text-yellow-800 {
+    color: var(--color-yellow-800);
+  }
+  .underline {
+    text-decoration-line: underline;
+  }
+  .shadow-md {
+    --tw-shadow: 0 4px 6px -1px var(--tw-shadow-color, rgb(0 0 0 / 0.1)), 0 2px 4px -2px var(--tw-shadow-color, rgb(0 0 0 / 0.1));
+    box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+  }
+  .shadow-sm {
+    --tw-shadow: 0 1px 3px 0 var(--tw-shadow-color, rgb(0 0 0 / 0.1)), 0 1px 2px -1px var(--tw-shadow-color, rgb(0 0 0 / 0.1));
+    box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+  }
+  .outline {
+    outline-style: var(--tw-outline-style);
+    outline-width: 1px;
+  }
+  .blur {
+    --tw-blur: blur(8px);
+    filter: var(--tw-blur,) var(--tw-brightness,) var(--tw-contrast,) var(--tw-grayscale,) var(--tw-hue-rotate,) var(--tw-invert,) var(--tw-saturate,) var(--tw-sepia,) var(--tw-drop-shadow,);
+  }
+  .drop-shadow-2xl {
+    --tw-drop-shadow-size: drop-shadow(0 25px 25px var(--tw-drop-shadow-color, rgb(0 0 0 / 0.15)));
+    --tw-drop-shadow: drop-shadow(var(--drop-shadow-2xl));
+    filter: var(--tw-blur,) var(--tw-brightness,) var(--tw-contrast,) var(--tw-grayscale,) var(--tw-hue-rotate,) var(--tw-invert,) var(--tw-saturate,) var(--tw-sepia,) var(--tw-drop-shadow,);
+  }
+  .filter {
+    filter: var(--tw-blur,) var(--tw-brightness,) var(--tw-contrast,) var(--tw-grayscale,) var(--tw-hue-rotate,) var(--tw-invert,) var(--tw-saturate,) var(--tw-sepia,) var(--tw-drop-shadow,);
+  }
+  .transition {
+    transition-property: color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, --tw-gradient-from, --tw-gradient-via, --tw-gradient-to, opacity, box-shadow, transform, translate, scale, rotate, filter, -webkit-backdrop-filter, backdrop-filter, display, content-visibility, overlay, pointer-events;
+    transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
+    transition-duration: var(--tw-duration, var(--default-transition-duration));
+  }
+  .transition-all {
+    transition-property: all;
+    transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
+    transition-duration: var(--tw-duration, var(--default-transition-duration));
+  }
+  .transition-colors {
+    transition-property: color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, --tw-gradient-from, --tw-gradient-via, --tw-gradient-to;
+    transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
+    transition-duration: var(--tw-duration, var(--default-transition-duration));
+  }
+  .transition-transform {
+    transition-property: transform, translate, scale, rotate;
+    transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
+    transition-duration: var(--tw-duration, var(--default-transition-duration));
+  }
+  .duration-200 {
+    --tw-duration: 200ms;
+    transition-duration: 200ms;
+  }
+  .group-hover\:border-ctp-subtext1 {
+    &:is(:where(.group):hover *) {
+      @media (hover: hover) {
+        border-color: var(--catppuccin-color-subtext1);
+      }
+    }
+  }
+  .group-hover\:bg-ctp-blue-100 {
+    &:is(:where(.group):hover *) {
+      @media (hover: hover) {
+        background-color: var(--catppuccin-color-blue-100);
+      }
+    }
+  }
+  .group-hover\:bg-ctp-blue-100\/20 {
+    &:is(:where(.group):hover *) {
+      @media (hover: hover) {
+        background-color: var(--catppuccin-color-blue-100);
+        @supports (color: color-mix(in lab, red, red)) {
+          background-color: color-mix(in oklab, var(--catppuccin-color-blue-100) 20%, transparent);
+        }
+      }
+    }
+  }
+  .group-hover\:bg-ctp-blue-100\/50 {
+    &:is(:where(.group):hover *) {
+      @media (hover: hover) {
+        background-color: var(--catppuccin-color-blue-100);
+        @supports (color: color-mix(in lab, red, red)) {
+          background-color: color-mix(in oklab, var(--catppuccin-color-blue-100) 50%, transparent);
+        }
+      }
+    }
+  }
+  .group-hover\:bg-transparent {
+    &:is(:where(.group):hover *) {
+      @media (hover: hover) {
+        background-color: transparent;
+      }
+    }
+  }
+  .group-hover\:bg-transparent\/5 {
+    &:is(:where(.group):hover *) {
+      @media (hover: hover) {
+        background-color: color-mix(in oklab, transparent 5%, transparent);
+      }
+    }
+  }
+  .group-hover\:bg-transparent\/50 {
+    &:is(:where(.group):hover *) {
+      @media (hover: hover) {
+        background-color: color-mix(in oklab, transparent 50%, transparent);
+      }
+    }
+  }
+  .group-hover\:underline {
+    &:is(:where(.group):hover *) {
+      @media (hover: hover) {
+        text-decoration-line: underline;
+      }
+    }
+  }
+  .hover\:z-20 {
+    &:hover {
+      @media (hover: hover) {
+        z-index: 20;
+      }
+    }
+  }
+  .hover\:bg-ctp-blue\/20 {
+    &:hover {
+      @media (hover: hover) {
+        background-color: var(--catppuccin-color-blue);
+        @supports (color: color-mix(in lab, red, red)) {
+          background-color: color-mix(in oklab, var(--catppuccin-color-blue) 20%, transparent);
+        }
+      }
+    }
+  }
+  .hover\:bg-ctp-green-700 {
+    &:hover {
+      @media (hover: hover) {
+        background-color: var(--catppuccin-color-green-700);
+      }
+    }
+  }
+  .hover\:bg-gray-50 {
+    &:hover {
+      @media (hover: hover) {
+        background-color: var(--color-gray-50);
+      }
+    }
+  }
+  .hover\:bg-gray-100 {
+    &:hover {
+      @media (hover: hover) {
+        background-color: var(--color-gray-100);
+      }
+    }
+  }
+  .hover\:text-ctp-subtext0 {
+    &:hover {
+      @media (hover: hover) {
+        color: var(--catppuccin-color-subtext0);
+      }
+    }
+  }
+  .hover\:text-ctp-subtext1 {
+    &:hover {
+      @media (hover: hover) {
+        color: var(--catppuccin-color-subtext1);
+      }
+    }
+  }
+  .hover\:shadow-md {
+    &:hover {
+      @media (hover: hover) {
+        --tw-shadow: 0 4px 6px -1px var(--tw-shadow-color, rgb(0 0 0 / 0.1)), 0 2px 4px -2px var(--tw-shadow-color, rgb(0 0 0 / 0.1));
+        box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+      }
+    }
+  }
+  .hover\:drop-shadow-2xl {
+    &:hover {
+      @media (hover: hover) {
+        --tw-drop-shadow-size: drop-shadow(0 25px 25px var(--tw-drop-shadow-color, rgb(0 0 0 / 0.15)));
+        --tw-drop-shadow: drop-shadow(var(--drop-shadow-2xl));
+        filter: var(--tw-blur,) var(--tw-brightness,) var(--tw-contrast,) var(--tw-grayscale,) var(--tw-hue-rotate,) var(--tw-invert,) var(--tw-saturate,) var(--tw-sepia,) var(--tw-drop-shadow,);
+      }
+    }
+  }
+  .focus\:text-ctp-subtext1 {
+    &:focus {
+      color: var(--catppuccin-color-subtext1);
+    }
+  }
+  .focus\:ring-1 {
+    &:focus {
+      --tw-ring-shadow: var(--tw-ring-inset,) 0 0 0 calc(1px + var(--tw-ring-offset-width)) var(--tw-ring-color, currentcolor);
+      box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+    }
+  }
+  .focus\:ring-2 {
+    &:focus {
+      --tw-ring-shadow: var(--tw-ring-inset,) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color, currentcolor);
+      box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+    }
+  }
+  .focus\:outline-none {
+    &:focus {
+      --tw-outline-style: none;
+      outline-style: none;
+    }
+  }
+  .focus-visible\:outline {
+    &:focus-visible {
+      outline-style: var(--tw-outline-style);
+      outline-width: 1px;
+    }
+  }
+  .focus-visible\:outline-offset-2 {
+    &:focus-visible {
+      outline-offset: 2px;
+    }
+  }
+  .focus-visible\:outline-ctp-green-600 {
+    &:focus-visible {
+      outline-color: var(--catppuccin-color-green-600);
+    }
+  }
+  .active\:bg-ctp-blue\/20 {
+    &:active {
+      background-color: var(--catppuccin-color-blue);
+      @supports (color: color-mix(in lab, red, red)) {
+        background-color: color-mix(in oklab, var(--catppuccin-color-blue) 20%, transparent);
+      }
+    }
+  }
+  .sm\:px-6 {
+    @media (width >= 40rem) {
+      padding-inline: calc(var(--spacing) * 6);
+    }
+  }
+  .sm\:text-8xl {
+    @media (width >= 40rem) {
+      font-size: var(--text-8xl);
+      line-height: var(--tw-leading, var(--text-8xl--line-height));
+    }
+  }
+  .md\:grid-cols-3 {
+    @media (width >= 48rem) {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  .md\:grid-cols-5 {
+    @media (width >= 48rem) {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+  }
+  .md\:text-9xl {
+    @media (width >= 48rem) {
+      font-size: var(--text-9xl);
+      line-height: var(--tw-leading, var(--text-9xl--line-height));
+    }
+  }
+  .lg\:px-8 {
+    @media (width >= 64rem) {
+      padding-inline: calc(var(--spacing) * 8);
+    }
+  }
+}
+@layer base {
+  :root {
+    --catppuccin-color-rosewater: #dc8a78;
+    --catppuccin-color-rosewater-500: #dc8a78;
+    --catppuccin-color-rosewater-400: #de998c;
+    --catppuccin-color-rosewater-300: #e0a69c;
+    --catppuccin-color-rosewater-200: #e2b1ab;
+    --catppuccin-color-rosewater-100: #e4bcb8;
+    --catppuccin-color-rosewater-50: #e6c6c4;
+    --catppuccin-color-rosewater-600: #d28372;
+    --catppuccin-color-rosewater-700: #c27969;
+    --catppuccin-color-rosewater-800: #af6d5e;
+    --catppuccin-color-rosewater-900: #9a5f52;
+    --catppuccin-color-rosewater-950: #804e43;
+    --catppuccin-color-flamingo: #dd7878;
+    --catppuccin-color-flamingo-500: #dd7878;
+    --catppuccin-color-flamingo-400: #df8b8c;
+    --catppuccin-color-flamingo-300: #e19b9c;
+    --catppuccin-color-flamingo-200: #e3a9ab;
+    --catppuccin-color-flamingo-100: #e4b5b8;
+    --catppuccin-color-flamingo-50: #e6c1c4;
+    --catppuccin-color-flamingo-600: #d37272;
+    --catppuccin-color-flamingo-700: #c26969;
+    --catppuccin-color-flamingo-800: #b05e5e;
+    --catppuccin-color-flamingo-900: #9a5252;
+    --catppuccin-color-flamingo-950: #804343;
+    --catppuccin-color-pink: #ea76cb;
+    --catppuccin-color-pink-500: #ea76cb;
+    --catppuccin-color-pink-400: #eb89d0;
+    --catppuccin-color-pink-300: #eb9ad4;
+    --catppuccin-color-pink-200: #eca8d9;
+    --catppuccin-color-pink-100: #ecb5dd;
+    --catppuccin-color-pink-50: #edc1e1;
+    --catppuccin-color-pink-600: #df70c2;
+    --catppuccin-color-pink-700: #ce67b2;
+    --catppuccin-color-pink-800: #ba5da1;
+    --catppuccin-color-pink-900: #a4518e;
+    --catppuccin-color-pink-950: #884275;
+    --catppuccin-color-mauve: #8839ef;
+    --catppuccin-color-mauve-500: #8839ef;
+    --catppuccin-color-mauve-400: #9763f0;
+    --catppuccin-color-mauve-300: #a47ef0;
+    --catppuccin-color-mauve-200: #af93f1;
+    --catppuccin-color-mauve-100: #baa5f1;
+    --catppuccin-color-mauve-50: #c4b5f2;
+    --catppuccin-color-mauve-600: #8236e4;
+    --catppuccin-color-mauve-700: #7731d2;
+    --catppuccin-color-mauve-800: #6b2bbe;
+    --catppuccin-color-mauve-900: #5e25a7;
+    --catppuccin-color-mauve-950: #4d1d8b;
+    --catppuccin-color-red: #d20f39;
+    --catppuccin-color-red-500: #d20f39;
+    --catppuccin-color-red-400: #d55664;
+    --catppuccin-color-red-300: #d87680;
+    --catppuccin-color-red-200: #db8d95;
+    --catppuccin-color-red-100: #dea1a8;
+    --catppuccin-color-red-50: #e1b1b8;
+    --catppuccin-color-red-600: #c80e36;
+    --catppuccin-color-red-700: #b90c31;
+    --catppuccin-color-red-800: #a7092b;
+    --catppuccin-color-red-900: #930725;
+    --catppuccin-color-red-950: #7a051d;
+    --catppuccin-color-maroon: #e64553;
+    --catppuccin-color-maroon-500: #e64553;
+    --catppuccin-color-maroon-400: #e76972;
+    --catppuccin-color-maroon-300: #e88289;
+    --catppuccin-color-maroon-200: #e9969c;
+    --catppuccin-color-maroon-100: #eaa7ad;
+    --catppuccin-color-maroon-50: #ebb6bb;
+    --catppuccin-color-maroon-600: #dc414f;
+    --catppuccin-color-maroon-700: #ca3c48;
+    --catppuccin-color-maroon-800: #b73540;
+    --catppuccin-color-maroon-900: #a12e38;
+    --catppuccin-color-maroon-950: #86242d;
+    --catppuccin-color-peach: #fe640b;
+    --catppuccin-color-peach-500: #fe640b;
+    --catppuccin-color-peach-400: #fd7c57;
+    --catppuccin-color-peach-300: #fb9077;
+    --catppuccin-color-peach-200: #faa08f;
+    --catppuccin-color-peach-100: #f8afa3;
+    --catppuccin-color-peach-50: #f7bcb4;
+    --catppuccin-color-peach-600: #f25f0a;
+    --catppuccin-color-peach-700: #e05708;
+    --catppuccin-color-peach-800: #cb4e07;
+    --catppuccin-color-peach-900: #b24405;
+    --catppuccin-color-peach-950: #943703;
+    --catppuccin-color-yellow: #df8e1d;
+    --catppuccin-color-yellow-500: #df8e1d;
+    --catppuccin-color-yellow-400: #e19c5a;
+    --catppuccin-color-yellow-300: #e2a879;
+    --catppuccin-color-yellow-200: #e4b391;
+    --catppuccin-color-yellow-100: #e6bea4;
+    --catppuccin-color-yellow-50: #e7c8b5;
+    --catppuccin-color-yellow-600: #d5871b;
+    --catppuccin-color-yellow-700: #c47c18;
+    --catppuccin-color-yellow-800: #b27015;
+    --catppuccin-color-yellow-900: #9c6211;
+    --catppuccin-color-yellow-950: #82500c;
+    --catppuccin-color-green: #40a02b;
+    --catppuccin-color-green-500: #40a02b;
+    --catppuccin-color-green-400: #66aa5e;
+    --catppuccin-color-green-300: #7fb47c;
+    --catppuccin-color-green-200: #94bd93;
+    --catppuccin-color-green-100: #a5c6a6;
+    --catppuccin-color-green-50: #b4ceb6;
+    --catppuccin-color-green-600: #3d9929;
+    --catppuccin-color-green-700: #378c25;
+    --catppuccin-color-green-800: #317f20;
+    --catppuccin-color-green-900: #2a6f1b;
+    --catppuccin-color-green-950: #215b15;
+    --catppuccin-color-teal: #179299;
+    --catppuccin-color-teal-500: #179299;
+    --catppuccin-color-teal-400: #569fa5;
+    --catppuccin-color-teal-300: #75abb1;
+    --catppuccin-color-teal-200: #8db6bb;
+    --catppuccin-color-teal-100: #a0c0c5;
+    --catppuccin-color-teal-50: #b0c9ce;
+    --catppuccin-color-teal-600: #158b92;
+    --catppuccin-color-teal-700: #138086;
+    --catppuccin-color-teal-800: #107379;
+    --catppuccin-color-teal-900: #0d656a;
+    --catppuccin-color-teal-950: #085357;
+    --catppuccin-color-sky: #04a5e5;
+    --catppuccin-color-sky-500: #04a5e5;
+    --catppuccin-color-sky-400: #53afe7;
+    --catppuccin-color-sky-300: #74b8e8;
+    --catppuccin-color-sky-200: #8bc0ea;
+    --catppuccin-color-sky-100: #9fc8ec;
+    --catppuccin-color-sky-50: #b0d0ed;
+    --catppuccin-color-sky-600: #049ddb;
+    --catppuccin-color-sky-700: #0391ca;
+    --catppuccin-color-sky-800: #0283b6;
+    --catppuccin-color-sky-900: #0272a0;
+    --catppuccin-color-sky-950: #015e85;
+    --catppuccin-color-sapphire: #209fb5;
+    --catppuccin-color-sapphire-500: #209fb5;
+    --catppuccin-color-sapphire-400: #59aabd;
+    --catppuccin-color-sapphire-300: #77b3c4;
+    --catppuccin-color-sapphire-200: #8ebdcb;
+    --catppuccin-color-sapphire-100: #a0c5d2;
+    --catppuccin-color-sapphire-50: #b1cdd8;
+    --catppuccin-color-sapphire-600: #1e98ad;
+    --catppuccin-color-sapphire-700: #1b8b9f;
+    --catppuccin-color-sapphire-800: #177e90;
+    --catppuccin-color-sapphire-900: #136e7e;
+    --catppuccin-color-sapphire-950: #0e5b68;
+    --catppuccin-color-blue: #1e66f5;
+    --catppuccin-color-blue-500: #1e66f5;
+    --catppuccin-color-blue-400: #587ef5;
+    --catppuccin-color-blue-300: #7791f5;
+    --catppuccin-color-blue-200: #8da1f5;
+    --catppuccin-color-blue-100: #a0b0f5;
+    --catppuccin-color-blue-50: #b1bdf5;
+    --catppuccin-color-blue-600: #1c61ea;
+    --catppuccin-color-blue-700: #1959d8;
+    --catppuccin-color-blue-800: #1650c3;
+    --catppuccin-color-blue-900: #1245ac;
+    --catppuccin-color-blue-950: #0d388f;
+    --catppuccin-color-lavender: #7287fd;
+    --catppuccin-color-lavender-500: #7287fd;
+    --catppuccin-color-lavender-400: #8696fc;
+    --catppuccin-color-lavender-300: #97a4fb;
+    --catppuccin-color-lavender-200: #a5b0fb;
+    --catppuccin-color-lavender-100: #b2bbfa;
+    --catppuccin-color-lavender-50: #bec5f9;
+    --catppuccin-color-lavender-600: #6d81f2;
+    --catppuccin-color-lavender-700: #6476df;
+    --catppuccin-color-lavender-800: #596aca;
+    --catppuccin-color-lavender-900: #4e5db1;
+    --catppuccin-color-lavender-950: #3f4c94;
+    --catppuccin-color-text: #4c4f69;
+    --catppuccin-color-subtext1: #5c5f77;
+    --catppuccin-color-subtext0: #6c6f85;
+    --catppuccin-color-overlay2: #7c7f93;
+    --catppuccin-color-overlay1: #8c8fa1;
+    --catppuccin-color-overlay0: #9ca0b0;
+    --catppuccin-color-surface2: #acb0be;
+    --catppuccin-color-surface1: #bcc0cc;
+    --catppuccin-color-surface0: #ccd0da;
+    --catppuccin-color-base: #eff1f5;
+    --catppuccin-color-mantle: #e6e9ef;
+    --catppuccin-color-crust: #dce0e8;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --catppuccin-color-rosewater: #f5e0dc;
+      --catppuccin-color-rosewater-500: #f5e0dc;
+      --catppuccin-color-rosewater-400: #f6e3e0;
+      --catppuccin-color-rosewater-300: #f7e7e4;
+      --catppuccin-color-rosewater-200: #f8eae7;
+      --catppuccin-color-rosewater-100: #f9edeb;
+      --catppuccin-color-rosewater-50: #faf0ee;
+      --catppuccin-color-rosewater-600: #ead6d2;
+      --catppuccin-color-rosewater-700: #d8c6c3;
+      --catppuccin-color-rosewater-800: #c4b3b1;
+      --catppuccin-color-rosewater-900: #ad9e9d;
+      --catppuccin-color-rosewater-950: #918585;
+      --catppuccin-color-flamingo: #f2cdcd;
+      --catppuccin-color-flamingo-500: #f2cdcd;
+      --catppuccin-color-flamingo-400: #f3d3d3;
+      --catppuccin-color-flamingo-300: #f5d8d8;
+      --catppuccin-color-flamingo-200: #f6dede;
+      --catppuccin-color-flamingo-100: #f7e3e3;
+      --catppuccin-color-flamingo-50: #f9e8e8;
+      --catppuccin-color-flamingo-600: #e7c4c4;
+      --catppuccin-color-flamingo-700: #d6b5b5;
+      --catppuccin-color-flamingo-800: #c2a4a5;
+      --catppuccin-color-flamingo-900: #ab9193;
+      --catppuccin-color-flamingo-950: #8f797c;
+      --catppuccin-color-pink: #f5c2e7;
+      --catppuccin-color-pink-500: #f5c2e7;
+      --catppuccin-color-pink-400: #f6c9ea;
+      --catppuccin-color-pink-300: #f7d0ec;
+      --catppuccin-color-pink-200: #f8d7ef;
+      --catppuccin-color-pink-100: #f9ddf1;
+      --catppuccin-color-pink-50: #fae3f3;
+      --catppuccin-color-pink-600: #eab9dd;
+      --catppuccin-color-pink-700: #d8abcc;
+      --catppuccin-color-pink-800: #c49bba;
+      --catppuccin-color-pink-900: #ad89a5;
+      --catppuccin-color-pink-950: #91738b;
+      --catppuccin-color-mauve: #cba6f7;
+      --catppuccin-color-mauve-500: #cba6f7;
+      --catppuccin-color-mauve-400: #d1b2f8;
+      --catppuccin-color-mauve-300: #d7bcf9;
+      --catppuccin-color-mauve-200: #dcc6f9;
+      --catppuccin-color-mauve-100: #e2d0fa;
+      --catppuccin-color-mauve-50: #e7d9fb;
+      --catppuccin-color-mauve-600: #c29fec;
+      --catppuccin-color-mauve-700: #b392da;
+      --catppuccin-color-mauve-800: #a285c7;
+      --catppuccin-color-mauve-900: #8f75b0;
+      --catppuccin-color-mauve-950: #786394;
+      --catppuccin-color-red: #f38ba8;
+      --catppuccin-color-red-500: #f38ba8;
+      --catppuccin-color-red-400: #f49cb3;
+      --catppuccin-color-red-300: #f5abbe;
+      --catppuccin-color-red-200: #f7b8c7;
+      --catppuccin-color-red-100: #f8c4d1;
+      --catppuccin-color-red-50: #f9d0d9;
+      --catppuccin-color-red-600: #e885a1;
+      --catppuccin-color-red-700: #d67b95;
+      --catppuccin-color-red-800: #c36f88;
+      --catppuccin-color-red-900: #ac6279;
+      --catppuccin-color-red-950: #905367;
+      --catppuccin-color-maroon: #eba0ac;
+      --catppuccin-color-maroon-500: #eba0ac;
+      --catppuccin-color-maroon-400: #edadb7;
+      --catppuccin-color-maroon-300: #efb8c0;
+      --catppuccin-color-maroon-200: #f1c3ca;
+      --catppuccin-color-maroon-100: #f3cdd2;
+      --catppuccin-color-maroon-50: #f5d6db;
+      --catppuccin-color-maroon-600: #e099a5;
+      --catppuccin-color-maroon-700: #cf8d98;
+      --catppuccin-color-maroon-800: #bc808b;
+      --catppuccin-color-maroon-900: #a6717c;
+      --catppuccin-color-maroon-950: #8b5f6a;
+      --catppuccin-color-peach: #fab387;
+      --catppuccin-color-peach-500: #fab387;
+      --catppuccin-color-peach-400: #fbbc99;
+      --catppuccin-color-peach-300: #fbc5a8;
+      --catppuccin-color-peach-200: #fcceb6;
+      --catppuccin-color-peach-100: #fcd6c3;
+      --catppuccin-color-peach-50: #fdddcf;
+      --catppuccin-color-peach-600: #efab81;
+      --catppuccin-color-peach-700: #dd9e78;
+      --catppuccin-color-peach-800: #c88f6e;
+      --catppuccin-color-peach-900: #b17e63;
+      --catppuccin-color-peach-950: #946a55;
+      --catppuccin-color-yellow: #f9e2af;
+      --catppuccin-color-yellow-500: #f9e2af;
+      --catppuccin-color-yellow-400: #fae5b9;
+      --catppuccin-color-yellow-300: #fae8c3;
+      --catppuccin-color-yellow-200: #fbebcb;
+      --catppuccin-color-yellow-100: #fbeed4;
+      --catppuccin-color-yellow-50: #fcf1dc;
+      --catppuccin-color-yellow-600: #eed8a7;
+      --catppuccin-color-yellow-700: #dcc79b;
+      --catppuccin-color-yellow-800: #c7b58d;
+      --catppuccin-color-yellow-900: #b0a07e;
+      --catppuccin-color-yellow-950: #93866b;
+      --catppuccin-color-green: #a6e3a1;
+      --catppuccin-color-green-500: #a6e3a1;
+      --catppuccin-color-green-400: #b2e6ae;
+      --catppuccin-color-green-300: #bce9b9;
+      --catppuccin-color-green-200: #c6ecc4;
+      --catppuccin-color-green-100: #d0efcd;
+      --catppuccin-color-green-50: #d9f2d7;
+      --catppuccin-color-green-600: #9fd99a;
+      --catppuccin-color-green-700: #92c88f;
+      --catppuccin-color-green-800: #85b682;
+      --catppuccin-color-green-900: #75a074;
+      --catppuccin-color-green-950: #638663;
+      --catppuccin-color-teal: #94e2d5;
+      --catppuccin-color-teal-500: #94e2d5;
+      --catppuccin-color-teal-400: #a3e5da;
+      --catppuccin-color-teal-300: #b1e8de;
+      --catppuccin-color-teal-200: #bdebe3;
+      --catppuccin-color-teal-100: #c8eee7;
+      --catppuccin-color-teal-50: #d3f1eb;
+      --catppuccin-color-teal-600: #8dd8cc;
+      --catppuccin-color-teal-700: #83c7bc;
+      --catppuccin-color-teal-800: #77b5ac;
+      --catppuccin-color-teal-900: #69a098;
+      --catppuccin-color-teal-950: #588681;
+      --catppuccin-color-sky: #89dceb;
+      --catppuccin-color-sky-500: #89dceb;
+      --catppuccin-color-sky-400: #9ae0ed;
+      --catppuccin-color-sky-300: #aae4ef;
+      --catppuccin-color-sky-200: #b7e7f1;
+      --catppuccin-color-sky-100: #c4ebf3;
+      --catppuccin-color-sky-50: #cfeef5;
+      --catppuccin-color-sky-600: #83d2e1;
+      --catppuccin-color-sky-700: #79c2d0;
+      --catppuccin-color-sky-800: #6eb0bd;
+      --catppuccin-color-sky-900: #619ba7;
+      --catppuccin-color-sky-950: #52828d;
+      --catppuccin-color-sapphire: #74c7ec;
+      --catppuccin-color-sapphire-500: #74c7ec;
+      --catppuccin-color-sapphire-400: #8bceee;
+      --catppuccin-color-sapphire-300: #9ed4f0;
+      --catppuccin-color-sapphire-200: #aedaf2;
+      --catppuccin-color-sapphire-100: #bce0f4;
+      --catppuccin-color-sapphire-50: #c9e5f6;
+      --catppuccin-color-sapphire-600: #6fbee2;
+      --catppuccin-color-sapphire-700: #66b0d1;
+      --catppuccin-color-sapphire-800: #5d9fbe;
+      --catppuccin-color-sapphire-900: #538ca8;
+      --catppuccin-color-sapphire-950: #46768e;
+      --catppuccin-color-blue: #89b4fa;
+      --catppuccin-color-blue-500: #89b4fa;
+      --catppuccin-color-blue-400: #9abdfb;
+      --catppuccin-color-blue-300: #aac6fb;
+      --catppuccin-color-blue-200: #b7cefc;
+      --catppuccin-color-blue-100: #c4d6fc;
+      --catppuccin-color-blue-50: #cfdefd;
+      --catppuccin-color-blue-600: #83acef;
+      --catppuccin-color-blue-700: #799fdd;
+      --catppuccin-color-blue-800: #6e90c9;
+      --catppuccin-color-blue-900: #617fb2;
+      --catppuccin-color-blue-950: #526b96;
+      --catppuccin-color-lavender: #b4befe;
+      --catppuccin-color-lavender-500: #b4befe;
+      --catppuccin-color-lavender-400: #bdc6fe;
+      --catppuccin-color-lavender-300: #c6cdfe;
+      --catppuccin-color-lavender-200: #ced4fe;
+      --catppuccin-color-lavender-100: #d6dbfe;
+      --catppuccin-color-lavender-50: #dee2ff;
+      --catppuccin-color-lavender-600: #acb5f3;
+      --catppuccin-color-lavender-700: #9fa8e1;
+      --catppuccin-color-lavender-800: #9098cc;
+      --catppuccin-color-lavender-900: #7f86b5;
+      --catppuccin-color-lavender-950: #6b7099;
+      --catppuccin-color-text: #cdd6f4;
+      --catppuccin-color-subtext1: #bac2de;
+      --catppuccin-color-subtext0: #a6adc8;
+      --catppuccin-color-overlay2: #9399b2;
+      --catppuccin-color-overlay1: #7f849c;
+      --catppuccin-color-overlay0: #6c7086;
+      --catppuccin-color-surface2: #585b70;
+      --catppuccin-color-surface1: #45475a;
+      --catppuccin-color-surface0: #313244;
+      --catppuccin-color-base: #1e1e2e;
+      --catppuccin-color-mantle: #181825;
+      --catppuccin-color-crust: #11111b;
+    }
+  }
+  .latte {
+    --catppuccin-color-rosewater: #dc8a78;
+    --catppuccin-color-rosewater-500: #dc8a78;
+    --catppuccin-color-rosewater-400: #de998c;
+    --catppuccin-color-rosewater-300: #e0a69c;
+    --catppuccin-color-rosewater-200: #e2b1ab;
+    --catppuccin-color-rosewater-100: #e4bcb8;
+    --catppuccin-color-rosewater-50: #e6c6c4;
+    --catppuccin-color-rosewater-600: #d28372;
+    --catppuccin-color-rosewater-700: #c27969;
+    --catppuccin-color-rosewater-800: #af6d5e;
+    --catppuccin-color-rosewater-900: #9a5f52;
+    --catppuccin-color-rosewater-950: #804e43;
+    --catppuccin-color-flamingo: #dd7878;
+    --catppuccin-color-flamingo-500: #dd7878;
+    --catppuccin-color-flamingo-400: #df8b8c;
+    --catppuccin-color-flamingo-300: #e19b9c;
+    --catppuccin-color-flamingo-200: #e3a9ab;
+    --catppuccin-color-flamingo-100: #e4b5b8;
+    --catppuccin-color-flamingo-50: #e6c1c4;
+    --catppuccin-color-flamingo-600: #d37272;
+    --catppuccin-color-flamingo-700: #c26969;
+    --catppuccin-color-flamingo-800: #b05e5e;
+    --catppuccin-color-flamingo-900: #9a5252;
+    --catppuccin-color-flamingo-950: #804343;
+    --catppuccin-color-pink: #ea76cb;
+    --catppuccin-color-pink-500: #ea76cb;
+    --catppuccin-color-pink-400: #eb89d0;
+    --catppuccin-color-pink-300: #eb9ad4;
+    --catppuccin-color-pink-200: #eca8d9;
+    --catppuccin-color-pink-100: #ecb5dd;
+    --catppuccin-color-pink-50: #edc1e1;
+    --catppuccin-color-pink-600: #df70c2;
+    --catppuccin-color-pink-700: #ce67b2;
+    --catppuccin-color-pink-800: #ba5da1;
+    --catppuccin-color-pink-900: #a4518e;
+    --catppuccin-color-pink-950: #884275;
+    --catppuccin-color-mauve: #8839ef;
+    --catppuccin-color-mauve-500: #8839ef;
+    --catppuccin-color-mauve-400: #9763f0;
+    --catppuccin-color-mauve-300: #a47ef0;
+    --catppuccin-color-mauve-200: #af93f1;
+    --catppuccin-color-mauve-100: #baa5f1;
+    --catppuccin-color-mauve-50: #c4b5f2;
+    --catppuccin-color-mauve-600: #8236e4;
+    --catppuccin-color-mauve-700: #7731d2;
+    --catppuccin-color-mauve-800: #6b2bbe;
+    --catppuccin-color-mauve-900: #5e25a7;
+    --catppuccin-color-mauve-950: #4d1d8b;
+    --catppuccin-color-red: #d20f39;
+    --catppuccin-color-red-500: #d20f39;
+    --catppuccin-color-red-400: #d55664;
+    --catppuccin-color-red-300: #d87680;
+    --catppuccin-color-red-200: #db8d95;
+    --catppuccin-color-red-100: #dea1a8;
+    --catppuccin-color-red-50: #e1b1b8;
+    --catppuccin-color-red-600: #c80e36;
+    --catppuccin-color-red-700: #b90c31;
+    --catppuccin-color-red-800: #a7092b;
+    --catppuccin-color-red-900: #930725;
+    --catppuccin-color-red-950: #7a051d;
+    --catppuccin-color-maroon: #e64553;
+    --catppuccin-color-maroon-500: #e64553;
+    --catppuccin-color-maroon-400: #e76972;
+    --catppuccin-color-maroon-300: #e88289;
+    --catppuccin-color-maroon-200: #e9969c;
+    --catppuccin-color-maroon-100: #eaa7ad;
+    --catppuccin-color-maroon-50: #ebb6bb;
+    --catppuccin-color-maroon-600: #dc414f;
+    --catppuccin-color-maroon-700: #ca3c48;
+    --catppuccin-color-maroon-800: #b73540;
+    --catppuccin-color-maroon-900: #a12e38;
+    --catppuccin-color-maroon-950: #86242d;
+    --catppuccin-color-peach: #fe640b;
+    --catppuccin-color-peach-500: #fe640b;
+    --catppuccin-color-peach-400: #fd7c57;
+    --catppuccin-color-peach-300: #fb9077;
+    --catppuccin-color-peach-200: #faa08f;
+    --catppuccin-color-peach-100: #f8afa3;
+    --catppuccin-color-peach-50: #f7bcb4;
+    --catppuccin-color-peach-600: #f25f0a;
+    --catppuccin-color-peach-700: #e05708;
+    --catppuccin-color-peach-800: #cb4e07;
+    --catppuccin-color-peach-900: #b24405;
+    --catppuccin-color-peach-950: #943703;
+    --catppuccin-color-yellow: #df8e1d;
+    --catppuccin-color-yellow-500: #df8e1d;
+    --catppuccin-color-yellow-400: #e19c5a;
+    --catppuccin-color-yellow-300: #e2a879;
+    --catppuccin-color-yellow-200: #e4b391;
+    --catppuccin-color-yellow-100: #e6bea4;
+    --catppuccin-color-yellow-50: #e7c8b5;
+    --catppuccin-color-yellow-600: #d5871b;
+    --catppuccin-color-yellow-700: #c47c18;
+    --catppuccin-color-yellow-800: #b27015;
+    --catppuccin-color-yellow-900: #9c6211;
+    --catppuccin-color-yellow-950: #82500c;
+    --catppuccin-color-green: #40a02b;
+    --catppuccin-color-green-500: #40a02b;
+    --catppuccin-color-green-400: #66aa5e;
+    --catppuccin-color-green-300: #7fb47c;
+    --catppuccin-color-green-200: #94bd93;
+    --catppuccin-color-green-100: #a5c6a6;
+    --catppuccin-color-green-50: #b4ceb6;
+    --catppuccin-color-green-600: #3d9929;
+    --catppuccin-color-green-700: #378c25;
+    --catppuccin-color-green-800: #317f20;
+    --catppuccin-color-green-900: #2a6f1b;
+    --catppuccin-color-green-950: #215b15;
+    --catppuccin-color-teal: #179299;
+    --catppuccin-color-teal-500: #179299;
+    --catppuccin-color-teal-400: #569fa5;
+    --catppuccin-color-teal-300: #75abb1;
+    --catppuccin-color-teal-200: #8db6bb;
+    --catppuccin-color-teal-100: #a0c0c5;
+    --catppuccin-color-teal-50: #b0c9ce;
+    --catppuccin-color-teal-600: #158b92;
+    --catppuccin-color-teal-700: #138086;
+    --catppuccin-color-teal-800: #107379;
+    --catppuccin-color-teal-900: #0d656a;
+    --catppuccin-color-teal-950: #085357;
+    --catppuccin-color-sky: #04a5e5;
+    --catppuccin-color-sky-500: #04a5e5;
+    --catppuccin-color-sky-400: #53afe7;
+    --catppuccin-color-sky-300: #74b8e8;
+    --catppuccin-color-sky-200: #8bc0ea;
+    --catppuccin-color-sky-100: #9fc8ec;
+    --catppuccin-color-sky-50: #b0d0ed;
+    --catppuccin-color-sky-600: #049ddb;
+    --catppuccin-color-sky-700: #0391ca;
+    --catppuccin-color-sky-800: #0283b6;
+    --catppuccin-color-sky-900: #0272a0;
+    --catppuccin-color-sky-950: #015e85;
+    --catppuccin-color-sapphire: #209fb5;
+    --catppuccin-color-sapphire-500: #209fb5;
+    --catppuccin-color-sapphire-400: #59aabd;
+    --catppuccin-color-sapphire-300: #77b3c4;
+    --catppuccin-color-sapphire-200: #8ebdcb;
+    --catppuccin-color-sapphire-100: #a0c5d2;
+    --catppuccin-color-sapphire-50: #b1cdd8;
+    --catppuccin-color-sapphire-600: #1e98ad;
+    --catppuccin-color-sapphire-700: #1b8b9f;
+    --catppuccin-color-sapphire-800: #177e90;
+    --catppuccin-color-sapphire-900: #136e7e;
+    --catppuccin-color-sapphire-950: #0e5b68;
+    --catppuccin-color-blue: #1e66f5;
+    --catppuccin-color-blue-500: #1e66f5;
+    --catppuccin-color-blue-400: #587ef5;
+    --catppuccin-color-blue-300: #7791f5;
+    --catppuccin-color-blue-200: #8da1f5;
+    --catppuccin-color-blue-100: #a0b0f5;
+    --catppuccin-color-blue-50: #b1bdf5;
+    --catppuccin-color-blue-600: #1c61ea;
+    --catppuccin-color-blue-700: #1959d8;
+    --catppuccin-color-blue-800: #1650c3;
+    --catppuccin-color-blue-900: #1245ac;
+    --catppuccin-color-blue-950: #0d388f;
+    --catppuccin-color-lavender: #7287fd;
+    --catppuccin-color-lavender-500: #7287fd;
+    --catppuccin-color-lavender-400: #8696fc;
+    --catppuccin-color-lavender-300: #97a4fb;
+    --catppuccin-color-lavender-200: #a5b0fb;
+    --catppuccin-color-lavender-100: #b2bbfa;
+    --catppuccin-color-lavender-50: #bec5f9;
+    --catppuccin-color-lavender-600: #6d81f2;
+    --catppuccin-color-lavender-700: #6476df;
+    --catppuccin-color-lavender-800: #596aca;
+    --catppuccin-color-lavender-900: #4e5db1;
+    --catppuccin-color-lavender-950: #3f4c94;
+    --catppuccin-color-text: #4c4f69;
+    --catppuccin-color-subtext1: #5c5f77;
+    --catppuccin-color-subtext0: #6c6f85;
+    --catppuccin-color-overlay2: #7c7f93;
+    --catppuccin-color-overlay1: #8c8fa1;
+    --catppuccin-color-overlay0: #9ca0b0;
+    --catppuccin-color-surface2: #acb0be;
+    --catppuccin-color-surface1: #bcc0cc;
+    --catppuccin-color-surface0: #ccd0da;
+    --catppuccin-color-base: #eff1f5;
+    --catppuccin-color-mantle: #e6e9ef;
+    --catppuccin-color-crust: #dce0e8;
+  }
+  .frappe {
+    --catppuccin-color-rosewater: #f2d5cf;
+    --catppuccin-color-rosewater-500: #f2d5cf;
+    --catppuccin-color-rosewater-400: #f3dad4;
+    --catppuccin-color-rosewater-300: #f5deda;
+    --catppuccin-color-rosewater-200: #f6e3df;
+    --catppuccin-color-rosewater-100: #f7e7e4;
+    --catppuccin-color-rosewater-50: #f9ebe9;
+    --catppuccin-color-rosewater-600: #e7ccc6;
+    --catppuccin-color-rosewater-700: #d6bdb9;
+    --catppuccin-color-rosewater-800: #c3aca9;
+    --catppuccin-color-rosewater-900: #ad9998;
+    --catppuccin-color-rosewater-950: #928284;
+    --catppuccin-color-flamingo: #eebebe;
+    --catppuccin-color-flamingo-500: #eebebe;
+    --catppuccin-color-flamingo-400: #f0c6c6;
+    --catppuccin-color-flamingo-300: #f2cdcd;
+    --catppuccin-color-flamingo-200: #f3d4d4;
+    --catppuccin-color-flamingo-100: #f5dbdb;
+    --catppuccin-color-flamingo-50: #f7e2e2;
+    --catppuccin-color-flamingo-600: #e4b6b6;
+    --catppuccin-color-flamingo-700: #d3a9aa;
+    --catppuccin-color-flamingo-800: #c09a9c;
+    --catppuccin-color-flamingo-900: #aa898d;
+    --catppuccin-color-flamingo-950: #90757b;
+    --catppuccin-color-pink: #f4b8e4;
+    --catppuccin-color-pink-500: #f4b8e4;
+    --catppuccin-color-pink-400: #f5c1e7;
+    --catppuccin-color-pink-300: #f6c9ea;
+    --catppuccin-color-pink-200: #f7d1ed;
+    --catppuccin-color-pink-100: #f8d8ef;
+    --catppuccin-color-pink-50: #fadff2;
+    --catppuccin-color-pink-600: #e9b0da;
+    --catppuccin-color-pink-700: #d8a3cb;
+    --catppuccin-color-pink-800: #c495ba;
+    --catppuccin-color-pink-900: #ae85a6;
+    --catppuccin-color-pink-950: #93728f;
+    --catppuccin-color-mauve: #ca9ee6;
+    --catppuccin-color-mauve-500: #ca9ee6;
+    --catppuccin-color-mauve-400: #d0abe9;
+    --catppuccin-color-mauve-300: #d6b7eb;
+    --catppuccin-color-mauve-200: #dcc2ee;
+    --catppuccin-color-mauve-100: #e1ccf0;
+    --catppuccin-color-mauve-50: #e7d6f3;
+    --catppuccin-color-mauve-600: #c197dc;
+    --catppuccin-color-mauve-700: #b38dcd;
+    --catppuccin-color-mauve-800: #a381bb;
+    --catppuccin-color-mauve-900: #9173a8;
+    --catppuccin-color-mauve-950: #7b6490;
+    --catppuccin-color-red: #e78284;
+    --catppuccin-color-red-500: #e78284;
+    --catppuccin-color-red-400: #ea9597;
+    --catppuccin-color-red-300: #eca5a7;
+    --catppuccin-color-red-200: #efb4b5;
+    --catppuccin-color-red-100: #f1c1c2;
+    --catppuccin-color-red-50: #f3cdce;
+    --catppuccin-color-red-600: #dd7d7f;
+    --catppuccin-color-red-700: #cc7478;
+    --catppuccin-color-red-800: #ba6b70;
+    --catppuccin-color-red-900: #a56168;
+    --catppuccin-color-red-950: #8c555e;
+    --catppuccin-color-maroon: #ea999c;
+    --catppuccin-color-maroon-500: #ea999c;
+    --catppuccin-color-maroon-400: #eca7a9;
+    --catppuccin-color-maroon-300: #eeb4b6;
+    --catppuccin-color-maroon-200: #f1bfc1;
+    --catppuccin-color-maroon-100: #f3cacb;
+    --catppuccin-color-maroon-50: #f5d4d5;
+    --catppuccin-color-maroon-600: #e09396;
+    --catppuccin-color-maroon-700: #cf888d;
+    --catppuccin-color-maroon-800: #bc7d82;
+    --catppuccin-color-maroon-900: #a77077;
+    --catppuccin-color-maroon-950: #8d6169;
+    --catppuccin-color-peach: #ef9f76;
+    --catppuccin-color-peach-500: #ef9f76;
+    --catppuccin-color-peach-400: #f1ac8c;
+    --catppuccin-color-peach-300: #f2b89f;
+    --catppuccin-color-peach-200: #f4c3af;
+    --catppuccin-color-peach-100: #f6cdbd;
+    --catppuccin-color-peach-50: #f7d6ca;
+    --catppuccin-color-peach-600: #e59872;
+    --catppuccin-color-peach-700: #d38e6c;
+    --catppuccin-color-peach-800: #c08266;
+    --catppuccin-color-peach-900: #ab745f;
+    --catppuccin-color-peach-950: #906458;
+    --catppuccin-color-yellow: #e5c890;
+    --catppuccin-color-yellow-500: #e5c890;
+    --catppuccin-color-yellow-400: #e8cea0;
+    --catppuccin-color-yellow-300: #ebd5ae;
+    --catppuccin-color-yellow-200: #eddabb;
+    --catppuccin-color-yellow-100: #f0e0c6;
+    --catppuccin-color-yellow-50: #f2e6d1;
+    --catppuccin-color-yellow-600: #dbbf8b;
+    --catppuccin-color-yellow-700: #cbb182;
+    --catppuccin-color-yellow-800: #b8a279;
+    --catppuccin-color-yellow-900: #a4906f;
+    --catppuccin-color-yellow-950: #8a7b64;
+    --catppuccin-color-green: #a6d189;
+    --catppuccin-color-green-500: #a6d189;
+    --catppuccin-color-green-400: #b2d69a;
+    --catppuccin-color-green-300: #bcdbaa;
+    --catppuccin-color-green-200: #c6e0b7;
+    --catppuccin-color-green-100: #d0e5c4;
+    --catppuccin-color-green-50: #d9e9cf;
+    --catppuccin-color-green-600: #9fc884;
+    --catppuccin-color-green-700: #93b97c;
+    --catppuccin-color-green-800: #87a974;
+    --catppuccin-color-green-900: #78966b;
+    --catppuccin-color-green-950: #678060;
+    --catppuccin-color-teal: #81c8be;
+    --catppuccin-color-teal-500: #81c8be;
+    --catppuccin-color-teal-400: #94cec6;
+    --catppuccin-color-teal-300: #a5d5cd;
+    --catppuccin-color-teal-200: #b4dad4;
+    --catppuccin-color-teal-100: #c1e0db;
+    --catppuccin-color-teal-50: #cde6e2;
+    --catppuccin-color-teal-600: #7cbfb6;
+    --catppuccin-color-teal-700: #73b1aa;
+    --catppuccin-color-teal-800: #6aa29c;
+    --catppuccin-color-teal-900: #5f908d;
+    --catppuccin-color-teal-950: #537b7b;
+    --catppuccin-color-sky: #99d1db;
+    --catppuccin-color-sky-500: #99d1db;
+    --catppuccin-color-sky-400: #a7d6df;
+    --catppuccin-color-sky-300: #b4dbe3;
+    --catppuccin-color-sky-200: #bfe0e7;
+    --catppuccin-color-sky-100: #cae5ea;
+    --catppuccin-color-sky-50: #d4e9ee;
+    --catppuccin-color-sky-600: #93c8d2;
+    --catppuccin-color-sky-700: #88b9c3;
+    --catppuccin-color-sky-800: #7ca9b3;
+    --catppuccin-color-sky-900: #6f96a0;
+    --catppuccin-color-sky-950: #60808a;
+    --catppuccin-color-sapphire: #85c1dc;
+    --catppuccin-color-sapphire-500: #85c1dc;
+    --catppuccin-color-sapphire-400: #97c8e0;
+    --catppuccin-color-sapphire-300: #a7cfe4;
+    --catppuccin-color-sapphire-200: #b5d6e7;
+    --catppuccin-color-sapphire-100: #c2ddeb;
+    --catppuccin-color-sapphire-50: #cee3ee;
+    --catppuccin-color-sapphire-600: #80b9d3;
+    --catppuccin-color-sapphire-700: #77abc4;
+    --catppuccin-color-sapphire-800: #6d9cb4;
+    --catppuccin-color-sapphire-900: #628ba1;
+    --catppuccin-color-sapphire-950: #55778b;
+    --catppuccin-color-blue: #8caaee;
+    --catppuccin-color-blue-500: #8caaee;
+    --catppuccin-color-blue-400: #9db5f0;
+    --catppuccin-color-blue-300: #abbff2;
+    --catppuccin-color-blue-200: #b9c9f3;
+    --catppuccin-color-blue-100: #c5d2f5;
+    --catppuccin-color-blue-50: #d0daf7;
+    --catppuccin-color-blue-600: #86a3e4;
+    --catppuccin-color-blue-700: #7d97d4;
+    --catppuccin-color-blue-800: #728ac2;
+    --catppuccin-color-blue-900: #677bad;
+    --catppuccin-color-blue-950: #596a95;
+    --catppuccin-color-lavender: #babbf1;
+    --catppuccin-color-lavender-500: #babbf1;
+    --catppuccin-color-lavender-400: #c2c3f2;
+    --catppuccin-color-lavender-300: #cacbf4;
+    --catppuccin-color-lavender-200: #d2d2f5;
+    --catppuccin-color-lavender-100: #d9daf7;
+    --catppuccin-color-lavender-50: #e0e0f8;
+    --catppuccin-color-lavender-600: #b2b3e7;
+    --catppuccin-color-lavender-700: #a5a6d6;
+    --catppuccin-color-lavender-800: #9698c4;
+    --catppuccin-color-lavender-900: #8687af;
+    --catppuccin-color-lavender-950: #727496;
+    --catppuccin-color-text: #c6d0f5;
+    --catppuccin-color-subtext1: #b5bfe2;
+    --catppuccin-color-subtext0: #a5adce;
+    --catppuccin-color-overlay2: #949cbb;
+    --catppuccin-color-overlay1: #838ba7;
+    --catppuccin-color-overlay0: #737994;
+    --catppuccin-color-surface2: #626880;
+    --catppuccin-color-surface1: #51576d;
+    --catppuccin-color-surface0: #414559;
+    --catppuccin-color-base: #303446;
+    --catppuccin-color-mantle: #292c3c;
+    --catppuccin-color-crust: #232634;
+  }
+  .macchiato {
+    --catppuccin-color-rosewater: #f4dbd6;
+    --catppuccin-color-rosewater-500: #f4dbd6;
+    --catppuccin-color-rosewater-400: #f5dfdb;
+    --catppuccin-color-rosewater-300: #f6e3df;
+    --catppuccin-color-rosewater-200: #f7e7e3;
+    --catppuccin-color-rosewater-100: #f8eae8;
+    --catppuccin-color-rosewater-50: #faeeec;
+    --catppuccin-color-rosewater-600: #e9d1cd;
+    --catppuccin-color-rosewater-700: #d7c1be;
+    --catppuccin-color-rosewater-800: #c4b0ad;
+    --catppuccin-color-rosewater-900: #ad9b9b;
+    --catppuccin-color-rosewater-950: #918384;
+    --catppuccin-color-flamingo: #f0c6c6;
+    --catppuccin-color-flamingo-500: #f0c6c6;
+    --catppuccin-color-flamingo-400: #f2cdcd;
+    --catppuccin-color-flamingo-300: #f3d3d3;
+    --catppuccin-color-flamingo-200: #f5d9d9;
+    --catppuccin-color-flamingo-100: #f6dfdf;
+    --catppuccin-color-flamingo-50: #f8e5e5;
+    --catppuccin-color-flamingo-600: #e5bdbe;
+    --catppuccin-color-flamingo-700: #d4afb0;
+    --catppuccin-color-flamingo-800: #c09fa1;
+    --catppuccin-color-flamingo-900: #aa8d90;
+    --catppuccin-color-flamingo-950: #8f777b;
+    --catppuccin-color-pink: #f5bde6;
+    --catppuccin-color-pink-500: #f5bde6;
+    --catppuccin-color-pink-400: #f6c5e9;
+    --catppuccin-color-pink-300: #f7cceb;
+    --catppuccin-color-pink-200: #f8d4ee;
+    --catppuccin-color-pink-100: #f9dbf0;
+    --catppuccin-color-pink-50: #fae1f3;
+    --catppuccin-color-pink-600: #eab5dc;
+    --catppuccin-color-pink-700: #d8a7cc;
+    --catppuccin-color-pink-800: #c498ba;
+    --catppuccin-color-pink-900: #ae86a6;
+    --catppuccin-color-pink-950: #92728d;
+    --catppuccin-color-mauve: #c6a0f6;
+    --catppuccin-color-mauve-500: #c6a0f6;
+    --catppuccin-color-mauve-400: #cdadf7;
+    --catppuccin-color-mauve-300: #d3b8f8;
+    --catppuccin-color-mauve-200: #d9c3f9;
+    --catppuccin-color-mauve-100: #dfcdfa;
+    --catppuccin-color-mauve-50: #e5d6fb;
+    --catppuccin-color-mauve-600: #bd99eb;
+    --catppuccin-color-mauve-700: #af8eda;
+    --catppuccin-color-mauve-800: #9f81c7;
+    --catppuccin-color-mauve-900: #8c72b1;
+    --catppuccin-color-mauve-950: #766196;
+    --catppuccin-color-red: #ed8796;
+    --catppuccin-color-red-500: #ed8796;
+    --catppuccin-color-red-400: #ef99a5;
+    --catppuccin-color-red-300: #f1a8b2;
+    --catppuccin-color-red-200: #f3b6be;
+    --catppuccin-color-red-100: #f4c3c9;
+    --catppuccin-color-red-50: #f6cfd3;
+    --catppuccin-color-red-600: #e28190;
+    --catppuccin-color-red-700: #d17886;
+    --catppuccin-color-red-800: #be6d7c;
+    --catppuccin-color-red-900: #a86170;
+    --catppuccin-color-red-950: #8d5362;
+    --catppuccin-color-maroon: #ee99a0;
+    --catppuccin-color-maroon-500: #ee99a0;
+    --catppuccin-color-maroon-400: #f0a7ad;
+    --catppuccin-color-maroon-300: #f2b4b8;
+    --catppuccin-color-maroon-200: #f3bfc3;
+    --catppuccin-color-maroon-100: #f5cacd;
+    --catppuccin-color-maroon-50: #f7d4d6;
+    --catppuccin-color-maroon-600: #e39299;
+    --catppuccin-color-maroon-700: #d2878f;
+    --catppuccin-color-maroon-800: #bf7b83;
+    --catppuccin-color-maroon-900: #a96e76;
+    --catppuccin-color-maroon-950: #8e5d67;
+    --catppuccin-color-peach: #f5a97f;
+    --catppuccin-color-peach-500: #f5a97f;
+    --catppuccin-color-peach-400: #f6b493;
+    --catppuccin-color-peach-300: #f7bea4;
+    --catppuccin-color-peach-200: #f8c8b3;
+    --catppuccin-color-peach-100: #f9d1c0;
+    --catppuccin-color-peach-50: #fadacc;
+    --catppuccin-color-peach-600: #eaa27a;
+    --catppuccin-color-peach-700: #d89572;
+    --catppuccin-color-peach-800: #c4886a;
+    --catppuccin-color-peach-900: #ae7961;
+    --catppuccin-color-peach-950: #926656;
+    --catppuccin-color-yellow: #eed49f;
+    --catppuccin-color-yellow-500: #eed49f;
+    --catppuccin-color-yellow-400: #f0d9ac;
+    --catppuccin-color-yellow-300: #f2ddb8;
+    --catppuccin-color-yellow-200: #f3e2c3;
+    --catppuccin-color-yellow-100: #f5e6cd;
+    --catppuccin-color-yellow-50: #f7ebd6;
+    --catppuccin-color-yellow-600: #e3cb99;
+    --catppuccin-color-yellow-700: #d2bb8e;
+    --catppuccin-color-yellow-800: #bfaa82;
+    --catppuccin-color-yellow-900: #a99775;
+    --catppuccin-color-yellow-950: #8e7f66;
+    --catppuccin-color-green: #a6da95;
+    --catppuccin-color-green-500: #a6da95;
+    --catppuccin-color-green-400: #b2dea4;
+    --catppuccin-color-green-300: #bce2b1;
+    --catppuccin-color-green-200: #c6e6bd;
+    --catppuccin-color-green-100: #d0eac8;
+    --catppuccin-color-green-50: #d9edd3;
+    --catppuccin-color-green-600: #9fd08f;
+    --catppuccin-color-green-700: #93c185;
+    --catppuccin-color-green-800: #85af7b;
+    --catppuccin-color-green-900: #769b6f;
+    --catppuccin-color-green-950: #648261;
+    --catppuccin-color-teal: #8bd5ca;
+    --catppuccin-color-teal-500: #8bd5ca;
+    --catppuccin-color-teal-400: #9cdad0;
+    --catppuccin-color-teal-300: #abded6;
+    --catppuccin-color-teal-200: #b8e3dc;
+    --catppuccin-color-teal-100: #c4e7e1;
+    --catppuccin-color-teal-50: #d0ebe7;
+    --catppuccin-color-teal-600: #85ccc1;
+    --catppuccin-color-teal-700: #7bbcb3;
+    --catppuccin-color-teal-800: #70aba4;
+    --catppuccin-color-teal-900: #639792;
+    --catppuccin-color-teal-950: #557f7d;
+    --catppuccin-color-sky: #91d7e3;
+    --catppuccin-color-sky-500: #91d7e3;
+    --catppuccin-color-sky-400: #a1dbe6;
+    --catppuccin-color-sky-300: #afe0e9;
+    --catppuccin-color-sky-200: #bbe4ec;
+    --catppuccin-color-sky-100: #c7e8ef;
+    --catppuccin-color-sky-50: #d2ecf2;
+    --catppuccin-color-sky-600: #8bcdd9;
+    --catppuccin-color-sky-700: #80bec9;
+    --catppuccin-color-sky-800: #75adb8;
+    --catppuccin-color-sky-900: #6899a4;
+    --catppuccin-color-sky-950: #58818b;
+    --catppuccin-color-sapphire: #7dc4e4;
+    --catppuccin-color-sapphire-500: #7dc4e4;
+    --catppuccin-color-sapphire-400: #91cbe7;
+    --catppuccin-color-sapphire-300: #a3d2ea;
+    --catppuccin-color-sapphire-200: #b2d8ed;
+    --catppuccin-color-sapphire-100: #bfdeef;
+    --catppuccin-color-sapphire-50: #cce4f2;
+    --catppuccin-color-sapphire-600: #78bbda;
+    --catppuccin-color-sapphire-700: #6fadca;
+    --catppuccin-color-sapphire-800: #659db9;
+    --catppuccin-color-sapphire-900: #5a8ba4;
+    --catppuccin-color-sapphire-950: #4d768c;
+    --catppuccin-color-blue: #8aadf4;
+    --catppuccin-color-blue-500: #8aadf4;
+    --catppuccin-color-blue-400: #9bb7f5;
+    --catppuccin-color-blue-300: #aac1f6;
+    --catppuccin-color-blue-200: #b8caf7;
+    --catppuccin-color-blue-100: #c4d3f8;
+    --catppuccin-color-blue-50: #cfdbfa;
+    --catppuccin-color-blue-600: #84a5e9;
+    --catppuccin-color-blue-700: #7a99d8;
+    --catppuccin-color-blue-800: #6f8bc5;
+    --catppuccin-color-blue-900: #637baf;
+    --catppuccin-color-blue-950: #546895;
+    --catppuccin-color-lavender: #b7bdf8;
+    --catppuccin-color-lavender-500: #b7bdf8;
+    --catppuccin-color-lavender-400: #c0c5f9;
+    --catppuccin-color-lavender-300: #c8ccf9;
+    --catppuccin-color-lavender-200: #d0d4fa;
+    --catppuccin-color-lavender-100: #d8dbfb;
+    --catppuccin-color-lavender-50: #dfe1fc;
+    --catppuccin-color-lavender-600: #afb5ed;
+    --catppuccin-color-lavender-700: #a2a7dc;
+    --catppuccin-color-lavender-800: #9398c8;
+    --catppuccin-color-lavender-900: #8286b2;
+    --catppuccin-color-lavender-950: #6d7297;
+    --catppuccin-color-text: #cad3f5;
+    --catppuccin-color-subtext1: #b8c0e0;
+    --catppuccin-color-subtext0: #a5adcb;
+    --catppuccin-color-overlay2: #939ab7;
+    --catppuccin-color-overlay1: #8087a2;
+    --catppuccin-color-overlay0: #6e738d;
+    --catppuccin-color-surface2: #5b6078;
+    --catppuccin-color-surface1: #494d64;
+    --catppuccin-color-surface0: #363a4f;
+    --catppuccin-color-base: #24273a;
+    --catppuccin-color-mantle: #1e2030;
+    --catppuccin-color-crust: #181926;
+  }
+  .mocha {
+    --catppuccin-color-rosewater: #f5e0dc;
+    --catppuccin-color-rosewater-500: #f5e0dc;
+    --catppuccin-color-rosewater-400: #f6e3e0;
+    --catppuccin-color-rosewater-300: #f7e7e4;
+    --catppuccin-color-rosewater-200: #f8eae7;
+    --catppuccin-color-rosewater-100: #f9edeb;
+    --catppuccin-color-rosewater-50: #faf0ee;
+    --catppuccin-color-rosewater-600: #ead6d2;
+    --catppuccin-color-rosewater-700: #d8c6c3;
+    --catppuccin-color-rosewater-800: #c4b3b1;
+    --catppuccin-color-rosewater-900: #ad9e9d;
+    --catppuccin-color-rosewater-950: #918585;
+    --catppuccin-color-flamingo: #f2cdcd;
+    --catppuccin-color-flamingo-500: #f2cdcd;
+    --catppuccin-color-flamingo-400: #f3d3d3;
+    --catppuccin-color-flamingo-300: #f5d8d8;
+    --catppuccin-color-flamingo-200: #f6dede;
+    --catppuccin-color-flamingo-100: #f7e3e3;
+    --catppuccin-color-flamingo-50: #f9e8e8;
+    --catppuccin-color-flamingo-600: #e7c4c4;
+    --catppuccin-color-flamingo-700: #d6b5b5;
+    --catppuccin-color-flamingo-800: #c2a4a5;
+    --catppuccin-color-flamingo-900: #ab9193;
+    --catppuccin-color-flamingo-950: #8f797c;
+    --catppuccin-color-pink: #f5c2e7;
+    --catppuccin-color-pink-500: #f5c2e7;
+    --catppuccin-color-pink-400: #f6c9ea;
+    --catppuccin-color-pink-300: #f7d0ec;
+    --catppuccin-color-pink-200: #f8d7ef;
+    --catppuccin-color-pink-100: #f9ddf1;
+    --catppuccin-color-pink-50: #fae3f3;
+    --catppuccin-color-pink-600: #eab9dd;
+    --catppuccin-color-pink-700: #d8abcc;
+    --catppuccin-color-pink-800: #c49bba;
+    --catppuccin-color-pink-900: #ad89a5;
+    --catppuccin-color-pink-950: #91738b;
+    --catppuccin-color-mauve: #cba6f7;
+    --catppuccin-color-mauve-500: #cba6f7;
+    --catppuccin-color-mauve-400: #d1b2f8;
+    --catppuccin-color-mauve-300: #d7bcf9;
+    --catppuccin-color-mauve-200: #dcc6f9;
+    --catppuccin-color-mauve-100: #e2d0fa;
+    --catppuccin-color-mauve-50: #e7d9fb;
+    --catppuccin-color-mauve-600: #c29fec;
+    --catppuccin-color-mauve-700: #b392da;
+    --catppuccin-color-mauve-800: #a285c7;
+    --catppuccin-color-mauve-900: #8f75b0;
+    --catppuccin-color-mauve-950: #786394;
+    --catppuccin-color-red: #f38ba8;
+    --catppuccin-color-red-500: #f38ba8;
+    --catppuccin-color-red-400: #f49cb3;
+    --catppuccin-color-red-300: #f5abbe;
+    --catppuccin-color-red-200: #f7b8c7;
+    --catppuccin-color-red-100: #f8c4d1;
+    --catppuccin-color-red-50: #f9d0d9;
+    --catppuccin-color-red-600: #e885a1;
+    --catppuccin-color-red-700: #d67b95;
+    --catppuccin-color-red-800: #c36f88;
+    --catppuccin-color-red-900: #ac6279;
+    --catppuccin-color-red-950: #905367;
+    --catppuccin-color-maroon: #eba0ac;
+    --catppuccin-color-maroon-500: #eba0ac;
+    --catppuccin-color-maroon-400: #edadb7;
+    --catppuccin-color-maroon-300: #efb8c0;
+    --catppuccin-color-maroon-200: #f1c3ca;
+    --catppuccin-color-maroon-100: #f3cdd2;
+    --catppuccin-color-maroon-50: #f5d6db;
+    --catppuccin-color-maroon-600: #e099a5;
+    --catppuccin-color-maroon-700: #cf8d98;
+    --catppuccin-color-maroon-800: #bc808b;
+    --catppuccin-color-maroon-900: #a6717c;
+    --catppuccin-color-maroon-950: #8b5f6a;
+    --catppuccin-color-peach: #fab387;
+    --catppuccin-color-peach-500: #fab387;
+    --catppuccin-color-peach-400: #fbbc99;
+    --catppuccin-color-peach-300: #fbc5a8;
+    --catppuccin-color-peach-200: #fcceb6;
+    --catppuccin-color-peach-100: #fcd6c3;
+    --catppuccin-color-peach-50: #fdddcf;
+    --catppuccin-color-peach-600: #efab81;
+    --catppuccin-color-peach-700: #dd9e78;
+    --catppuccin-color-peach-800: #c88f6e;
+    --catppuccin-color-peach-900: #b17e63;
+    --catppuccin-color-peach-950: #946a55;
+    --catppuccin-color-yellow: #f9e2af;
+    --catppuccin-color-yellow-500: #f9e2af;
+    --catppuccin-color-yellow-400: #fae5b9;
+    --catppuccin-color-yellow-300: #fae8c3;
+    --catppuccin-color-yellow-200: #fbebcb;
+    --catppuccin-color-yellow-100: #fbeed4;
+    --catppuccin-color-yellow-50: #fcf1dc;
+    --catppuccin-color-yellow-600: #eed8a7;
+    --catppuccin-color-yellow-700: #dcc79b;
+    --catppuccin-color-yellow-800: #c7b58d;
+    --catppuccin-color-yellow-900: #b0a07e;
+    --catppuccin-color-yellow-950: #93866b;
+    --catppuccin-color-green: #a6e3a1;
+    --catppuccin-color-green-500: #a6e3a1;
+    --catppuccin-color-green-400: #b2e6ae;
+    --catppuccin-color-green-300: #bce9b9;
+    --catppuccin-color-green-200: #c6ecc4;
+    --catppuccin-color-green-100: #d0efcd;
+    --catppuccin-color-green-50: #d9f2d7;
+    --catppuccin-color-green-600: #9fd99a;
+    --catppuccin-color-green-700: #92c88f;
+    --catppuccin-color-green-800: #85b682;
+    --catppuccin-color-green-900: #75a074;
+    --catppuccin-color-green-950: #638663;
+    --catppuccin-color-teal: #94e2d5;
+    --catppuccin-color-teal-500: #94e2d5;
+    --catppuccin-color-teal-400: #a3e5da;
+    --catppuccin-color-teal-300: #b1e8de;
+    --catppuccin-color-teal-200: #bdebe3;
+    --catppuccin-color-teal-100: #c8eee7;
+    --catppuccin-color-teal-50: #d3f1eb;
+    --catppuccin-color-teal-600: #8dd8cc;
+    --catppuccin-color-teal-700: #83c7bc;
+    --catppuccin-color-teal-800: #77b5ac;
+    --catppuccin-color-teal-900: #69a098;
+    --catppuccin-color-teal-950: #588681;
+    --catppuccin-color-sky: #89dceb;
+    --catppuccin-color-sky-500: #89dceb;
+    --catppuccin-color-sky-400: #9ae0ed;
+    --catppuccin-color-sky-300: #aae4ef;
+    --catppuccin-color-sky-200: #b7e7f1;
+    --catppuccin-color-sky-100: #c4ebf3;
+    --catppuccin-color-sky-50: #cfeef5;
+    --catppuccin-color-sky-600: #83d2e1;
+    --catppuccin-color-sky-700: #79c2d0;
+    --catppuccin-color-sky-800: #6eb0bd;
+    --catppuccin-color-sky-900: #619ba7;
+    --catppuccin-color-sky-950: #52828d;
+    --catppuccin-color-sapphire: #74c7ec;
+    --catppuccin-color-sapphire-500: #74c7ec;
+    --catppuccin-color-sapphire-400: #8bceee;
+    --catppuccin-color-sapphire-300: #9ed4f0;
+    --catppuccin-color-sapphire-200: #aedaf2;
+    --catppuccin-color-sapphire-100: #bce0f4;
+    --catppuccin-color-sapphire-50: #c9e5f6;
+    --catppuccin-color-sapphire-600: #6fbee2;
+    --catppuccin-color-sapphire-700: #66b0d1;
+    --catppuccin-color-sapphire-800: #5d9fbe;
+    --catppuccin-color-sapphire-900: #538ca8;
+    --catppuccin-color-sapphire-950: #46768e;
+    --catppuccin-color-blue: #89b4fa;
+    --catppuccin-color-blue-500: #89b4fa;
+    --catppuccin-color-blue-400: #9abdfb;
+    --catppuccin-color-blue-300: #aac6fb;
+    --catppuccin-color-blue-200: #b7cefc;
+    --catppuccin-color-blue-100: #c4d6fc;
+    --catppuccin-color-blue-50: #cfdefd;
+    --catppuccin-color-blue-600: #83acef;
+    --catppuccin-color-blue-700: #799fdd;
+    --catppuccin-color-blue-800: #6e90c9;
+    --catppuccin-color-blue-900: #617fb2;
+    --catppuccin-color-blue-950: #526b96;
+    --catppuccin-color-lavender: #b4befe;
+    --catppuccin-color-lavender-500: #b4befe;
+    --catppuccin-color-lavender-400: #bdc6fe;
+    --catppuccin-color-lavender-300: #c6cdfe;
+    --catppuccin-color-lavender-200: #ced4fe;
+    --catppuccin-color-lavender-100: #d6dbfe;
+    --catppuccin-color-lavender-50: #dee2ff;
+    --catppuccin-color-lavender-600: #acb5f3;
+    --catppuccin-color-lavender-700: #9fa8e1;
+    --catppuccin-color-lavender-800: #9098cc;
+    --catppuccin-color-lavender-900: #7f86b5;
+    --catppuccin-color-lavender-950: #6b7099;
+    --catppuccin-color-text: #cdd6f4;
+    --catppuccin-color-subtext1: #bac2de;
+    --catppuccin-color-subtext0: #a6adc8;
+    --catppuccin-color-overlay2: #9399b2;
+    --catppuccin-color-overlay1: #7f849c;
+    --catppuccin-color-overlay0: #6c7086;
+    --catppuccin-color-surface2: #585b70;
+    --catppuccin-color-surface1: #45475a;
+    --catppuccin-color-surface0: #313244;
+    --catppuccin-color-base: #1e1e2e;
+    --catppuccin-color-mantle: #181825;
+    --catppuccin-color-crust: #11111b;
+  }
+}
+@property --tw-translate-x {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0;
+}
+@property --tw-translate-y {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0;
+}
+@property --tw-translate-z {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0;
+}
+@property --tw-rotate-x {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-rotate-y {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-rotate-z {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-skew-x {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-skew-y {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-space-x-reverse {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0;
+}
+@property --tw-divide-y-reverse {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0;
+}
+@property --tw-border-style {
+  syntax: "*";
+  inherits: false;
+  initial-value: solid;
+}
+@property --tw-gradient-position {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-gradient-from {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: #0000;
+}
+@property --tw-gradient-via {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: #0000;
+}
+@property --tw-gradient-to {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: #0000;
+}
+@property --tw-gradient-stops {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-gradient-via-stops {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-gradient-from-position {
+  syntax: "<length-percentage>";
+  inherits: false;
+  initial-value: 0%;
+}
+@property --tw-gradient-via-position {
+  syntax: "<length-percentage>";
+  inherits: false;
+  initial-value: 50%;
+}
+@property --tw-gradient-to-position {
+  syntax: "<length-percentage>";
+  inherits: false;
+  initial-value: 100%;
+}
+@property --tw-leading {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-font-weight {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-tracking {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-shadow {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0 0 #0000;
+}
+@property --tw-shadow-color {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-shadow-alpha {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 100%;
+}
+@property --tw-inset-shadow {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0 0 #0000;
+}
+@property --tw-inset-shadow-color {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-inset-shadow-alpha {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 100%;
+}
+@property --tw-ring-color {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-ring-shadow {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0 0 #0000;
+}
+@property --tw-inset-ring-color {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-inset-ring-shadow {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0 0 #0000;
+}
+@property --tw-ring-inset {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-ring-offset-width {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+@property --tw-ring-offset-color {
+  syntax: "*";
+  inherits: false;
+  initial-value: #fff;
+}
+@property --tw-ring-offset-shadow {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0 0 #0000;
+}
+@property --tw-outline-style {
+  syntax: "*";
+  inherits: false;
+  initial-value: solid;
+}
+@property --tw-blur {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-brightness {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-contrast {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-grayscale {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-hue-rotate {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-invert {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-opacity {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-saturate {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-sepia {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-drop-shadow {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-drop-shadow-color {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-drop-shadow-alpha {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 100%;
+}
+@property --tw-drop-shadow-size {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-duration {
+  syntax: "*";
+  inherits: false;
+}
+@layer properties {
+  @supports ((-webkit-hyphens: none) and (not (margin-trim: inline))) or ((-moz-orient: inline) and (not (color:rgb(from red r g b)))) {
+    *, ::before, ::after, ::backdrop {
+      --tw-translate-x: 0;
+      --tw-translate-y: 0;
+      --tw-translate-z: 0;
+      --tw-rotate-x: initial;
+      --tw-rotate-y: initial;
+      --tw-rotate-z: initial;
+      --tw-skew-x: initial;
+      --tw-skew-y: initial;
+      --tw-space-x-reverse: 0;
+      --tw-divide-y-reverse: 0;
+      --tw-border-style: solid;
+      --tw-gradient-position: initial;
+      --tw-gradient-from: #0000;
+      --tw-gradient-via: #0000;
+      --tw-gradient-to: #0000;
+      --tw-gradient-stops: initial;
+      --tw-gradient-via-stops: initial;
+      --tw-gradient-from-position: 0%;
+      --tw-gradient-via-position: 50%;
+      --tw-gradient-to-position: 100%;
+      --tw-leading: initial;
+      --tw-font-weight: initial;
+      --tw-tracking: initial;
+      --tw-shadow: 0 0 #0000;
+      --tw-shadow-color: initial;
+      --tw-shadow-alpha: 100%;
+      --tw-inset-shadow: 0 0 #0000;
+      --tw-inset-shadow-color: initial;
+      --tw-inset-shadow-alpha: 100%;
+      --tw-ring-color: initial;
+      --tw-ring-shadow: 0 0 #0000;
+      --tw-inset-ring-color: initial;
+      --tw-inset-ring-shadow: 0 0 #0000;
+      --tw-ring-inset: initial;
+      --tw-ring-offset-width: 0px;
+      --tw-ring-offset-color: #fff;
+      --tw-ring-offset-shadow: 0 0 #0000;
+      --tw-outline-style: solid;
+      --tw-blur: initial;
+      --tw-brightness: initial;
+      --tw-contrast: initial;
+      --tw-grayscale: initial;
+      --tw-hue-rotate: initial;
+      --tw-invert: initial;
+      --tw-opacity: initial;
+      --tw-saturate: initial;
+      --tw-sepia: initial;
+      --tw-drop-shadow: initial;
+      --tw-drop-shadow-color: initial;
+      --tw-drop-shadow-alpha: 100%;
+      --tw-drop-shadow-size: initial;
+      --tw-duration: initial;
+    }
+  }
+}

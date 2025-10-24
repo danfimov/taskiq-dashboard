@@ -11,30 +11,31 @@ from taskiq_dashboard.domain.dto.task_status import TaskStatus
 from taskiq_dashboard.infrastructure.database.schemas import Task
 from taskiq_dashboard.infrastructure.settings import Settings
 
+
 # Константы для генерации данных
 TASK_NAMES = [
-    "extract_data",
-    "transform_data",
-    "load_data",
-    "send_email",
-    "generate_report",
-    "process_image",
-    "check_availability",
-    "clean_database",
-    "backup_data",
-    "update_index",
-    "analyze_metrics",
-    "fetch_external_api",
+    'extract_data',
+    'transform_data',
+    'load_data',
+    'send_email',
+    'generate_report',
+    'process_image',
+    'check_availability',
+    'clean_database',
+    'backup_data',
+    'update_index',
+    'analyze_metrics',
+    'fetch_external_api',
 ]
 
 WORKER_NAMES = [
-    "worker-01",
-    "worker-02",
-    "worker-03",
-    "analytics-worker",
-    "email-worker",
-    "image-processor",
-    "data-worker",
+    'worker-01',
+    'worker-02',
+    'worker-03',
+    'analytics-worker',
+    'email-worker',
+    'image-processor',
+    'data-worker',
 ]
 
 
@@ -51,11 +52,11 @@ async def create_random_tasks(session: AsyncSession, count: int) -> None:
         # Генерируем аргументы
         args = json.dumps([random.randint(1, 100) for _ in range(random.randint(0, 3))])
         kwargs = json.dumps(
-            {f"param{i}": random.choice(["value", 123, True, None]) for i in range(random.randint(0, 3))}
+            {f'param{i}': random.choice(['value', 123, True, None]) for i in range(random.randint(0, 3))}
         )
 
         # Генерируем время начала (от недели назад до сейчас)
-        started_at = dt.datetime.now(dt.timezone.utc) - dt.timedelta(
+        started_at = dt.datetime.now(dt.UTC) - dt.timedelta(
             days=random.randint(0, 7),
             hours=random.randint(0, 23),
             minutes=random.randint(0, 59),
@@ -75,25 +76,25 @@ async def create_random_tasks(session: AsyncSession, count: int) -> None:
             finished_at = started_at + execution_time
 
             if status == TaskStatus.COMPLETED:
-                result = json.dumps({"success": True, "value": random.randint(1, 1000)})
+                result = json.dumps({'success': True, 'value': random.randint(1, 1000)})
             elif status == TaskStatus.FAILURE:
                 error = random.choice(
                     [
-                        "Connection timeout",
-                        "ValueError: Invalid input data",
+                        'Connection timeout',
+                        'ValueError: Invalid input data',
                         "KeyError: 'missing_key'",
-                        "IndexError: list index out of range",
-                        "Exception: External API unavailable",
+                        'IndexError: list index out of range',
+                        'Exception: External API unavailable',
                     ]
                 )
             elif status == TaskStatus.ABANDONED:
                 error = random.choice(
                     [
-                        "Timeout exceeded",
-                        "Worker node crashed",
-                        "Task was cancelled by user",
-                        "Resource limits exceeded",
-                        "Task was terminated due to system maintenance",
+                        'Timeout exceeded',
+                        'Worker node crashed',
+                        'Task was cancelled by user',
+                        'Resource limits exceeded',
+                        'Task was terminated due to system maintenance',
                     ]
                 )
 
@@ -117,7 +118,7 @@ async def create_random_tasks(session: AsyncSession, count: int) -> None:
     session.add_all(tasks)
     await session.commit()
 
-    print(f"✅ Успешно добавлено {count} задач в базу данных")
+    print(f'✅ Успешно добавлено {count} задач в базу данных')
 
 
 async def main() -> None:
@@ -136,11 +137,11 @@ async def main() -> None:
 
     # Запрашиваем количество задач для генерации
     try:
-        task_count = int(input("Введите количество задач для генерации: "))
+        task_count = int(input('Введите количество задач для генерации: '))
         if task_count <= 0:
-            raise ValueError("Количество должно быть положительным")
+            raise ValueError('Количество должно быть положительным')
     except ValueError:
-        print("Ошибка: введите корректное число")
+        print('Ошибка: введите корректное число')
         return
 
     # Создаем задачи
@@ -151,5 +152,5 @@ async def main() -> None:
     await engine.dispose()
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     asyncio.run(main())
