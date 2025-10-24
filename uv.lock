@@ -4,16 +4,16 @@ requires-python = ">=3.12"
 
 [[package]]
 name = "alembic"
-version = "1.15.2"
+version = "1.17.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "mako" },
     { name = "sqlalchemy" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/e6/57/e314c31b261d1e8a5a5f1908065b4ff98270a778ce7579bd4254477209a7/alembic-1.15.2.tar.gz", hash = "sha256:1c72391bbdeffccfe317eefba686cb9a3c078005478885413b95c3b26c57a8a7", size = 1925573, upload-time = "2025-03-28T13:52:00.443Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/6b/45/6f4555f2039f364c3ce31399529dcf48dd60726ff3715ad67f547d87dfd2/alembic-1.17.0.tar.gz", hash = "sha256:4652a0b3e19616b57d652b82bfa5e38bf5dbea0813eed971612671cb9e90c0fe", size = 1975526, upload-time = "2025-10-11T18:40:13.585Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/41/18/d89a443ed1ab9bcda16264716f809c663866d4ca8de218aa78fd50b38ead/alembic-1.15.2-py3-none-any.whl", hash = "sha256:2e76bd916d547f6900ec4bb5a90aeac1485d2c92536923d0b138c02b126edc53", size = 231911, upload-time = "2025-03-28T13:52:02.218Z" },
+    { url = "https://files.pythonhosted.org/packages/44/1f/38e29b06bfed7818ebba1f84904afdc8153ef7b6c7e0d8f3bc6643f5989c/alembic-1.17.0-py3-none-any.whl", hash = "sha256:80523bc437d41b35c5db7e525ad9d908f79de65c27d6a5a5eab6df348a352d99", size = 247449, upload-time = "2025-10-11T18:40:16.288Z" },
 ]
 
 [[package]]
