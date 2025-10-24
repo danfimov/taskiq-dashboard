@@ -36,5 +36,5 @@ class TaskiqDashboard:
         application = get_app()
         uvicorn.run(
             application,
-            **self._uvicorn_kwargs,
+            **self._uvicorn_kwargs,  # type: ignore[arg-type]
         )

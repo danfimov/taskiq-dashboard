@@ -17,7 +17,7 @@ services:
     environment:
       TASKIQ_DASHBOARD__POSTGRES__DRIVER: postgresql+asyncpg
       TASKIQ_DASHBOARD__POSTGRES__HOST: postgres
-      TASKIQ_DASHBOARD__POSTGRES__PORT: "5432"
+      TASKIQ_DASHBOARD__POSTGRES__PORT: 5432
       TASKIQ_DASHBOARD__POSTGRES__USER: taskiq_dashboard
       TASKIQ_DASHBOARD__POSTGRES__PASSWORD: look_in_vault
       TASKIQ_DASHBOARD__POSTGRES__DATABASE: taskiq_dashboard

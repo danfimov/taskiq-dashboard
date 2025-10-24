@@ -37,10 +37,7 @@ dependencies = [
     # html templates
     "jinja2>=3.1.6",
     # db
-    "alembic>=1.16.5",
     "asyncpg>=0.30.0",
-    "greenlet>=3.2.4",
-    "psycopg2-binary>=2.9.11",
     "sqlalchemy>=2.0.43",
     # other
     "pydantic-settings>=2.10.1",
