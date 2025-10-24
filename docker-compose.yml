@@ -1,9 +1,9 @@
 services:
   postgres:
-    image: postgres:16
+    image: postgres:18
     environment:
       POSTGRES_USER: taskiq_dashboard
-      POSTGRES_PASSWORD: taskiq_dashboard
+      POSTGRES_PASSWORD: look_in_vault
       POSTGRES_DB: taskiq_dashboard
     volumes:
       - postgres_data:/var/lib/postgresql/data

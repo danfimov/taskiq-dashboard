@@ -1,0 +1,67 @@
+name: Feature Request
+description: Suggest an idea for this project
+title: "Short description of feature"
+labels: ["enhancement", "triage"]
+assignees:
+  - danfimov
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a new feature!
+
+  - type: textarea
+    id: problem-description
+    attributes:
+      label: Is your feature request related to a problem?
+      description: A clear and concise description of what the problem is.
+      placeholder: I'm always frustrated when...
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution-description
+    attributes:
+      label: Describe the solution you'd like
+      description: A clear and concise description of what you want to happen.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Describe alternatives you've considered
+      description: A clear and concise description of any alternative solutions or features you've considered.
+    validations:
+      required: false
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: Which component would this affect?
+      description: Select the component this feature would primarily affect
+      options:
+        - UI/UX
+        - Database Drivers
+        - Configuration
+        - Documentation
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: use-case
+    attributes:
+      label: Use case
+      description: Describe the specific use case this feature would enable
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional context
+      description: Add any other context, mockups, or examples about the feature request here.
+    validations:
+      required: false
