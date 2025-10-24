@@ -1,4 +1,5 @@
 import os
+from functools import cache
 from typing import Any
 from urllib.parse import quote, urlparse
 
@@ -74,7 +75,7 @@ class APISettings(BaseModel):
 
 class Settings(pydantic_settings.BaseSettings):
     api: APISettings = APISettings()
-    postgres: PostgresSettings
+    db: PostgresSettings
 
     model_config = pydantic_settings.SettingsConfigDict(
         env_nested_delimiter='__',
@@ -82,3 +83,8 @@ class Settings(pydantic_settings.BaseSettings):
         env_file=('conf/.env', os.getenv('ENV_FILE', '.env')),
         env_file_encoding='utf-8',
     )
+
+
+@cache
+def get_settings() -> Settings:
+    return Settings()

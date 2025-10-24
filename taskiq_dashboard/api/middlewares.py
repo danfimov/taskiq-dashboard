@@ -4,7 +4,7 @@ from fastapi import HTTPException, Request
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import Response
 
-from taskiq_dashboard.infrastructure.settings import Settings
+from taskiq_dashboard.infrastructure import get_settings
 
 
 class AccessTokenMiddleware(BaseHTTPMiddleware):
@@ -16,7 +16,7 @@ class AccessTokenMiddleware(BaseHTTPMiddleware):
         if not token:
             raise HTTPException(status_code=401, detail='Missing or invalid Authorization header')
 
-        settings = await request.app.state.dishka_container.get(Settings)
+        settings = get_settings()
         if settings.api.token.get_secret_value() != token:
             raise HTTPException(status_code=401, detail='Invalid access token')
         return await call_next(request)

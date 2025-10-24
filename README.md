@@ -35,9 +35,10 @@ from taskiq_dashboard import TaskiqDashboard
 
 def run_admin_panel() -> None:
     app = TaskiqDashboard(
+        api_token='supersecret', # the same secret as in middleware
+        database_dsn="postgresql://taskiq-dashboard:look_in_vault@postgres:5432/taskiq-dashboard",
         host='0.0.0.0',
         port=8000,
-        api_token='supersecret', # the same secret as in middleware
     )
     app.run()
 
@@ -66,12 +67,7 @@ services:
     depends_on:
       - postgres
     environment:
-      TASKIQ_DASHBOARD__POSTGRES__DRIVER: postgresql+asyncpg
-      TASKIQ_DASHBOARD__POSTGRES__HOST: postgres
-      TASKIQ_DASHBOARD__POSTGRES__PORT: "5432"
-      TASKIQ_DASHBOARD__POSTGRES__USER: taskiq_dashboard
-      TASKIQ_DASHBOARD__POSTGRES__PASSWORD: look_in_vault
-      TASKIQ_DASHBOARD__POSTGRES__DATABASE: taskiq_dashboard
+      TASKIQ_DASHBOARD__API__TOKEN: supersecret
     ports:
       - "8000:8000"
 
@@ -87,10 +83,8 @@ For example you can pass uvicorn parameters like `host`, `port`, `log_level` dir
 
 ```python
 app = TaskiqDashboard(
-    host='localhost',
-    port=8000,
     api_token='supersecret',
-
+    database_dsn=...,  # optional
     # all this keywords will be passed to uvicorn
     log_level='info',
     access_log=False,
@@ -100,14 +94,14 @@ app = TaskiqDashboard(
 You can also configure the database connection using environment variables:
 
 ```dotenv
-TASKIQ_DASHBOARD__POSTGRES__DRIVER=postgresql+asyncpg
-TASKIQ_DASHBOARD__POSTGRES__HOST=localhost
-TASKIQ_DASHBOARD__POSTGRES__PORT=5432
-TASKIQ_DASHBOARD__POSTGRES__USER=taskiq_dashboard
-TASKIQ_DASHBOARD__POSTGRES__PASSWORD=look_in_vault
-TASKIQ_DASHBOARD__POSTGRES__DATABASE=taskiq_dashboard
-TASKIQ_DASHBOARD__POSTGRES__MIN_POOL_SIZE=1
-TASKIQ_DASHBOARD__POSTGRES__MAX_POOL_SIZE=5
+TASKIQ_DASHBOARD__DB__DRIVER=postgresql+asyncpg
+TASKIQ_DASHBOARD__DB__HOST=localhost
+TASKIQ_DASHBOARD__DB__PORT=5432
+TASKIQ_DASHBOARD__DB__USER=taskiq-dashboard
+TASKIQ_DASHBOARD__DB__PASSWORD=look_in_vault
+TASKIQ_DASHBOARD__DB__DATABASE=taskiq-dashboard
+TASKIQ_DASHBOARD__DB__MIN_POOL_SIZE=1
+TASKIQ_DASHBOARD__DB__MAX_POOL_SIZE=5
 ```
 
 ## Dashboard

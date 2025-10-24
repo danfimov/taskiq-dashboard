@@ -6,7 +6,7 @@ services:
       POSTGRES_PASSWORD: look_in_vault
       POSTGRES_DB: taskiq-dashboard
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql
     ports:
       - "5432:5432"
 
@@ -16,6 +16,7 @@ services:
       - postgres
     environment:
       TASKIQ_DASHBOARD__POSTGRES__HOST: postgres
+      TASKIQ_DASHBOARD__API__TOKEN: supersecret
     ports:
       - "8000:8000"
 

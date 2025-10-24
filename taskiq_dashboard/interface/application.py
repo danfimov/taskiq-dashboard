@@ -1,38 +1,35 @@
-import asyncio
 import typing as tp
 
 import uvicorn
 from pydantic import SecretStr
 
 from taskiq_dashboard.api.application import get_app
-from taskiq_dashboard.dependencies import container
-from taskiq_dashboard.infrastructure.settings import Settings
+from taskiq_dashboard.infrastructure import PostgresSettings, get_settings
 
 
 class TaskiqDashboard:
     def __init__(
         self,
-        api_token: str = 'supersecret',  # noqa: S107
-        host: str = 'localhost',
-        port: int = 8000,
+        api_token: str,
+        database_dsn: str | None = None,
         **uvicorn_kwargs: tp.Any,
     ) -> None:
         """Initialize Taskiq Dashboard application.
 
         Args:
             api_token: Access token for securing the dashboard API.
-            host: Host to bind the application to.
-            port: Port to bind the application to.
+            database_dsn: URL for the database.
             uvicorn_kwargs: Additional keyword arguments to pass to uvicorn.
         """
-        settings = asyncio.run(
-            container.get(Settings),
-        )
-        settings.api.token = SecretStr(api_token)
+        self.settings = get_settings()
+        self.settings.api.token = SecretStr(api_token)
+
+        if database_dsn:
+            self.settings.db = PostgresSettings(dsn=database_dsn)  # type: ignore[call-arg]
 
         self._uvicorn_kwargs = {
-            'host': host,
-            'port': port,
+            'host': 'localhost',
+            'port': 8000,
             'reload': False,
             'workers': 1,
             'lifespan': 'on',

@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 
 from sqlalchemy.ext import asyncio as sa_async
 
-from taskiq_dashboard.infrastructure.settings import PostgresSettings
+from taskiq_dashboard.infrastructure import PostgresSettings
 
 
 class AsyncPostgresSessionProvider:

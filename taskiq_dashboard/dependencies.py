@@ -4,16 +4,16 @@ from dishka import Provider, Scope, make_async_container, provide
 
 from taskiq_dashboard.domain.services.schema_service import AbstractSchemaService
 from taskiq_dashboard.domain.services.task_service import TaskService
+from taskiq_dashboard.infrastructure import Settings, get_settings
 from taskiq_dashboard.infrastructure.database.session_provider import AsyncPostgresSessionProvider
 from taskiq_dashboard.infrastructure.services.schema_service import SchemaService
 from taskiq_dashboard.infrastructure.services.task_service import SqlAlchemyTaskService
-from taskiq_dashboard.infrastructure.settings import Settings
 
 
 class TaskiqDashboardProvider(Provider):
     def __init__(self, scope: Scope = Scope.APP) -> None:
         super().__init__(scope=scope)
-        self.settings = Settings()
+        self.settings = get_settings()
 
     @provide
     def provide_settings(self) -> Settings:
@@ -22,7 +22,7 @@ class TaskiqDashboardProvider(Provider):
     @provide
     async def provide_session_provider(self) -> tp.AsyncGenerator[AsyncPostgresSessionProvider, tp.Any]:
         session_provider = AsyncPostgresSessionProvider(
-            connection_settings=self.settings.postgres,
+            connection_settings=self.settings.db,
         )
         yield session_provider
         await session_provider.close()

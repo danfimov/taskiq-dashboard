@@ -9,7 +9,7 @@ from sqlalchemy.orm import sessionmaker
 
 from taskiq_dashboard.domain.dto.task_status import TaskStatus
 from taskiq_dashboard.infrastructure.database.schemas import Task
-from taskiq_dashboard.infrastructure.settings import Settings
+from taskiq_dashboard.infrastructure import Settings
 
 
 # Константы для генерации данных
