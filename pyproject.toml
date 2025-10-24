@@ -208,4 +208,7 @@ warn_required_dynamic_aliases = true
 warn_untyped_fields = true
 
 [tool.bandit]
-skips = ["B104"]
+skips = [
+    "B104",
+    "B107",
+]

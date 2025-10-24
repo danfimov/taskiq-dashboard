@@ -69,6 +69,7 @@ class PostgresSettings(BaseModel):
 class APISettings(BaseModel):
     host: str = '0.0.0.0'  # noqa: S104
     port: int = 8000
+    token: SecretStr = SecretStr('supersecret')
 
 
 class Settings(pydantic_settings.BaseSettings):
