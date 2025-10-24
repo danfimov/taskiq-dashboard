@@ -9,6 +9,7 @@ from fastapi.staticfiles import StaticFiles
 from taskiq_dashboard import dependencies
 from taskiq_dashboard.api.routers import dashboard_router, event_router, system_router
 from taskiq_dashboard.api.routers.exception_handlers import exception_handler__not_found
+from taskiq_dashboard.domain.services.schema_service import AbstractSchemaService
 
 
 logger = getLogger(__name__)
@@ -16,6 +17,8 @@ logger = getLogger(__name__)
 
 @contextlib.asynccontextmanager
 async def lifespan(app: fastapi.FastAPI) -> tp.AsyncGenerator[None, None]:
+    schema_service = await app.state.dishka_container.get(AbstractSchemaService)
+    await schema_service.create_schema()
     yield
     await app.state.dishka_container.close()
 

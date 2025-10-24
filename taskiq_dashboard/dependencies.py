@@ -2,8 +2,10 @@ import typing as tp
 
 from dishka import Provider, Scope, make_async_container, provide
 
+from taskiq_dashboard.domain.services.schema_service import AbstractSchemaService
 from taskiq_dashboard.domain.services.task_service import TaskService
 from taskiq_dashboard.infrastructure.database.session_provider import AsyncPostgresSessionProvider
+from taskiq_dashboard.infrastructure.services.schema_service import SchemaService
 from taskiq_dashboard.infrastructure.services.task_service import SqlAlchemyTaskService
 from taskiq_dashboard.infrastructure.settings import Settings
 
@@ -31,6 +33,15 @@ class TaskiqDashboardProvider(Provider):
         session_provider: AsyncPostgresSessionProvider,
     ) -> TaskService:
         return SqlAlchemyTaskService(
+            session_provider=session_provider,
+        )
+
+    @provide
+    def provide_schema_service(
+        self,
+        session_provider: AsyncPostgresSessionProvider,
+    ) -> AbstractSchemaService:
+        return SchemaService(
             session_provider=session_provider,
         )
 

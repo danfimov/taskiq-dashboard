@@ -21,7 +21,7 @@ from taskiq_pg.asyncpg import AsyncpgBroker, AsyncpgResultBackend, AsyncpgSchedu
 from taskiq_dashboard import TaskiqDashboard
 
 
-dsn = 'postgres://taskiq_dashboard:look_in_vault@localhost:5432/taskiq_dashboard'
+dsn = 'postgres://taskiq-dashboard:look_in_vault@localhost:5432/taskiq-dashboard'
 broker = (
     AsyncpgBroker(dsn)
     .with_result_backend(AsyncpgResultBackend(dsn))

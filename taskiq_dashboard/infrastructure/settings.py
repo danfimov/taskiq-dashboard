@@ -6,21 +6,15 @@ import pydantic_settings
 from pydantic import BaseModel, SecretStr, model_validator
 
 
-def _remove_prefix(value: str, prefix: str) -> str:
-    if value.startswith(prefix):
-        return value[len(prefix) :]
-    return value
-
-
 class PostgresSettings(BaseModel):
     """Настройки для подключения к PostgreSQL."""
 
     driver: str = 'postgresql+asyncpg'
-    host: str
+    host: str = 'postgres'
     port: int = 5432
-    user: str
-    password: SecretStr
-    database: str
+    user: str = 'taskiq-dashboard'
+    password: SecretStr = SecretStr('look_in_vault')
+    database: str = 'taskiq-dashboard'
 
     min_pool_size: int = 1
     max_pool_size: int = 5
@@ -68,7 +62,7 @@ class PostgresSettings(BaseModel):
         values['port'] = parsed_dsn.port
         values['user'] = parsed_dsn.username
         values['password'] = parsed_dsn.password
-        values['database'] = _remove_prefix(parsed_dsn.path, '/')
+        values['database'] = parsed_dsn.path.removeprefix('/')
         return values
 
 
