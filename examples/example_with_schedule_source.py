@@ -74,9 +74,9 @@ async def best_task_ever() -> None:
 
 def run_admin_panel() -> None:
     app = TaskiqDashboard(
+        api_token='supersecret',
         host='0.0.0.0',
         port=8000,
-        api_token='supersecret',
     )
     app.run()
 
