@@ -76,6 +76,7 @@ def run_admin_panel() -> None:
     app = TaskiqDashboard(
         host='0.0.0.0',
         port=8000,
+        api_token='supersecret',
     )
     app.run()
 

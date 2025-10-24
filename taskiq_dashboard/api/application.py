@@ -7,6 +7,7 @@ from dishka.integrations.fastapi import setup_dishka
 from fastapi.staticfiles import StaticFiles
 
 from taskiq_dashboard import dependencies
+from taskiq_dashboard.api.middlewares import AccessTokenMiddleware
 from taskiq_dashboard.api.routers import dashboard_router, event_router, system_router
 from taskiq_dashboard.api.routers.exception_handlers import exception_handler__not_found
 from taskiq_dashboard.domain.services.schema_service import AbstractSchemaService
@@ -38,6 +39,7 @@ def get_app() -> fastapi.FastAPI:
     app.include_router(router=dashboard_router)
     app.include_router(router=event_router)
     app.mount('/static', StaticFiles(directory='taskiq_dashboard/api/static'), name='static')
+    app.add_middleware(AccessTokenMiddleware)
     setup_dishka(container=dependencies.container, app=app)
 
     return app

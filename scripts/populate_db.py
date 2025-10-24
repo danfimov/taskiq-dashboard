@@ -87,7 +87,7 @@ async def create_random_tasks(session: AsyncSession, count: int) -> None:
                         'Exception: External API unavailable',
                     ]
                 )
-            elif status == TaskStatus.ABANDONED:
+            elif status == TaskStatus.QUEUED:
                 error = random.choice(
                     [
                         'Timeout exceeded',
@@ -97,6 +97,7 @@ async def create_random_tasks(session: AsyncSession, count: int) -> None:
                         'Task was terminated due to system maintenance',
                     ]
                 )
+                finished_at = None
 
         # Создаем объект задачи
         task = Task(

@@ -2,11 +2,7 @@
 
 Broker-agnostic admin dashboard for Taskiq
 
-UI preview:
-
-Tasks Page | Task Details Page
-:-------------------------:|:-------------------------:
-![Alt text](./docs/assets/dashboard.png) | ![Alt text](./docs/assets/task.png)
+Live demo of UI: https://taskiq-dashboard.danfimov.com/
 
 ## Usage
 
