@@ -1,8 +1,34 @@
 [project]
 name = "taskiq-dashboard"
 version = "0.1.0"
-description = "Add your description here"
+description = "An interactive dashboard for monitoring and managing Taskiq tasks."
 readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "Framework :: AsyncIO",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Software Development",
+    "Topic :: System :: Networking",
+    "Typing :: Typed",
+    "Operating System :: OS Independent",
+]
+keywords = ["taskiq", "tasks", "distributed", "async", "admin"]
+authors = [
+    {name = "Anfimov Dima", email = "lovesolaristics@gmail.com"}
+]
 requires-python = ">=3.12"
 dependencies = [
     # api
@@ -20,6 +46,10 @@ dependencies = [
     "pydantic-settings>=2.10.1",
     "dishka>=1.7.2",
 ]
+
+[project.urls]
+"Bug Tracker" = "https://github.com/danfimov/taskiq-dashboard/issues"
+"Repository" = "https://github.com/danfimov/taskiq-dashboard/"
 
 [dependency-groups]
 dev = [
