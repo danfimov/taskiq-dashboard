@@ -15,6 +15,14 @@ help: ## Show this help
 run:  ## Run API part with hot reload
 	@uvicorn taskiq_dashboard.api:get_app --factory --workers 1 --host 0.0.0.0 --port 80 --reload
 
+.PHONY: run_docs
+run_docs: ## Run documentation server
+	@uv run mkdocs serve --livereload
+
+.PHONY: run_infra
+run_infra: ## Run rabbitmq in docker for integration tests
+	@docker compose -f docker-compose.yml up -d
+
 .PHONY: build
 build:  ## Build docker image with tag "local"
 	@docker build --progress=plain -t taskiq_dashboard:local .
