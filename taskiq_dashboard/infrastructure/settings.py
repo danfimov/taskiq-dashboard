@@ -15,7 +15,7 @@ def _remove_prefix(value: str, prefix: str) -> str:
 class PostgresSettings(BaseModel):
     """Настройки для подключения к PostgreSQL."""
 
-    driver: str = "postgresql+asyncpg"
+    driver: str = 'postgresql+asyncpg'
     host: str
     port: int = 5432
     user: str
@@ -50,33 +50,39 @@ class PostgresSettings(BaseModel):
             >>>     )
         """
         return SecretStr(
-            f"{self.driver}://{self.user}:{quote(self.password.get_secret_value())}@{self.host}:{self.port}/{self.database}",
+            f'{self.driver}://{self.user}:{quote(self.password.get_secret_value())}@{self.host}:{self.port}/{self.database}',
         )
 
-    @model_validator(mode="before")
+    @model_validator(mode='before')
     @classmethod
     def __parse_dsn(cls, values: dict[str, Any]) -> dict[str, Any]:
-        dsn = values.get("dsn")
+        dsn = values.get('dsn')
         if dsn is not None and not isinstance(dsn, str):
             msg = "Field 'dsn' must be str"
             raise TypeError(msg)
         if not dsn:
             return values
         parsed_dsn = urlparse(dsn)
-        values["driver"] = parsed_dsn.scheme
-        values["host"] = parsed_dsn.hostname
-        values["port"] = parsed_dsn.port
-        values["user"] = parsed_dsn.username
-        values["password"] = parsed_dsn.password
-        values["database"] = _remove_prefix(parsed_dsn.path, "/")
+        values['driver'] = parsed_dsn.scheme
+        values['host'] = parsed_dsn.hostname
+        values['port'] = parsed_dsn.port
+        values['user'] = parsed_dsn.username
+        values['password'] = parsed_dsn.password
+        values['database'] = _remove_prefix(parsed_dsn.path, '/')
         return values
 
 
+class APISettings(BaseModel):
+    host: str = '0.0.0.0'  # noqa: S104
+    port: int = 8000
+
+
 class Settings(pydantic_settings.BaseSettings):
+    api: APISettings = APISettings()
     postgres: PostgresSettings
 
     model_config = pydantic_settings.SettingsConfigDict(
-        env_nested_delimiter="__",
-        env_file=("conf/.env", os.getenv("ENV_FILE", ".env")),
-        env_file_encoding="utf-8",
+        env_nested_delimiter='__',
+        env_file=('conf/.env', os.getenv('ENV_FILE', '.env')),
+        env_file_encoding='utf-8',
     )

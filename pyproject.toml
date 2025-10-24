@@ -5,13 +5,21 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "alembic>=1.15.2",
+    # api
+    "fastapi>=0.120.0",
+    "uvicorn[standard]>=0.34.1",
+    # html templates
+    "jinja2>=3.1.6",
+    # db
+    "alembic>=1.16.5",
     "asyncpg>=0.30.0",
-    "greenlet>=3.2.0",
-    "litestar[standard,jinja]>=2.15.2",
-    "psycopg2-binary>=2.9.10",
-    "pydantic-settings>=2.8.1",
-    "sqlalchemy>=2.0.40",
+    "greenlet>=3.2.4",
+    "psycopg2-binary>=2.9.11",
+    "sqlalchemy>=2.0.43",
+    # other
+    "pydantic-settings>=2.10.1",
+    "dishka>=1.7.2",
+    "taskiq-postgres[asyncpg]>=0.6.0",
 ]
 
 [dependency-groups]
@@ -41,14 +49,90 @@ docs = [
 
 [tool.ruff]
 line-length = 120
+indent-width = 4
 exclude = [
     ".ruff_cache",
     ".venv",
     "venv",
 ]
 
+
+[tool.ruff.lint]
+select = [
+    "ALL",
+]
+ignore = [
+    "D100",  # Docstring in public module
+    "D104",  # Docstring in public package
+
+    # Conflicted rules
+    "D203",  # with D211
+    "D212",  # with D213
+    "COM812",  # with formatter
+
+    # temporary disable
+    "D", "ANN", "T201",
+
+    # Todo comments
+    "FIX002",
+    "TD002",
+    "TD003",
+
+    # messages in exceptions
+    "EM101",
+    "TRY003",
+
+    "RUF002",  # cyrillic letters
+]
+
+[tool.ruff.lint.isort]
+known-local-folder = ["taskiq_dashboard"]
+lines-after-imports = 2
+
 [tool.ruff.format]
 quote-style = "single"
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = [
+    "PLR2004",  # ignore magic value used in comparison in tests
+    "S101",  # ignore asserts in tests
+    "D",  # ignore docstrings in tests
+    "S106",  # hard-coded password in tests
+
+    # type annotations
+    "ANN001",
+    "ANN002",
+    "ANN201",
+    "ANN202",
+    "ANN003",
+
+    # unused function argument
+    "ARG001",
+    "ARG002",
+
+    "SLF001",  # private member accessed
+
+    # exception must not use a string literal
+    "EM101",
+    "TRY003",
+
+    # comments on russian
+    "RUF003",
+]
+"taskiq_dashboard/infrastructure/database/migrations/versions/*" = [
+    "N999",  # Invalid module name
+
+    # Auto-generated doc-strings by alembic
+    "D400",
+    "D415",
+]
+"scripts/*" = [
+    "ALL",
+]
+"examples/*" = [
+    "S",
+    "INP",
+]
 
 [tool.ruff.lint.flake8-quotes]
 multiline-quotes = "double"
@@ -84,3 +168,6 @@ init_forbid_extra = true
 init_typed = true
 warn_required_dynamic_aliases = true
 warn_untyped_fields = true
+
+[tool.bandit]
+skips = ["B104"]

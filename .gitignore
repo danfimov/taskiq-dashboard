@@ -174,3 +174,6 @@ cython_debug/
 .pypirc
 
 conf/.env
+
+# Project specific ignores
+node_modules/

@@ -17,18 +17,24 @@ repos:
     -   id: check-toml
     -   id: check-yaml
     -   id: check-added-large-files
+        exclude: |
+          (?x)^(
+            taskiq_dashboard/api/static/.*
+          )$
     -   id: end-of-file-fixer
 
 -   repo: https://github.com/crate-ci/typos
     rev: v1.38.1
     hooks:
       - id: typos
-
+        exclude: taskiq_dashboard/api/static/htmx.js
 -   repo: https://github.com/Yelp/detect-secrets
     rev: v1.5.0
     hooks:
     -   id: detect-secrets
         args: [
+            '--exclude-files', 'pnpm-lock.yaml',
+            '--exclude-files', 'taskiq_dashboard/api/static/htmx.js',
             '--exclude-lines', 'look_in_vault',
             '--exclude-lines', 'taskiq_postgres',
             '--exclude-lines', 'postgresql://postgres:postgres@localhost:5432/postgres',
@@ -56,7 +62,7 @@ repos:
 
     -   id: bandit
         name: bandit
-        entry: uv run --active --frozen bandit -c pyproject.toml -r src
+        entry: uv run --active --frozen bandit -c pyproject.toml -r taskiq_dashboard
         language: python
         types: [python]
         require_serial: true

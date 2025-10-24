@@ -1,0 +1,40 @@
+<meta charset="utf-8" />
+<link rel="stylesheet"
+      href="{{ url_for('static', path='css/tailwind.css') }}">
+<script defer src="{{ url_for('static', path='htmx.js') }}"></script>
+<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<style>
+    #site-logo {
+        visibility: hidden;
+    }
+
+    html[data-theme-ready="true"] #site-logo[data-ready="true"] {
+        visibility: visible;
+    }
+</style>
+<script>
+    (function() {
+        var THEMES = {
+            latte: 1,
+            frappe: 1,
+            macchiato: 1,
+            mocha: 1,
+            auto: 1
+        };
+        try {
+            var isAuto = localStorage.getItem('theme-auto') === 'true';
+            var t = localStorage.getItem('theme');
+            if (!t || !THEMES[t] || isAuto) {
+                t = matchMedia('(prefers-color-scheme: dark)').matches ? 'mocha' : 'latte';
+            }
+            document.documentElement.className = t;
+            document.documentElement.style.colorScheme = (t === 'latte') ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme-ready', 'true');
+            window.__theme = t;
+        } catch (_) {}
+    })();
+</script>
+<link rel="icon"
+      href="{{ url_for('static', path='favicon.ico') }}"
+      type="image/x-icon" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
