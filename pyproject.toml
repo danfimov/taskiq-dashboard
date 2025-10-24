@@ -19,7 +19,6 @@ dependencies = [
     # other
     "pydantic-settings>=2.10.1",
     "dishka>=1.7.2",
-    "taskiq-postgres[asyncpg]>=0.6.0",
 ]
 
 [dependency-groups]
@@ -27,6 +26,7 @@ dev = [
     {include-group = "lint"},
     {include-group = "test"},
     {include-group = "docs"},
+    {include-group = "examples"},
     "prek>=0.2.8",
 ]
 lint = [
@@ -46,6 +46,17 @@ docs = [
     "mkdocs-material>=9.6.22",
     "mkdocstrings-python>=1.18.2",
 ]
+examples = [
+    "taskiq-postgres[asyncpg]>=0.6.0",
+]
+
+[build-system]
+requires = ["uv_build>=0.9.5,<0.10.0"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "taskiq_dashboard"
+module-root = ""
 
 [tool.ruff]
 line-length = 120

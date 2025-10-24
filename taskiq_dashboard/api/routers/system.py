@@ -11,7 +11,6 @@ class HealthCheckResponse(BaseModel):
     app_name: str
 
 
-
 @router.get('/liveness', name='liveness', summary='Проверка работоспособности сервиса')
 async def get_liveness() -> HealthCheckResponse:
     return HealthCheckResponse(

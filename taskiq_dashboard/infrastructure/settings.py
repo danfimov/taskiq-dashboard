@@ -22,8 +22,8 @@ class PostgresSettings(BaseModel):
     password: SecretStr
     database: str
 
-    min_pool_size: int
-    max_pool_size: int
+    min_pool_size: int = 1
+    max_pool_size: int = 5
 
     @property
     def dsn(self) -> SecretStr:
@@ -83,6 +83,7 @@ class Settings(pydantic_settings.BaseSettings):
 
     model_config = pydantic_settings.SettingsConfigDict(
         env_nested_delimiter='__',
+        env_prefix='TASKIQ_DASHBOARD__',
         env_file=('conf/.env', os.getenv('ENV_FILE', '.env')),
         env_file_encoding='utf-8',
     )

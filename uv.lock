@@ -1541,7 +1541,7 @@ wheels = [
 [[package]]
 name = "taskiq-dashboard"
 version = "0.1.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "alembic" },
     { name = "asyncpg" },
@@ -1552,7 +1552,6 @@ dependencies = [
     { name = "psycopg2-binary" },
     { name = "pydantic-settings" },
     { name = "sqlalchemy" },
-    { name = "taskiq-postgres", extra = ["asyncpg"] },
     { name = "uvicorn", extra = ["standard"] },
 ]
 
@@ -1568,11 +1567,15 @@ dev = [
     { name = "pytest-asyncio" },
     { name = "pytest-cov" },
     { name = "ruff" },
+    { name = "taskiq-postgres", extra = ["asyncpg"] },
     { name = "zizmor" },
 ]
 docs = [
     { name = "mkdocs-material" },
     { name = "mkdocstrings-python" },
+]
+examples = [
+    { name = "taskiq-postgres", extra = ["asyncpg"] },
 ]
 lint = [
     { name = "bandit" },
@@ -1598,7 +1601,6 @@ requires-dist = [
     { name = "psycopg2-binary", specifier = ">=2.9.11" },
     { name = "pydantic-settings", specifier = ">=2.10.1" },
     { name = "sqlalchemy", specifier = ">=2.0.43" },
-    { name = "taskiq-postgres", extras = ["asyncpg"], specifier = ">=0.6.0" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.34.1" },
 ]
 
@@ -1614,12 +1616,14 @@ dev = [
     { name = "pytest-asyncio", specifier = ">=1.1.0" },
     { name = "pytest-cov", specifier = ">=7.0.0" },
     { name = "ruff", specifier = ">=0.14.0" },
+    { name = "taskiq-postgres", extras = ["asyncpg"], specifier = ">=0.6.0" },
     { name = "zizmor", specifier = ">=1.15.2" },
 ]
 docs = [
     { name = "mkdocs-material", specifier = ">=9.6.22" },
     { name = "mkdocstrings-python", specifier = ">=1.18.2" },
 ]
+examples = [{ name = "taskiq-postgres", extras = ["asyncpg"], specifier = ">=0.6.0" }]
 lint = [
     { name = "bandit", specifier = ">=1.8.6" },
     { name = "codespell", specifier = ">=2.4.1" },
