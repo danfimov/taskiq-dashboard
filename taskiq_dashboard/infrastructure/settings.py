@@ -11,7 +11,7 @@ class PostgresSettings(BaseModel):
     """Настройки для подключения к PostgreSQL."""
 
     driver: str = 'postgresql+asyncpg'
-    host: str = 'postgres'
+    host: str = 'localhost'
     port: int = 5432
     user: str = 'taskiq-dashboard'
     password: SecretStr = SecretStr('look_in_vault')
