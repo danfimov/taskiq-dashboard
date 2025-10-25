@@ -54,19 +54,20 @@ services:
   postgres:
     image: postgres:18
     environment:
-      POSTGRES_USER: taskiq_dashboard
+      POSTGRES_USER: taskiq-dashboard
       POSTGRES_PASSWORD: look_in_vault
-      POSTGRES_DB: taskiq_dashboard
+      POSTGRES_DB: taskiq-dashboard
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
 
   dashboard:
-    image: taskiq_dashboard:local
+    image: ghcr.io/danfimov/taskiq-dashboard:latest
     depends_on:
       - postgres
     environment:
+      TASKIQ_DASHBOARD__POSTGRES__HOST: postgres
       TASKIQ_DASHBOARD__API__TOKEN: supersecret
     ports:
       - "8000:8000"

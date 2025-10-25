@@ -22,9 +22,9 @@ jobs:
      postgres:
        image: postgres:18
        env:
-         POSTGRES_USER: taskiq_admin
+         POSTGRES_USER: taskiq-dashboard
          POSTGRES_PASSWORD: look_in_vault
-         POSTGRES_DB: taskiq_admin
+         POSTGRES_DB: taskiq-dashboard
        options: >-
          --health-cmd pg_isready
          --health-interval 10s

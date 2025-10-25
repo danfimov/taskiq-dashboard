@@ -3,7 +3,7 @@ import typing as tp
 import uvicorn
 from pydantic import SecretStr
 
-from taskiq_dashboard.api.application import get_app
+from taskiq_dashboard.api.application import get_application
 from taskiq_dashboard.infrastructure import PostgresSettings, get_settings
 
 
@@ -41,7 +41,7 @@ class TaskiqDashboard:
         self._uvicorn_kwargs.update(uvicorn_kwargs or {})
 
     def run(self) -> None:
-        application = get_app()
+        application = get_application()
         uvicorn.run(
             application,
             **self._uvicorn_kwargs,  # type: ignore[arg-type]

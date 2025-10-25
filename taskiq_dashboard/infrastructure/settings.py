@@ -11,7 +11,7 @@ class PostgresSettings(BaseModel):
     """Настройки для подключения к PostgreSQL."""
 
     driver: str = 'postgresql+asyncpg'
-    host: str = 'postgres'
+    host: str = 'localhost'
     port: int = 5432
     user: str = 'taskiq-dashboard'
     password: SecretStr = SecretStr('look_in_vault')
@@ -75,7 +75,7 @@ class APISettings(BaseModel):
 
 class Settings(pydantic_settings.BaseSettings):
     api: APISettings = APISettings()
-    db: PostgresSettings
+    db: PostgresSettings = PostgresSettings()
 
     model_config = pydantic_settings.SettingsConfigDict(
         env_nested_delimiter='__',

@@ -24,8 +24,9 @@ class Task(pydantic.BaseModel):
     started_at: datetime.datetime
     finished_at: datetime.datetime | None = None
 
-    class Config:
-        from_attributes = True
+    model_config = pydantic.ConfigDict(
+        from_attributes=True,
+    )
 
 
 class QueuedTask(pydantic.BaseModel):

@@ -7,12 +7,14 @@ from taskiq_dashboard.domain.dto.task_status import TaskStatus
 
 class TaskService(ABC):
     @abstractmethod
-    async def get_tasks(
+    async def get_tasks(  # noqa: PLR0913
         self,
         page: int = 1,
         per_page: int = 30,
         status: TaskStatus | None = None,
         name_search: str | None = None,
+        sort_by: str | None = None,
+        sort_order: str = 'desc',
     ) -> tuple[list[Task], int]:
         """
         Retrieve tasks with pagination and filtering.
@@ -22,6 +24,8 @@ class TaskService(ABC):
             per_page: Number of tasks per page
             status: Filter by task status
             name_search: Filter by task name (fuzzy search)
+            sort_by: Column to sort by ('started_at' or 'finished_at')
+            sort_order: Sort order ('asc' or 'desc')
 
         Returns:
             Tuple of (tasks, total_count)

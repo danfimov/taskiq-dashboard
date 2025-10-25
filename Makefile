@@ -47,5 +47,9 @@ format:  ## Run formatting
 	@uv run ruff format .
 
 .PHONY: test
-test:  ## Run tests
-	@pytest
+test:  ## Run all tests
+	@uv run pytest
+
+.PHONY: test_cov
+test_cov:  ## Generate test coverage report
+	@uv run pytest -m 'not linting' --cov='taskiq_dashboard' --cov-report=html

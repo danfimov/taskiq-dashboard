@@ -13,12 +13,14 @@ class SqlAlchemyTaskService(TaskService):
     def __init__(self, session_provider: AsyncPostgresSessionProvider) -> None:
         self._session_provider = session_provider
 
-    async def get_tasks(
+    async def get_tasks(  # noqa: PLR0913
         self,
         page: int = 1,
         per_page: int = 30,
         status: TaskStatus | None = None,
         name_search: str | None = None,
+        sort_by: str | None = None,
+        sort_order: str = 'desc',
     ) -> tuple[list[Task], int]:
         """
         Get paginated and filtered tasks.
@@ -28,6 +30,8 @@ class SqlAlchemyTaskService(TaskService):
             per_page: Number of tasks per page
             status: Filter by task status
             name_search: Filter by task name (fuzzy search)
+            sort_by: Column to sort by ('started_at', 'finished_at', or None for default)
+            sort_order: Sort order ('asc' or 'desc')
 
         Returns:
             Tuple of (tasks_list, total_count)
@@ -57,8 +61,19 @@ class SqlAlchemyTaskService(TaskService):
         # Calculate offset
         offset = (page - 1) * per_page
 
+        # Apply sorting
+        if sort_by == 'finished_at':
+            sort_column = TaskSchema.finished_at
+        elif sort_by == 'started_at':
+            sort_column = TaskSchema.started_at
+        else:
+            sort_column = TaskSchema.started_at
+
+        query = query.order_by(sort_column.asc()) if sort_order.lower() == 'asc' else query.order_by(sort_column.desc())
+
         # Get tasks for current page
-        query = query.order_by(TaskSchema.started_at.desc()).limit(per_page).offset(offset)
+        query = query.limit(per_page).offset(offset)
+
         async with self._session_provider.session() as session:
             result = await session.execute(query)
             task_schemas = result.scalars().all()

@@ -129,7 +129,7 @@ async def main() -> None:
 
     # Создаем engine для SQLAlchemy
     engine = create_async_engine(
-        settings.postgres.dsn.get_secret_value(),
+        settings.db.dsn.get_secret_value(),
         echo=True,
     )
 
