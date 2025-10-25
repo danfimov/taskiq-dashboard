@@ -67,6 +67,7 @@ services:
     depends_on:
       - postgres
     environment:
+      TASKIQ_DASHBOARD__POSTGRES__HOST: postgres
       TASKIQ_DASHBOARD__API__TOKEN: supersecret
     ports:
       - "8000:8000"
