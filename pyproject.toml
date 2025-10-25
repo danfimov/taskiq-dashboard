@@ -65,9 +65,12 @@ lint = [
     "mypy>=1.18.1",
 ]
 test = [
+    "psycopg2-binary>=2.9.11",
     "pytest>=8.4.2",
     "pytest-asyncio>=1.1.0",
     "pytest-cov>=7.0.0",
+    # for test databases management
+    "sqlalchemy-utils>=0.42.0",
 ]
 docs = [
     "mkdocs-material>=9.6.22",
@@ -156,6 +159,9 @@ quote-style = "single"
 
     # comments on russian
     "RUF003",
+
+    # __init__ files
+    "INP001",
 ]
 "taskiq_dashboard/infrastructure/database/migrations/versions/*" = [
     "N999",  # Invalid module name
@@ -184,6 +190,28 @@ pythonpath = [
 ]
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
+markers = [
+    "unit: marks unit tests",
+    "integration: marks tests with real infrastructure env",
+]
+filterwarnings = []
+
+[tool.coverage.report]
+exclude_lines = [
+    "# pragma: no cover",
+    "def __repr__",
+    "def __str__",
+    "def __unicode__",
+    "if tp.TYPE_CHECKING:",
+    "pass",
+]
+show_missing = true
+skip_empty = true
+omit = [
+    "*/__init__.py",
+    "venv/*",
+    "tests/*"
+]
 
 [tool.mypy]
 plugins = ["pydantic.mypy"]
