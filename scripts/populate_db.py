@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 
 from taskiq_dashboard.domain.dto.task_status import TaskStatus
-from taskiq_dashboard.infrastructure.database.schemas import Task
+from taskiq_dashboard.infrastructure.database.schemas import PostgresTask as Task
 from taskiq_dashboard.infrastructure import Settings
 
 
@@ -50,10 +50,8 @@ async def create_random_tasks(session: AsyncSession, count: int) -> None:
         status = random.choice(list(TaskStatus))
 
         # Генерируем аргументы
-        args = json.dumps([random.randint(1, 100) for _ in range(random.randint(0, 3))])
-        kwargs = json.dumps(
-            {f'param{i}': random.choice(['value', 123, True, None]) for i in range(random.randint(0, 3))}
-        )
+        args = [random.randint(1, 100) for _ in range(random.randint(0, 3))]
+        kwargs = {f'param{i}': random.choice(['value', 123, True, None]) for i in range(random.randint(0, 3))}
 
         # Генерируем время начала (от недели назад до сейчас)
         started_at = dt.datetime.now(dt.UTC) - dt.timedelta(
