@@ -5,12 +5,17 @@ from taskiq_dashboard.infrastructure.database.session_provider import AsyncPostg
 
 
 class SchemaService(AbstractSchemaService):
-    def __init__(self, session_provider: AsyncPostgresSessionProvider) -> None:
+    def __init__(
+        self,
+        session_provider: AsyncPostgresSessionProvider,
+        table_name: str = 'taskiq_dashboard__tasks',
+    ) -> None:
         self._session_provider = session_provider
+        self._table_name = table_name
 
     async def create_schema(self) -> None:
-        query = """
-        CREATE TABLE IF NOT EXISTS tasks (
+        query = f"""
+        CREATE TABLE IF NOT EXISTS {self._table_name} (
             id UUID NOT NULL,
             name TEXT NOT NULL,
             status INTEGER NOT NULL,
@@ -22,7 +27,7 @@ class SchemaService(AbstractSchemaService):
             queued_at TIMESTAMP WITH TIME ZONE NOT NULL,
             started_at TIMESTAMP WITH TIME ZONE NOT NULL,
             finished_at TIMESTAMP WITH TIME ZONE,
-            CONSTRAINT pk_tasks PRIMARY KEY (id)
+            CONSTRAINT pk_{self._table_name} PRIMARY KEY (id)
         );
         """
         async with self._session_provider.session() as session:

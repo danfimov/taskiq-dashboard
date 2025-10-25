@@ -12,13 +12,32 @@ services:
 
   dashboard:
     image: taskiq_dashboard:local
+    build:
+      context: .
+      dockerfile: Dockerfile
     depends_on:
       - postgres
     environment:
+      TASKIQ_DASHBOARD__STORAGE_TYPE: postgres
       TASKIQ_DASHBOARD__POSTGRES__HOST: postgres
       TASKIQ_DASHBOARD__API__TOKEN: supersecret
     ports:
       - "8000:8000"
 
+  sqlite_dashboard:
+    image: taskiq_dashboard:local
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      TASKIQ_DASHBOARD__STORAGE_TYPE: sqlite
+      TASKIQ_DASHBOARD__SQLITE__DSN: sqlite+aiosqlite:///data/taskiq_dashboard.db
+      TASKIQ_DASHBOARD__API__TOKEN: supersecret
+    volumes:
+      - taskiq_dashboard_sqlite:/app/data/taskiq-dashboard.db
+    ports:
+      - "8000:8000"
+
 volumes:
   postgres_data:
+  taskiq_dashboard_sqlite:

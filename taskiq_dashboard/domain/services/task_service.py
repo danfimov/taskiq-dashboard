@@ -40,13 +40,13 @@ class TaskService(ABC):
     @abstractmethod
     async def create_task(
         self,
-        task_id: str,
+        task_id: uuid.UUID,
         task_arguments: QueuedTask,
     ) -> None: ...
 
     @abstractmethod
     async def update_task(
         self,
-        task_id: str,
+        task_id: uuid.UUID,
         task_arguments: StartedTask | ExecutedTask,
     ) -> None: ...

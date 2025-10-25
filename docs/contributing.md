@@ -9,22 +9,43 @@ This project uses modern Python development tools:
 - [uv](https://github.com/astral-sh/uv) — fast Python package installer and resolver
 - [ruff](https://github.com/astral-sh/ruff) — extremely fast Python linter and formatter
 
-### Setup Development Environment
+### Setting up local development environment
 
-```bash
-# Clone the repository
-git clone https://github.com/danfimov/taskiq-dashboard.git
-cd taskiq-dashboard
+To run the application locally for development, follow these steps:
 
-# Create a virtual environment (optional but recommended)
-make venv
+1. Clone the repository:
 
-# Install dependencies
-make init
-```
+    ```bash
+    git clone
+    https://github.com/danfimov/taskiq-dashboard.git
+    cd taskiq-dashboard
+    ```
+
+2. Create a virtual environment, activate it, install dependencies and pre-commit hooks:
+
+    ```bash
+    make init
+    ```
+
+3. Start a local PostgreSQL instance using Docker:
+
+    ```bash
+    make run_infra
+    ```
+
+4. Run tailwindcss in watch mode to compile CSS:
+
+    ```bash
+    pnpm run dev
+    ```
+
+5. Start the dashboard application:
+
+    ```bash
+    make run
+    ```
 
 You can see other useful commands by running `make help`.
-
 
 ## Contributing
 
