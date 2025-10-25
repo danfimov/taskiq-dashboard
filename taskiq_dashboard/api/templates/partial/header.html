@@ -103,6 +103,7 @@
             });
             // closing cases
             selectEl.addEventListener("blur", closeChevron);
+            selectEl.addEventListener("change", closeChevron);
             selectEl.addEventListener("keyup", (e) => {
                 if (e.key === "Escape") closeChevron();
             });

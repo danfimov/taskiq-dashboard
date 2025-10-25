@@ -52,7 +52,7 @@ async def dashboard_handler(  # noqa: PLR0913
     status: tp.Annotated[str | None, Query(title='Filter by status')] = None,
     search: tp.Annotated[str | None, Query(title='Search by name')] = None,
     sort_by: tp.Annotated[tp.Literal['started_at', 'finished_at'] | None, Query(title='Sort by column')] = 'started_at',
-    sort_order: tp.Annotated[str, Query(title='Sort order')] = 'desc',
+    sort_order: tp.Annotated[tp.Literal['asc', 'desc'], Query(title='Sort order')] = 'desc',
 ) -> HTMLResponse:
     """
     Render dashboard with paginated and filtered tasks.
@@ -66,10 +66,6 @@ async def dashboard_handler(  # noqa: PLR0913
                 task_status = STATUS_MAPPING[status_filter]
         except ValueError:
             pass  # Invalid status, ignore the filter
-
-    # Validate sort_by parameter
-    if sort_by and sort_by not in ('started_at', 'finished_at'):
-        sort_by = None
 
     # Get filtered and paginated tasks
     tasks, total_count = await task_service.get_tasks(

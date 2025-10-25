@@ -6,7 +6,8 @@
     <meta name="keywords" content="python, packages, projects, libraries">
     {% include "partial/head.html" %}
 </head>
-<body class="bg-ctp-base">
+<body class="bg-ctp-base"
+    hx-on:keydown='{% include "scripts/focus_on_search_field.js" %}'>
     {% include "partial/header.html" %}
     <main class="container mx-auto px-4 py-8">
         <div>
@@ -37,10 +38,11 @@
 
                     <!-- Status Filter -->
                     <div class="col-span-1 text-ctp-subtext0 hover:text-ctp-subtext1 focus:text-ctp-subtext1">
+                        <div class="relative">
                         <select
                             id="status"
                             name="status"
-                            class=" w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 transition-all duration-200 hover:shadow-md border-ctp-subtext0 group-hover:border-ctp-subtext1 "
+                            class=" w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 transition-all duration-200 hover:shadow-md border-ctp-subtext0 group-hover:border-ctp-subtext1 appearance-none"
                             hx-get="/"
                             hx-trigger="change"
                             hx-target="body"
@@ -53,6 +55,42 @@
                             <option class="bg-ctp-base" value="failure" {% if filters.status == "failure" %}selected{% endif %}>Failure</option>
                             <option class="bg-ctp-base" value="queued" {% if filters.status == "queued" %}selected{% endif %}>Queued</option>
                         </select>
+                        <svg id="status-chevron"
+                             class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-ctp-mauve-100 transform transition-transform duration-200"
+                             aria-hidden="true">
+                            <use href="{{ url_for('static', path='icons.svg#chevron-left') }}"></use>
+                        </svg>
+                        <script>
+                        const selectEl = document.getElementById("status");
+                        const chevronEl = document.getElementById("status-chevron");
+                        const openChevron = () => {
+                            chevronEl && chevronEl.classList.add("-rotate-90");
+                            selectEl.setAttribute("aria-expanded", "true");
+                        };
+                        const closeChevron = () => {
+                            chevronEl && chevronEl.classList.remove("-rotate-90");
+                            selectEl.setAttribute("aria-expanded", "false");
+                        };
+
+                        // opening cases
+                        selectEl.addEventListener("pointerdown", openChevron);
+                        selectEl.addEventListener("click", openChevron);
+                        selectEl.addEventListener("keydown", (e) => {
+                            if (["ArrowUp", "ArrowDown", " ", "Enter"].includes(e.key)) openChevron();
+                        });
+                        // closing cases
+                        selectEl.addEventListener("blur", closeChevron);
+                        selectEl.addEventListener("change", closeChevron);
+                        selectEl.addEventListener("keyup", (e) => {
+                            if (e.key === "Escape") closeChevron();
+                        });
+                        document.addEventListener("pointerdown", (e) => {
+                            if (!selectEl.contains(e.target)) {
+                                closeChevron();
+                            }
+                        });
+                        </script>
+                        </div>
                     </div>
 
 
