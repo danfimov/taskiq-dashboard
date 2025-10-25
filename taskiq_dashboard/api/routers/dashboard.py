@@ -51,6 +51,8 @@ async def dashboard_handler(  # noqa: PLR0913
     per_page: tp.Annotated[int, Query(title='Items per page', ge=1, le=100)] = 15,
     status: tp.Annotated[str | None, Query(title='Filter by status')] = None,
     search: tp.Annotated[str | None, Query(title='Search by name')] = None,
+    sort_by: tp.Annotated[tp.Literal['started_at', 'finished_at'] | None, Query(title='Sort by column')] = 'started_at',
+    sort_order: tp.Annotated[str, Query(title='Sort order')] = 'desc',
 ) -> HTMLResponse:
     """
     Render dashboard with paginated and filtered tasks.
@@ -65,12 +67,18 @@ async def dashboard_handler(  # noqa: PLR0913
         except ValueError:
             pass  # Invalid status, ignore the filter
 
+    # Validate sort_by parameter
+    if sort_by and sort_by not in ('started_at', 'finished_at'):
+        sort_by = None
+
     # Get filtered and paginated tasks
     tasks, total_count = await task_service.get_tasks(
         page=page,
         per_page=per_page,
         status=task_status,
         name_search=search,
+        sort_by=sort_by,
+        sort_order=sort_order,
     )
 
     # Calculate pagination metadata
@@ -90,6 +98,10 @@ async def dashboard_handler(  # noqa: PLR0913
         filter_params['status'] = status
     if search:
         filter_params['search'] = search
+    if sort_by:
+        filter_params['sort_by'] = sort_by
+    if sort_order != 'desc':
+        filter_params['sort_order'] = sort_order
 
     # Generate the status options for the dropdown
     status_options = [
@@ -120,6 +132,10 @@ async def dashboard_handler(  # noqa: PLR0913
                 'status': status or 'all',
                 'search': search or '',
                 'status_options': status_options,
+            },
+            'current_sort': {
+                'sort_by': sort_by,
+                'sort_order': sort_order,
             },
         },
     )
@@ -206,16 +222,3 @@ def get_visible_page_numbers(current_page: int, total_pages: int, window_size: i
     pages.append(total_pages)
 
     return pages
-
-
-def build_query_string(params: dict[str, tp.Any]) -> str:
-    """Build a query string from parameters."""
-    parts = []
-    for key, value in params.items():
-        if value is not None and value != '':
-            parts.append(f'{key}={value}')
-
-    if not parts:
-        return ''
-
-    return '?' + '&'.join(parts)

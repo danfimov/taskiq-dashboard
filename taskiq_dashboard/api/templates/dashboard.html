@@ -64,10 +64,44 @@
                 <table class="min-w-full divide-y divide-ctp-blue/20">
                     <thead class="">
                         <tr>
-                            {% set headers = ['Task ID', 'Name', 'Status', 'Worker', 'Started At', 'Finished At'] %}
-                            {% for header in headers %}
-                                <th scope="col" class="px-6 py-3 text-left font-normal text-ctp-text tracking-wider">{{ header }}</th>
-                            {% endfor %}
+                            <th scope="col" class="px-6 py-3 text-left font-normal text-ctp-text tracking-wider">Task ID</th>
+                            <th scope="col" class="px-6 py-3 text-left font-normal text-ctp-text tracking-wider">Name</th>
+                            <th scope="col" class="px-6 py-3 text-left font-normal text-ctp-text tracking-wider">Status</th>
+                            <th scope="col" class="px-6 py-3 text-left font-normal text-ctp-text tracking-wider">Worker</th>
+                            <th scope="col" class="px-6 py-3 text-left font-normal text-ctp-text tracking-wider">
+                                <a href="?page=1{% if filters.status != 'all' %}&status={{ filters.status }}{% endif %}{% if filters.search %}&search={{ filters.search }}{% endif %}&sort_by=started_at&sort_order={% if current_sort.sort_by == 'started_at' and current_sort.sort_order == 'asc' %}desc{% else %}asc{% endif %}"
+                                   class="flex items-center gap-2 hover:text-ctp-subtext0 transition-colors">
+                                    Started At
+                                    <span class="inline-flex">
+                                    {% if current_sort.sort_by == 'started_at' %}
+                                        {% if current_sort.sort_order == 'asc' %}
+                                        <svg class="w-4 h-4 rotate-90"><use href="{{ url_for('static', path='icons.svg#chevron-left') }}"></use></svg>
+                                        {% else %}
+                                            <svg class="w-4 h-4 -rotate-90"><use href="{{ url_for('static', path='icons.svg#chevron-left') }}"></use></svg>
+                                        {% endif %}
+                                    {% else %}
+                                        <svg class="w-4 h-4"><use href="{{ url_for('static', path='icons.svg#arrow-up-down') }}"></use></svg>
+                                    {% endif %}
+                                    </span>
+                                </a>
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left font-normal text-ctp-text tracking-wider">
+                                <a href="?page=1{% if filters.status != 'all' %}&status={{ filters.status }}{% endif %}{% if filters.search %}&search={{ filters.search }}{% endif %}&sort_by=finished_at&sort_order={% if current_sort.sort_by == 'finished_at' and current_sort.sort_order == 'asc' %}desc{% else %}asc{% endif %}"
+                                   class="flex items-center gap-2 hover:text-ctp-subtext0 transition-colors">
+                                    Finished At
+                                    <span class="inline-flex">
+                                    {% if current_sort.sort_by == 'finished_at' %}
+                                        {% if current_sort.sort_order == 'asc' %}
+                                            <svg class="w-4 h-4 rotate-90"><use href="{{ url_for('static', path='icons.svg#chevron-left') }}"></use></svg>
+                                        {% else %}
+                                            <svg class="w-4 h-4 -rotate-90"><use href="{{ url_for('static', path='icons.svg#chevron-left') }}"></use></svg>
+                                        {% endif %}
+                                    {% else %}
+                                        <svg class="w-4 h-4"><use href="{{ url_for('static', path='icons.svg#arrow-up-down') }}"></use></svg>
+                                    {% endif %}
+                                    </span>
+                                </a>
+                            </th>
                         </tr>
                     </thead>
                     <tbody class="divide-y text-ctp-text divide-ctp-blue/20">
