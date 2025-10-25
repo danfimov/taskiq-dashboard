@@ -4,14 +4,14 @@ import uvicorn
 from pydantic import SecretStr
 
 from taskiq_dashboard.api.application import get_application
-from taskiq_dashboard.infrastructure import PostgresSettings, get_settings
+from taskiq_dashboard.infrastructure import PostgresSettings, SqliteSettings, get_settings
 
 
 class TaskiqDashboard:
     def __init__(
         self,
         api_token: str,
-        database_dsn: str | None = None,
+        database_dsn: str,
         **uvicorn_kwargs: tp.Any,
     ) -> None:
         """Initialize Taskiq Dashboard application.
@@ -25,7 +25,10 @@ class TaskiqDashboard:
         self.settings.api.token = SecretStr(api_token)
 
         if database_dsn:
-            self.settings.db = PostgresSettings(dsn=database_dsn)  # type: ignore[call-arg]
+            if database_dsn.startswith('sqlite'):
+                self.settings.db = SqliteSettings(dsn=database_dsn)  # type: ignore[call-arg]
+            else:
+                self.settings.db = PostgresSettings(dsn=database_dsn)  # type: ignore[call-arg]
 
         self._uvicorn_kwargs = {
             'host': 'localhost',

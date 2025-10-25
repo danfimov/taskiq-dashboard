@@ -20,5 +20,16 @@ services:
     ports:
       - "8000:8000"
 
+  sqlite_dashboard:
+    image: taskiq_dashboard:local
+    environment:
+      TASKIQ_DASHBOARD__DATABASE__URL: sqlite+aiosqlite:///taskiq-dashboard.db
+      TASKIQ_DASHBOARD__API__TOKEN: supersecret
+    volumes:
+      - taskiq_dashboard_sqlite:/app/taskiq-dashboard.db
+    ports:
+      - "8000:8000"
+
 volumes:
   postgres_data:
+  taskiq_dashboard_sqlite:

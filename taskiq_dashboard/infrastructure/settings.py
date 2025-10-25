@@ -4,10 +4,10 @@ from typing import Any
 from urllib.parse import quote, urlparse
 
 import pydantic_settings
-from pydantic import BaseModel, SecretStr, model_validator
+from pydantic import SecretStr, model_validator
 
 
-class PostgresSettings(BaseModel):
+class PostgresSettings(pydantic_settings.BaseSettings):
     """Настройки для подключения к PostgreSQL."""
 
     driver: str = 'postgresql+asyncpg'
@@ -67,7 +67,34 @@ class PostgresSettings(BaseModel):
         return values
 
 
-class APISettings(BaseModel):
+class SqliteSettings(pydantic_settings.BaseSettings):
+    driver: str = 'sqlite+aiosqlite'
+    file_path: str = 'taskiq_dashboard.db'
+
+    @property
+    def dsn(self) -> str:
+        return SecretStr(f'{self.driver}:///{self.file_path}')
+
+    @model_validator(mode='before')
+    @classmethod
+    def __parse_dsn(cls, values: dict[str, Any]) -> dict[str, Any]:
+        dsn = values.get('dsn')
+        if dsn is not None and not isinstance(dsn, str):
+            msg = "Field 'dsn' must be str"
+            raise TypeError(msg)
+        if not dsn:
+            return values
+        parsed_dsn = urlparse(dsn)
+        values['driver'] = parsed_dsn.scheme
+        values['file_path'] = parsed_dsn.path.removeprefix('/')
+        return values
+
+    model_config = pydantic_settings.SettingsConfigDict(
+        extra='ignore',
+    )
+
+
+class APISettings(pydantic_settings.BaseSettings):
     host: str = '0.0.0.0'  # noqa: S104
     port: int = 8000
     token: SecretStr = SecretStr('supersecret')
@@ -75,7 +102,7 @@ class APISettings(BaseModel):
 
 class Settings(pydantic_settings.BaseSettings):
     api: APISettings = APISettings()
-    db: PostgresSettings = PostgresSettings()
+    db: SqliteSettings | PostgresSettings
 
     model_config = pydantic_settings.SettingsConfigDict(
         env_nested_delimiter='__',
