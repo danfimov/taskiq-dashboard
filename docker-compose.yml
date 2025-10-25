@@ -15,7 +15,7 @@ services:
     depends_on:
       - postgres
     environment:
-      TASKIQ_DASHBOARD__POSTGRES__HOST: postgres
+      TASKIQ_DASHBOARD__DB__HOST: postgres
       TASKIQ_DASHBOARD__API__TOKEN: supersecret
     ports:
       - "8000:8000"
@@ -23,7 +23,7 @@ services:
   sqlite_dashboard:
     image: taskiq_dashboard:local
     environment:
-      TASKIQ_DASHBOARD__DATABASE__URL: sqlite+aiosqlite:///taskiq-dashboard.db
+      TASKIQ_DASHBOARD__DB__URL: sqlite+aiosqlite:///taskiq-dashboard.db
       TASKIQ_DASHBOARD__API__TOKEN: supersecret
     volumes:
       - taskiq_dashboard_sqlite:/app/taskiq-dashboard.db

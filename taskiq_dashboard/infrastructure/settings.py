@@ -66,13 +66,17 @@ class PostgresSettings(pydantic_settings.BaseSettings):
         values['database'] = parsed_dsn.path.removeprefix('/')
         return values
 
+    model_config = pydantic_settings.SettingsConfigDict(
+        extra='ignore',
+    )
+
 
 class SqliteSettings(pydantic_settings.BaseSettings):
     driver: str = 'sqlite+aiosqlite'
     file_path: str = 'taskiq_dashboard.db'
 
     @property
-    def dsn(self) -> str:
+    def dsn(self) -> SecretStr:
         return SecretStr(f'{self.driver}:///{self.file_path}')
 
     @model_validator(mode='before')
@@ -102,7 +106,7 @@ class APISettings(pydantic_settings.BaseSettings):
 
 class Settings(pydantic_settings.BaseSettings):
     api: APISettings = APISettings()
-    db: SqliteSettings | PostgresSettings
+    db: PostgresSettings | SqliteSettings = PostgresSettings()
 
     model_config = pydantic_settings.SettingsConfigDict(
         env_nested_delimiter='__',

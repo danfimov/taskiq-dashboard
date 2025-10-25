@@ -4,19 +4,19 @@ from contextlib import asynccontextmanager
 
 from sqlalchemy.ext import asyncio as sa_async
 
-from taskiq_dashboard.infrastructure import PostgresSettings
+from taskiq_dashboard.infrastructure import PostgresSettings, SqliteSettings
 
 
 class AsyncPostgresSessionProvider:
     def __init__(
         self,
-        connection_settings: PostgresSettings,
+        connection_settings: PostgresSettings | SqliteSettings,
     ) -> None:
-        engine_parameters = {
+        engine_parameters: dict[str, tp.Any] = {
             'echo': False,
         }
 
-        if connection_settings.driver == 'postgresql+asyncpg':
+        if isinstance(connection_settings, PostgresSettings):
             engine_parameters.update(
                 {
                     'pool_size': connection_settings.min_pool_size,
