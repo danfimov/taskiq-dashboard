@@ -119,8 +119,8 @@ volumes:
 
 Taskiq-dashboard can run with PostgreSQL or SQLite.
 
-You can configure it using environment variables or by passing parameters directly to the `TaskiqDashboard` class. For a full list of configuration options, please refer to the [Configuration Reference](./docs/index.md) in documentation.
+You can configure it using environment variables or by passing parameters directly to the `TaskiqDashboard` class. For a full list of configuration options, please refer to the [Configuration article](https://danfimov.github.io/taskiq-dashboard/#configuration) in documentation.
 
 ## Development
 
-For development and contributing instructions, please refer to the [Contributing and Development](./docs/contributing.md) guide in documentation.
+For development and contributing instructions, please refer to the [Contribution guide](https://danfimov.github.io/taskiq-dashboard/contributing/) in documentation.
