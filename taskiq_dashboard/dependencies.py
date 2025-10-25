@@ -13,16 +13,18 @@ from taskiq_dashboard.infrastructure.services.task_service import SqlAlchemyTask
 class TaskiqDashboardProvider(Provider):
     def __init__(self, scope: Scope = Scope.APP) -> None:
         super().__init__(scope=scope)
-        self.settings = get_settings()
 
     @provide
     def provide_settings(self) -> Settings:
-        return self.settings
+        return get_settings()
 
     @provide
-    async def provide_session_provider(self) -> tp.AsyncGenerator[AsyncPostgresSessionProvider, tp.Any]:
+    async def provide_session_provider(
+        self,
+        settings: Settings,
+    ) -> tp.AsyncGenerator[AsyncPostgresSessionProvider, tp.Any]:
         session_provider = AsyncPostgresSessionProvider(
-            connection_settings=self.settings.db,
+            connection_settings=settings.db,
         )
         yield session_provider
         await session_provider.close()

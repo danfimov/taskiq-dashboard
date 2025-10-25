@@ -75,7 +75,7 @@ class APISettings(BaseModel):
 
 class Settings(pydantic_settings.BaseSettings):
     api: APISettings = APISettings()
-    db: PostgresSettings
+    db: PostgresSettings = PostgresSettings()
 
     model_config = pydantic_settings.SettingsConfigDict(
         env_nested_delimiter='__',

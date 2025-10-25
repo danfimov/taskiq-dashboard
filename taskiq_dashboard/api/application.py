@@ -1,6 +1,5 @@
 import contextlib
 import typing as tp
-from logging import getLogger
 
 import fastapi
 from dishka.integrations.fastapi import setup_dishka
@@ -13,9 +12,6 @@ from taskiq_dashboard.api.routers.exception_handlers import exception_handler__n
 from taskiq_dashboard.domain.services.schema_service import AbstractSchemaService
 
 
-logger = getLogger(__name__)
-
-
 @contextlib.asynccontextmanager
 async def lifespan(app: fastapi.FastAPI) -> tp.AsyncGenerator[None, None]:
     schema_service = await app.state.dishka_container.get(AbstractSchemaService)
@@ -24,7 +20,7 @@ async def lifespan(app: fastapi.FastAPI) -> tp.AsyncGenerator[None, None]:
     await app.state.dishka_container.close()
 
 
-def get_app() -> fastapi.FastAPI:
+def get_application() -> fastapi.FastAPI:
     docs_path = '/docs'
     app = fastapi.FastAPI(
         title='Taskiq Dashboard',
@@ -41,5 +37,4 @@ def get_app() -> fastapi.FastAPI:
     app.mount('/static', StaticFiles(directory='taskiq_dashboard/api/static'), name='static')
     app.add_middleware(AccessTokenMiddleware)
     setup_dishka(container=dependencies.container, app=app)
-
     return app
