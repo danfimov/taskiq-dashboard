@@ -19,6 +19,7 @@ ENV PATH="/app/.venv/bin:$PATH"
 COPY --from=builder --chown=app:app /app/.venv /app/.venv
 
 COPY . /app
+RUN mkdir -p /app/data && chmod 755 /app/data
 
 WORKDIR /app
 

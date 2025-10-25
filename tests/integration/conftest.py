@@ -7,7 +7,7 @@ import sqlalchemy as sa
 from sqlalchemy_utils import create_database, database_exists, drop_database
 
 from taskiq_dashboard.infrastructure import get_settings
-from taskiq_dashboard.infrastructure.database.schemas import Task as TaskSchema
+from taskiq_dashboard.infrastructure.database.schemas import PostgresTask
 from taskiq_dashboard.infrastructure.database.session_provider import AsyncPostgresSessionProvider
 from taskiq_dashboard.infrastructure.services.schema_service import SchemaService
 from taskiq_dashboard.infrastructure.settings import PostgresSettings
@@ -21,16 +21,16 @@ def postgres() -> PostgresSettings:
     settings = get_settings()
 
     tmp_name = f'{uuid.uuid4().hex}.pytest'
-    settings.db.database = tmp_name
+    settings.postgres.database = tmp_name
     os.environ['POSTGRES__DATABASE'] = tmp_name
-    settings.db.driver = 'postgresql'
-    tmp_url = settings.db.dsn.get_secret_value()
-    settings.db.driver = 'postgresql+asyncpg'
+    settings.postgres.driver = 'postgresql'
+    tmp_url = settings.postgres.dsn.get_secret_value()
+    settings.postgres.driver = 'postgresql+asyncpg'
 
     if not database_exists(tmp_url):
         create_database(tmp_url)
     try:
-        yield settings.db
+        yield settings.postgres
     finally:
         with suppress(Exception):
             drop_database(tmp_url)
@@ -54,12 +54,12 @@ async def session_provider(database: PostgresSettings) -> AsyncPostgresSessionPr
 async def cleanup_database(session_provider: AsyncPostgresSessionProvider) -> None:
     """Clean up database before each test"""
     async with session_provider.session() as session:
-        await session.execute(sa.delete(TaskSchema))
+        await session.execute(sa.delete(PostgresTask))
         await session.commit()
 
     yield
 
     # Cleanup after test
     async with session_provider.session() as session:
-        await session.execute(sa.delete(TaskSchema))
+        await session.execute(sa.delete(PostgresTask))
         await session.commit()

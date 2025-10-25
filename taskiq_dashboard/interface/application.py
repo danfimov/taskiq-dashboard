@@ -11,24 +11,25 @@ class TaskiqDashboard:
     def __init__(
         self,
         api_token: str,
-        database_dsn: str,
+        storage_type: str = 'sqlite',
+        database_dsn: str = 'sqlite+aiosqlite:///taskiq_dashboard.db',
         **uvicorn_kwargs: tp.Any,
     ) -> None:
         """Initialize Taskiq Dashboard application.
 
         Args:
             api_token: Access token for securing the dashboard API.
+            storage_type: Type of the storage backend ('sqlite' or 'postgres').
             database_dsn: URL for the database.
             uvicorn_kwargs: Additional keyword arguments to pass to uvicorn.
         """
         self.settings = get_settings()
         self.settings.api.token = SecretStr(api_token)
 
-        if database_dsn:
-            if database_dsn.startswith('sqlite'):
-                self.settings.db = SqliteSettings(dsn=database_dsn)  # type: ignore[call-arg]
-            else:
-                self.settings.db = PostgresSettings(dsn=database_dsn)  # type: ignore[call-arg]
+        if storage_type == 'sqlite':
+            self.settings.sqlite = SqliteSettings(dsn=database_dsn)  # type: ignore[call-arg]
+        else:
+            self.settings.postgres = PostgresSettings(dsn=database_dsn)  # type: ignore[call-arg]
 
         self._uvicorn_kwargs = {
             'host': 'localhost',

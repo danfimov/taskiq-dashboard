@@ -69,6 +69,7 @@ docker pull ghcr.io/danfimov/taskiq-dashboard:latest
         def run_admin_panel() -> None:
             app = TaskiqDashboard(
                 api_token='supersecret', # the same secret as in middleware
+                storage_type='postgres',
                 database_dsn="postgresql://taskiq-dashboard:look_in_vault@postgres:5432/taskiq-dashboard",
                 host='0.0.0.0',
                 port=8000,
@@ -87,6 +88,7 @@ docker pull ghcr.io/danfimov/taskiq-dashboard:latest
         def run_admin_panel() -> None:
             app = TaskiqDashboard(
                 api_token='supersecret', # the same secret as in middleware
+                storage_type='sqlite',
                 database_dsn="sqlite+aiosqlite:///taskiq_dashboard.db",
                 host='0.0.0.0',
                 port=8000,
@@ -119,7 +121,8 @@ docker pull ghcr.io/danfimov/taskiq-dashboard:latest
         depends_on:
           - postgres
         environment:
-          TASKIQ_DASHBOARD__DB__HOST: postgres
+          TASKIQ_DASHBOARD__STORAGE_TYPE: postgres
+          TASKIQ_DASHBOARD__POSTGRES__HOST: postgres
           TASKIQ_DASHBOARD__API__TOKEN: supersecret
         ports:
           - "8000:8000"
@@ -137,7 +140,8 @@ docker pull ghcr.io/danfimov/taskiq-dashboard:latest
         depends_on:
           - postgres
         environment:
-          TASKIQ_DASHBOARD__DB__DSN: sqlite+aiosqlite:///taskiq_dashboard.db
+          TASKIQ_DASHBOARD__STORAGE_TYPE: postgres
+          TASKIQ_DASHBOARD__SQLITE__DSN: sqlite+aiosqlite:///taskiq_dashboard.db
           TASKIQ_DASHBOARD__API__TOKEN: supersecret
         volumes:
           - taskiq_dashboard_sqlite:/app/taskiq-dashboard.db
@@ -161,6 +165,7 @@ For example you can pass uvicorn parameters like `host`, `port`, `log_level` dir
     ```python
     app = TaskiqDashboard(
         api_token='supersecret',
+        storage_type='postgres',
         database_dsn="postgresql://taskiq-dashboard:look_in_vault@postgres:5432/taskiq-dashboard",
         # all this keywords will be passed to uvicorn
         host='localhost',
@@ -175,6 +180,7 @@ For example you can pass uvicorn parameters like `host`, `port`, `log_level` dir
     ```python
     app = TaskiqDashboard(
         api_token='supersecret',
+        storage_type='sqlite',
         database_dsn="sqlite+aiosqlite:///taskiq_dashboard.db",
         # all this keywords will be passed to uvicorn
         host='localhost',
@@ -189,15 +195,15 @@ You can also configure the database connection or API parameters using environme
 === "postgres"
 
     ```dotenv
-    TASKIQ_DASHBOARD__DB__DRIVER=postgresql+asyncpg
-    TASKIQ_DASHBOARD__DB__HOST=localhost
-    TASKIQ_DASHBOARD__DB__PORT=5432
-    TASKIQ_DASHBOARD__DB__USER=taskiq-dashboard
-    TASKIQ_DASHBOARD__DB__PASSWORD=look_in_vault
-    TASKIQ_DASHBOARD__DB__DATABASE=taskiq-dashboard
-    TASKIQ_DASHBOARD__DB__MIN_POOL_SIZE=1
-    TASKIQ_DASHBOARD__DB__MAX_POOL_SIZE=5
-    # or just use DSN: TASKIQ_DASHBOARD__DB__DSN=postgresql+asyncpg://taskiq-dashboard:look_in_vault@localhost:5432/taskiq-dashboard
+    TASKIQ_DASHBOARD__POSTGRES__DRIVER=postgresql+asyncpg
+    TASKIQ_DASHBOARD__POSTGRES__HOST=localhost
+    TASKIQ_DASHBOARD__POSTGRES__PORT=5432
+    TASKIQ_DASHBOARD__POSTGRES__USER=taskiq-dashboard
+    TASKIQ_DASHBOARD__POSTGRES__PASSWORD=look_in_vault
+    TASKIQ_DASHBOARD__POSTGRES__DATABASE=taskiq-dashboard
+    TASKIQ_DASHBOARD__POSTGRES__MIN_POOL_SIZE=1
+    TASKIQ_DASHBOARD__POSTGRES__MAX_POOL_SIZE=5
+    # or just use DSN: TASKIQ_DASHBOARD__POSTGRES__DSN=postgresql+asyncpg://taskiq-dashboard:look_in_vault@localhost:5432/taskiq-dashboard
 
     TASKIQ_DASHBOARD__API__HOST=localhost
     TASKIQ_DASHBOARD__API__PORT=8000
@@ -207,9 +213,9 @@ You can also configure the database connection or API parameters using environme
 === "sqlite"
 
     ```dotenv
-    TASKIQ_DASHBOARD__DB__DRIVER=sqlite+aiosqlite
-    TASKIQ_DASHBOARD__DB__FILE_PATH=taskiq-dashboard.db
-    # or just use DSN: TASKIQ_DASHBOARD__DB__DSN=sqlite+aiosqlite:///taskiq_dashboard.db
+    TASKIQ_DASHBOARD__SQLITE__DRIVER=sqlite+aiosqlite
+    TASKIQ_DASHBOARD__SQLITE__FILE_PATH=taskiq-dashboard.db
+    # or just use DSN: TASKIQ_DASHBOARD__SQLITE__DSN=sqlite+aiosqlite:///taskiq_dashboard.db
 
     TASKIQ_DASHBOARD__API__HOST=localhost
     TASKIQ_DASHBOARD__API__PORT=8000

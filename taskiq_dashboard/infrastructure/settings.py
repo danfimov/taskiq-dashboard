@@ -1,6 +1,6 @@
 import os
+import typing as tp
 from functools import cache
-from typing import Any
 from urllib.parse import quote, urlparse
 
 import pydantic_settings
@@ -50,7 +50,7 @@ class PostgresSettings(pydantic_settings.BaseSettings):
 
     @model_validator(mode='before')
     @classmethod
-    def __parse_dsn(cls, values: dict[str, Any]) -> dict[str, Any]:
+    def __parse_dsn(cls, values: dict[str, tp.Any]) -> dict[str, tp.Any]:
         dsn = values.get('dsn')
         if dsn is not None and not isinstance(dsn, str):
             msg = "Field 'dsn' must be str"
@@ -81,7 +81,7 @@ class SqliteSettings(pydantic_settings.BaseSettings):
 
     @model_validator(mode='before')
     @classmethod
-    def __parse_dsn(cls, values: dict[str, Any]) -> dict[str, Any]:
+    def __parse_dsn(cls, values: dict[str, tp.Any]) -> dict[str, tp.Any]:
         dsn = values.get('dsn')
         if dsn is not None and not isinstance(dsn, str):
             msg = "Field 'dsn' must be str"
@@ -103,10 +103,18 @@ class APISettings(pydantic_settings.BaseSettings):
     port: int = 8000
     token: SecretStr = SecretStr('supersecret')
 
+    model_config = pydantic_settings.SettingsConfigDict(
+        extra='allow',
+    )
+
 
 class Settings(pydantic_settings.BaseSettings):
     api: APISettings = APISettings()
-    db: PostgresSettings | SqliteSettings = PostgresSettings()
+
+    # storage settings
+    storage_type: tp.Literal['postgres', 'sqlite'] = 'sqlite'
+    postgres: PostgresSettings = PostgresSettings()
+    sqlite: SqliteSettings = SqliteSettings()
 
     model_config = pydantic_settings.SettingsConfigDict(
         env_nested_delimiter='__',

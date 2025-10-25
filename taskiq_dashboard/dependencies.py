@@ -7,7 +7,7 @@ from taskiq_dashboard.domain.services.task_service import TaskService
 from taskiq_dashboard.infrastructure import Settings, get_settings
 from taskiq_dashboard.infrastructure.database.session_provider import AsyncPostgresSessionProvider
 from taskiq_dashboard.infrastructure.services.schema_service import SchemaService
-from taskiq_dashboard.infrastructure.services.task_service import SqlAlchemyTaskService
+from taskiq_dashboard.infrastructure.services.task_service import PostrgresTaskService, SqliteTaskService
 
 
 class TaskiqDashboardProvider(Provider):
@@ -24,7 +24,7 @@ class TaskiqDashboardProvider(Provider):
         settings: Settings,
     ) -> tp.AsyncGenerator[AsyncPostgresSessionProvider, tp.Any]:
         session_provider = AsyncPostgresSessionProvider(
-            connection_settings=settings.db,
+            connection_settings=settings.postgres if settings.storage_type == 'postgres' else settings.sqlite,
         )
         yield session_provider
         await session_provider.close()
@@ -32,19 +32,26 @@ class TaskiqDashboardProvider(Provider):
     @provide
     def provide_task_service(
         self,
+        settings: Settings,
         session_provider: AsyncPostgresSessionProvider,
     ) -> TaskService:
-        return SqlAlchemyTaskService(
+        if settings.storage_type == 'postgres':
+            return PostrgresTaskService(
+                session_provider=session_provider,
+            )
+        return SqliteTaskService(
             session_provider=session_provider,
         )
 
     @provide
     def provide_schema_service(
         self,
+        settings: Settings,
         session_provider: AsyncPostgresSessionProvider,
     ) -> AbstractSchemaService:
         return SchemaService(
             session_provider=session_provider,
+            table_name='taskiq_dashboard__tasks' if settings.storage_type == 'postgres' else 'tasks',
         )
 
 

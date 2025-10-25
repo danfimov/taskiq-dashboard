@@ -24,8 +24,8 @@ class BaseTableSchema:
     pass
 
 
-class Task(BaseTableSchema):
-    __tablename__ = 'tasks'
+class PostgresTask(BaseTableSchema):
+    __tablename__ = 'taskiq_dashboard__tasks'
 
     id: Mapped[uuid.UUID] = mapped_column(postgresql.UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name: Mapped[str] = mapped_column(postgresql.TEXT, nullable=False)
@@ -33,11 +33,46 @@ class Task(BaseTableSchema):
 
     worker: Mapped[str] = mapped_column(postgresql.TEXT, nullable=False)
 
-    args: Mapped[str] = mapped_column(postgresql.JSONB, default='')
-    kwargs: Mapped[str] = mapped_column(postgresql.JSONB, default='')
+    args: Mapped[str] = mapped_column(postgresql.JSONB, default='[]')
+    kwargs: Mapped[str] = mapped_column(postgresql.JSONB, default='{}')
 
     result: Mapped[str] = mapped_column(postgresql.JSONB, nullable=True, default=None)
     error: Mapped[str] = mapped_column(postgresql.TEXT, nullable=True, default=None)
+
+    queued_at: Mapped[dt.datetime] = mapped_column(
+        sa.DateTime(timezone=True),
+        nullable=False,
+        default=dt.datetime.now,
+    )
+    started_at: Mapped[dt.datetime] = mapped_column(
+        sa.DateTime(timezone=True),
+        nullable=False,
+        default=dt.datetime.now,
+    )
+    finished_at: Mapped[dt.datetime] = mapped_column(
+        sa.DateTime(timezone=True),
+        nullable=True,
+    )
+
+
+class SqliteTask(BaseTableSchema):
+    __tablename__ = 'tasks'
+
+    id: Mapped[uuid.UUID] = mapped_column(
+        sa.Uuid(native_uuid=False),
+        primary_key=True,
+        default=uuid.uuid4,
+    )
+    name: Mapped[str] = mapped_column(sa.String, nullable=False)
+    status: Mapped[task_status.TaskStatus] = mapped_column(sa.Integer, nullable=False)
+
+    worker: Mapped[str] = mapped_column(sa.String, nullable=False)
+
+    args: Mapped[str] = mapped_column(sa.String, default='[]')
+    kwargs: Mapped[str] = mapped_column(sa.String, default='{}')
+
+    result: Mapped[str] = mapped_column(sa.String, nullable=True, default=None)
+    error: Mapped[str] = mapped_column(sa.String, nullable=True, default=None)
 
     queued_at: Mapped[dt.datetime] = mapped_column(
         sa.DateTime(timezone=True),

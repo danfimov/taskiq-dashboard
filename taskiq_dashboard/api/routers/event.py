@@ -1,4 +1,5 @@
 import typing as tp
+import uuid
 from logging import getLogger
 
 import fastapi
@@ -23,7 +24,7 @@ logger = getLogger(__name__)
     name='Receive task event',
 )
 async def handle_task_event(
-    task_id: str,
+    task_id: uuid.UUID,
     event: tp.Annotated[tp.Literal['queued', 'started', 'executed'], fastapi.Path(title='Event type')],
     task_service: dishka_fastapi.FromDishka[TaskService],
     body: tp.Annotated[dict[str, tp.Any], fastapi.Body(title='Event data')],

@@ -46,4 +46,6 @@ jobs:
       - name: Install Dependencies
         run: uv sync --all-extras
       - name: Run tests
+        env:
+          TASKIQ_DASHBOARD__STORAGE_TYPE: postgres
         run: uv run pytest

@@ -52,6 +52,7 @@ docker pull ghcr.io/danfimov/taskiq-dashboard:latest
     def run_admin_panel() -> None:
         app = TaskiqDashboard(
             api_token='supersecret', # the same secret as in middleware
+            storage_type='postgresql',  # or 'sqlite'
             database_dsn="postgresql://taskiq-dashboard:look_in_vault@postgres:5432/taskiq-dashboard",
             host='0.0.0.0',
             port=8000,
@@ -85,7 +86,8 @@ services:
     depends_on:
       - postgres
     environment:
-      TASKIQ_DASHBOARD__DB__HOST: postgres
+      TASKIQ_DASHBOARD__STORAGE_TYPE: postgres
+      TASKIQ_DASHBOARD__POSTGRES__HOST: postgres
       TASKIQ_DASHBOARD__API__TOKEN: supersecret
     ports:
       - "8000:8000"
@@ -103,7 +105,8 @@ services:
     depends_on:
       - postgres
     environment:
-      TASKIQ_DASHBOARD__DB__DSN: sqlite+aiosqlite:///taskiq_dashboard.db
+      TASKIQ_DASHBOARD__STORAGE_TYPE: sqlite
+      TASKIQ_DASHBOARD__SQLITE__DSN: sqlite+aiosqlite:///taskiq_dashboard.db
       TASKIQ_DASHBOARD__API__TOKEN: supersecret
     volumes:
       - taskiq_dashboard_sqlite:/app/taskiq-dashboard.db

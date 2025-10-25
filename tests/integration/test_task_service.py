@@ -7,16 +7,16 @@ import sqlalchemy as sa
 from taskiq_dashboard.domain.dto.task import ExecutedTask, QueuedTask, StartedTask
 from taskiq_dashboard.domain.dto.task_status import TaskStatus
 from taskiq_dashboard.domain.services.task_service import TaskService
-from taskiq_dashboard.infrastructure.database.schemas import Task as TaskSchema
+from taskiq_dashboard.infrastructure.database.schemas import PostgresTask
 from taskiq_dashboard.infrastructure.database.session_provider import AsyncPostgresSessionProvider
-from taskiq_dashboard.infrastructure.services.task_service import SqlAlchemyTaskService
+from taskiq_dashboard.infrastructure.services.task_service import PostrgresTaskService
 
 
 @pytest.fixture
 async def task_service(
     session_provider: AsyncPostgresSessionProvider,
 ) -> TaskService:
-    return SqlAlchemyTaskService(session_provider=session_provider)
+    return PostrgresTaskService(session_provider=session_provider)
 
 
 class TestTaskService:
@@ -42,7 +42,7 @@ class TestTaskService:
 
         async with session_provider.session() as session:
             await session.execute(
-                sa.insert(TaskSchema).values(
+                sa.insert(PostgresTask).values(
                     id=task_id,
                     name='test_task',
                     status=TaskStatus.QUEUED,
@@ -99,7 +99,7 @@ class TestTaskService:
 
         # Then
         async with session_provider.session() as session:
-            result = await session.execute(sa.select(TaskSchema).where(TaskSchema.id == uuid.UUID(task_id)))
+            result = await session.execute(sa.select(PostgresTask).where(PostgresTask.id == uuid.UUID(task_id)))
             task_row = result.scalar_one()
 
         assert task_row.id == uuid.UUID(task_id)
@@ -121,7 +121,7 @@ class TestTaskService:
         # Create initial task
         async with session_provider.session() as session:
             await session.execute(
-                sa.insert(TaskSchema).values(
+                sa.insert(PostgresTask).values(
                     id=uuid.UUID(task_id),
                     name='old_name',
                     status=TaskStatus.QUEUED,
@@ -147,7 +147,7 @@ class TestTaskService:
 
         # Then
         async with session_provider.session() as session:
-            result = await session.execute(sa.select(TaskSchema).where(TaskSchema.id == uuid.UUID(task_id)))
+            result = await session.execute(sa.select(PostgresTask).where(PostgresTask.id == uuid.UUID(task_id)))
             task_row = result.scalar_one()
 
         assert task_row.status == TaskStatus.IN_PROGRESS
@@ -167,7 +167,7 @@ class TestTaskService:
         # Create initial task
         async with session_provider.session() as session:
             await session.execute(
-                sa.insert(TaskSchema).values(
+                sa.insert(PostgresTask).values(
                     id=uuid.UUID(task_id),
                     name='process_data',
                     status=TaskStatus.IN_PROGRESS,
@@ -192,7 +192,7 @@ class TestTaskService:
 
         # Then
         async with session_provider.session() as session:
-            result = await session.execute(sa.select(TaskSchema).where(TaskSchema.id == uuid.UUID(task_id)))
+            result = await session.execute(sa.select(PostgresTask).where(PostgresTask.id == uuid.UUID(task_id)))
             task_row = result.scalar_one()
 
         assert task_row.status == TaskStatus.COMPLETED
@@ -214,7 +214,7 @@ class TestTaskService:
         # Create initial task
         async with session_provider.session() as session:
             await session.execute(
-                sa.insert(TaskSchema).values(
+                sa.insert(PostgresTask).values(
                     id=uuid.UUID(task_id),
                     name='process_data',
                     status=TaskStatus.IN_PROGRESS,
@@ -239,7 +239,7 @@ class TestTaskService:
 
         # Then
         async with session_provider.session() as session:
-            result = await session.execute(sa.select(TaskSchema).where(TaskSchema.id == uuid.UUID(task_id)))
+            result = await session.execute(sa.select(PostgresTask).where(PostgresTask.id == uuid.UUID(task_id)))
             task_row = result.scalar_one()
 
         assert task_row.status == TaskStatus.FAILURE
@@ -256,7 +256,7 @@ class TestTaskService:
 
         async with session_provider.session() as session:
             await session.execute(
-                sa.insert(TaskSchema).values(
+                sa.insert(PostgresTask).values(
                     [
                         {
                             'id': uuid.uuid4(),
@@ -311,7 +311,7 @@ class TestTaskService:
 
         async with session_provider.session() as session:
             await session.execute(
-                sa.insert(TaskSchema).values(
+                sa.insert(PostgresTask).values(
                     [
                         {
                             'id': uuid.uuid4(),
@@ -367,7 +367,7 @@ class TestTaskService:
 
         async with session_provider.session() as session:
             await session.execute(
-                sa.insert(TaskSchema).values(
+                sa.insert(PostgresTask).values(
                     [
                         {
                             'id': uuid.uuid4(),
@@ -415,7 +415,7 @@ class TestTaskService:
 
         async with session_provider.session() as session:
             await session.execute(
-                sa.insert(TaskSchema).values(
+                sa.insert(PostgresTask).values(
                     [
                         {
                             'id': uuid.uuid4(),
@@ -451,7 +451,7 @@ class TestTaskService:
 
         async with session_provider.session() as session:
             await session.execute(
-                sa.insert(TaskSchema).values(
+                sa.insert(PostgresTask).values(
                     [
                         {
                             'id': uuid.uuid4(),
@@ -487,7 +487,7 @@ class TestTaskService:
 
         async with session_provider.session() as session:
             await session.execute(
-                sa.insert(TaskSchema).values(
+                sa.insert(PostgresTask).values(
                     [
                         {
                             'id': uuid.uuid4(),
@@ -523,7 +523,7 @@ class TestTaskService:
 
         async with session_provider.session() as session:
             await session.execute(
-                sa.insert(TaskSchema).values(
+                sa.insert(PostgresTask).values(
                     [
                         {
                             'id': uuid.uuid4(),
