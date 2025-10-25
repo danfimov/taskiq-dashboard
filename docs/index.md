@@ -137,8 +137,6 @@ docker pull ghcr.io/danfimov/taskiq-dashboard:latest
     services:
       dashboard:
         image: ghcr.io/danfimov/taskiq-dashboard:latest
-        depends_on:
-          - postgres
         environment:
           TASKIQ_DASHBOARD__STORAGE_TYPE: postgres
           TASKIQ_DASHBOARD__SQLITE__DSN: sqlite+aiosqlite:///taskiq_dashboard.db

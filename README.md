@@ -102,8 +102,6 @@ You can also run `taskiq-dashboard` with SQLite by using the following `docker-c
 services:
   dashboard:
     image: ghcr.io/danfimov/taskiq-dashboard:latest
-    depends_on:
-      - postgres
     environment:
       TASKIQ_DASHBOARD__STORAGE_TYPE: sqlite
       TASKIQ_DASHBOARD__SQLITE__DSN: sqlite+aiosqlite:///taskiq_dashboard.db
