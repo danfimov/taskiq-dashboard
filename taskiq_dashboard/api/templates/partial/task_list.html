@@ -1,0 +1,14 @@
+{% for task in results %}
+    {% include "partial/task_list_item.html" with context %}
+{% endfor %}
+
+{% set _limit = limit|default(30) %}
+{% set _offset = offset|default(0) %}
+{% set _next_offset = _offset + results|length %}
+{% if results|length >= _limit %}
+    <tr class="infinite-sentinel"
+        hx-get="{{ url_for('Task list view') }}?status={{ status }}&q={{ q }}&sort_by={{ sort_by }}&sort_order={{ sort_order }}&limit={{ _limit }}&offset={{ _next_offset }}"
+        hx-trigger="revealed"
+        hx-swap="beforeend"
+        hx-target="#task-list-body"></tr>
+{% endif %}

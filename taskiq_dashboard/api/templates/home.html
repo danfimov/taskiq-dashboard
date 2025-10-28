@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <title>Taskiq Dashboard</title>
+    <meta name="description" content="Main page of Taskiq Dashboard">
+    <meta name="keywords" content="python, packages, projects, libraries">
+    {% include "partial/head.html" %}
+</head>
+<body class="bg-ctp-base"
+    hx-on:keydown='{% include "scripts/focus_on_search_field.js" %}'>
+    {% include "partial/header.html" %}
+
+    <section class="mb-6 p-5">
+        <div id="filter-form" class="grid grid-cols-1 md:grid-cols-5 gap-4">
+            <!-- Name Search -->
+            <div class="col-span-1 relative group text-ctp-subtext0 hover:text-ctp-subtext1 focus:text-ctp-subtext1">
+                <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none">
+                    <use href="{{ url_for('static', path='icons.svg#search') }}"></use>
+                </svg>
+                <input
+                    type="text"
+                    name="q"
+                    id="search"
+                    class=" w-full pl-12 pr-4 py-2 border rounded focus:outline-none focus:ring-2 transition-all duration-200 hover:shadow-md border-ctp-subtext0 group-hover:border-ctp-subtext1 "
+                    placeholder="Search by task name"
+                    value="{{ q if q is defined else '' }}"
+                    hx-get="{{ url_for('Task list view') }}"
+                    hx-trigger="keyup changed delay:500ms"
+                    hx-target="#task-list"
+                    hx-push-url="true"
+                    hx-include="[name='status']"
+                >
+                <div class="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-6 p-2 pt-1 rounded-sm bg-ctp-lavender/10 text-sm"
+                     title="Фокус на поисковой строке">/</div>
+            </div>
+
+            <!-- Status Filter -->
+            <div class="col-span-1 text-ctp-subtext0 hover:text-ctp-subtext1 focus:text-ctp-subtext1">
+                <div class="relative">
+                <select
+                    id="status"
+                    name="status"
+                    class=" w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 transition-all duration-200 hover:shadow-md border-ctp-subtext0 group-hover:border-ctp-subtext1 appearance-none"
+                    hx-get="{{ url_for('Task list view') }}"
+                    hx-trigger="change"
+                    hx-target="#task-list-body"
+                    hx-push-url="true"
+                    hx-include="[name='search']"
+                >
+                    {% set status = status if status is defined else "all" %}
+                    <option class="bg-ctp-base" value="null" {% if status == "null" %}selected{% endif %}>All Statuses</option>
+                    <option class="bg-ctp-base" value="0" {% if status == "0" %}selected{% endif %}>In Progress</option>
+                    <option class="bg-ctp-base" value="1" {% if status == "1" %}selected{% endif %}>Completed</option>
+                    <option class="bg-ctp-base" value="2" {% if status == "2" %}selected{% endif %}>Failure</option>
+                    <option class="bg-ctp-base" value="3" {% if status == "3" %}selected{% endif %}>Queued</option>
+                </select>
+                <svg id="status-chevron"
+                     class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-ctp-mauve-100 transform transition-transform duration-200"
+                     aria-hidden="true">
+                    <use href="{{ url_for('static', path='icons.svg#chevron-left') }}"></use>
+                </svg>
+                <script>
+                const selectEl = document.getElementById("status");
+                const chevronEl = document.getElementById("status-chevron");
+                const openChevron = () => {
+                    chevronEl && chevronEl.classList.add("-rotate-90");
+                    selectEl.setAttribute("aria-expanded", "true");
+                };
+                const closeChevron = () => {
+                    chevronEl && chevronEl.classList.remove("-rotate-90");
+                    selectEl.setAttribute("aria-expanded", "false");
+                };
+
+                // opening cases
+                selectEl.addEventListener("pointerdown", openChevron);
+                selectEl.addEventListener("click", openChevron);
+                selectEl.addEventListener("keydown", (e) => {
+                    if (["ArrowUp", "ArrowDown", " ", "Enter"].includes(e.key)) openChevron();
+                });
+                // closing cases
+                selectEl.addEventListener("blur", closeChevron);
+                selectEl.addEventListener("change", closeChevron);
+                selectEl.addEventListener("keyup", (e) => {
+                    if (e.key === "Escape") closeChevron();
+                });
+                document.addEventListener("pointerdown", (e) => {
+                    if (!selectEl.contains(e.target)) {
+                        closeChevron();
+                    }
+                });
+                </script>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Task table section -->
+    <section class="overflow-x-auto mb-6 p-5">
+        <table id="task-list" class="min-w-full divide-y divide-ctp-blue/20 table-auto">
+            <thead>
+                <tr class="sticky top-0">
+                    <th scope="col" class="px-6 py-3 text-left font-normal text-ctp-text tracking-wider">Task ID</th>
+                    <th scope="col" class="px-6 py-3 text-left font-normal text-ctp-text tracking-wider">Name</th>
+                    <th scope="col" class="px-6 py-3 text-left font-normal text-ctp-text tracking-wider">Status</th>
+                    <th scope="col" class="px-6 py-3 text-left font-normal text-ctp-text tracking-wider">Worker</th>
+                    <th scope="col" class="px-6 py-3 text-left font-normal text-ctp-text tracking-wider">
+                        <a href="{{ url_for('Task list view') }}?status={{ status }}&q={{ q }}&sort_by=started_at&sort_order={%- if sort_by == 'started_at' and sort_order == 'asc' -%}desc{%- else -%}asc{%- endif -%}"
+                           class="flex items-center gap-2 hover:text-ctp-subtext0 transition-colors">
+                            Started At
+                            <span class="inline-flex">
+                            {% if sort_by == 'started_at' %}
+                                {% if sort_order == 'asc' %}
+                                    <svg class="w-4 h-4 rotate-90"><use href="{{ url_for('static', path='icons.svg#chevron-left') }}"></use></svg>
+                                {% else %}
+                                    <svg class="w-4 h-4 -rotate-90"><use href="{{ url_for('static', path='icons.svg#chevron-left') }}"></use></svg>
+                                {% endif %}
+                            {% else %}
+                                <svg class="w-4 h-4"><use href="{{ url_for('static', path='icons.svg#arrow-up-down') }}"></use></svg>
+                            {% endif %}
+                            </span>
+                        </a>
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-left font-normal text-ctp-text tracking-wider">
+                        <a href="{{ url_for('Task list view') }}?status={{ status }}&q={{ q }}&sort_by=finished_at&sort_order={%- if sort_by == 'finished_at' and sort_order == 'asc' -%}desc{%- else -%}asc{%- endif -%}"
+                           class="flex items-center gap-2 hover:text-ctp-subtext0 transition-colors">
+                            Finished At
+                            <span class="inline-flex">
+                            {% if sort_by == 'finished_at' %}
+                                {% if sort_order == 'asc' %}
+                                    <svg class="w-4 h-4 rotate-90"><use href="{{ url_for('static', path='icons.svg#chevron-left') }}"></use></svg>
+                                {% else %}
+                                    <svg class="w-4 h-4 -rotate-90"><use href="{{ url_for('static', path='icons.svg#chevron-left') }}"></use></svg>
+                                {% endif %}
+                            {% else %}
+                                <svg class="w-4 h-4"><use href="{{ url_for('static', path='icons.svg#arrow-up-down') }}"></use></svg>
+                            {% endif %}
+                            </span>
+                        </a>
+                    </th>
+                </tr>
+            </thead>
+            <tbody id="task-list-body" class="divide-y text-ctp-text divide-ctp-blue/20">
+                {% include "partial/task_list.html" with context %}
+            </tbody>
+        </table>
+    </section>
+</body>
+</html>

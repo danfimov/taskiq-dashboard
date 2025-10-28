@@ -40,7 +40,7 @@ dependencies = [
     "asyncpg>=0.30.0",
     "sqlalchemy>=2.0.43",
     # other
-    "pydantic-settings>=2.10.1",
+    "pydantic-settings>=2.11.0",
     "dishka>=1.7.2",
     "aiosqlite>=0.21.0",
 ]
@@ -64,6 +64,7 @@ lint = [
     "zizmor>=1.15.2",
     # type check
     "mypy>=1.18.1",
+    "djlint>=1.36.4",
 ]
 test = [
     "psycopg2-binary>=2.9.11",
@@ -241,3 +242,10 @@ skips = [
     "B104",
     "B107",
 ]
+
+[tool.djlint]
+profile="jinja"
+files=["taskiq_dashboard/api/templates"]
+format_js=true
+format_css=true
+indent_size=4

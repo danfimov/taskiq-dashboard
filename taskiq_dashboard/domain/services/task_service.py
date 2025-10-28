@@ -1,3 +1,4 @@
+import typing as tp
 import uuid
 from abc import ABC, abstractmethod
 
@@ -5,30 +6,30 @@ from taskiq_dashboard.domain.dto.task import ExecutedTask, QueuedTask, StartedTa
 from taskiq_dashboard.domain.dto.task_status import TaskStatus
 
 
-class TaskService(ABC):
+class TaskRepository(ABC):
     @abstractmethod
-    async def get_tasks(  # noqa: PLR0913
+    async def find_tasks(  # noqa: PLR0913
         self,
-        page: int = 1,
-        per_page: int = 30,
+        name: str | None = None,
         status: TaskStatus | None = None,
-        name_search: str | None = None,
-        sort_by: str | None = None,
-        sort_order: str = 'desc',
-    ) -> tuple[list[Task], int]:
+        sort_by: tp.Literal['started_at', 'finished_at'] | None = None,
+        sort_order: tp.Literal['asc', 'desc'] = 'desc',
+        limit: int = 30,
+        offset: int = 0,
+    ) -> list[Task]:
         """
         Retrieve tasks with pagination and filtering.
 
         Args:
-            page: The page number (1-indexed)
-            per_page: Number of tasks per page
             status: Filter by task status
-            name_search: Filter by task name (fuzzy search)
+            name: Filter by task name (fuzzy search)
             sort_by: Column to sort by ('started_at' or 'finished_at')
             sort_order: Sort order ('asc' or 'desc')
+            limit: Number of tasks to retrieve
+            offset: Number of tasks to skip
 
         Returns:
-            Tuple of (tasks, total_count)
+            List of tasks matching the criteria.
         """
         ...
 

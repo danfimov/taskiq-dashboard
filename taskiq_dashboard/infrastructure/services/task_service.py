@@ -1,16 +1,17 @@
 import json
+import typing as tp
 import uuid
 
 import sqlalchemy as sa
 
 from taskiq_dashboard.domain.dto.task import ExecutedTask, QueuedTask, StartedTask, Task
 from taskiq_dashboard.domain.dto.task_status import TaskStatus
-from taskiq_dashboard.domain.services.task_service import TaskService
+from taskiq_dashboard.domain.services.task_service import TaskRepository
 from taskiq_dashboard.infrastructure.database.schemas import PostgresTask, SqliteTask
 from taskiq_dashboard.infrastructure.database.session_provider import AsyncPostgresSessionProvider
 
 
-class PostrgresTaskService(TaskService):
+class PostgresTaskRepository(TaskRepository):
     def __init__(
         self,
         session_provider: AsyncPostgresSessionProvider,
@@ -18,75 +19,34 @@ class PostrgresTaskService(TaskService):
         self._session_provider = session_provider
         self.task = PostgresTask
 
-    async def get_tasks(  # noqa: PLR0913
+    async def find_tasks(  # noqa: PLR0913
         self,
-        page: int = 1,
-        per_page: int = 30,
+        name: str | None = None,
         status: TaskStatus | None = None,
-        name_search: str | None = None,
-        sort_by: str | None = None,
-        sort_order: str = 'desc',
-    ) -> tuple[list[Task], int]:
-        """
-        Get paginated and filtered tasks.
-
-        Args:
-            page: Page number (1-indexed)
-            per_page: Number of tasks per page
-            status: Filter by task status
-            name_search: Filter by task name (fuzzy search)
-            sort_by: Column to sort by ('started_at', 'finished_at', or None for default)
-            sort_order: Sort order ('asc' or 'desc')
-
-        Returns:
-            Tuple of (tasks_list, total_count)
-        """
-        # Build base query with filters
+        sort_by: tp.Literal['started_at', 'finished_at'] | None = None,
+        sort_order: tp.Literal['asc', 'desc'] = 'desc',
+        limit: int = 30,
+        offset: int = 0,
+    ) -> list[Task]:
         query = sa.select(self.task)
-        count_query = sa.select(sa.func.count(self.task.id))
-
-        # Apply status filter
-        if status is not None:
-            query = query.where(self.task.status == status)
-            count_query = count_query.where(self.task.status == status)
-
-        # Apply name search filter
-        if name_search and name_search.strip():
-            # Use ILIKE for case-insensitive pattern matching (PostgreSQL specific)
-            search_pattern = f'%{name_search.strip()}%'
+        if name and len(name) > 1:
+            search_pattern = f'%{name.strip()}%'
             query = query.where(self.task.name.ilike(search_pattern))
-            count_query = count_query.where(self.task.name.ilike(search_pattern))
-
-        # Get total count with applied filters
-        async with self._session_provider.session() as session:
-            total_count_result = await session.execute(count_query)
-            total_count = total_count_result.scalar()
-            total_count = total_count or 0
-
-        # Calculate offset
-        offset = (page - 1) * per_page
-
-        # Apply sorting
-        if sort_by == 'finished_at':
-            sort_column = self.task.finished_at
-        elif sort_by == 'started_at':
-            sort_column = self.task.started_at
-        else:
-            sort_column = self.task.started_at
-
-        query = query.order_by(sort_column.asc()) if sort_order.lower() == 'asc' else query.order_by(sort_column.desc())
-
-        # Get tasks for current page
-        query = query.limit(per_page).offset(offset)
-
+        if status is not None:
+            query = query.where(self.task.status == status.value)
+        if sort_by:
+            if sort_by == 'finished_at':
+                sort_column = self.task.finished_at
+            elif sort_by == 'started_at':
+                sort_column = self.task.started_at
+            else:
+                raise ValueError('Unsupported sort_by value: %s', sort_by)
+            query = query.order_by(sort_column.asc()) if sort_order == 'asc' else query.order_by(sort_column.desc())
+        query = query.limit(limit).offset(offset)
         async with self._session_provider.session() as session:
             result = await session.execute(query)
             task_schemas = result.scalars().all()
-
-        # Convert to DTOs
-        tasks = [Task.model_validate(task) for task in task_schemas]
-
-        return tasks, total_count
+        return [Task.model_validate(task) for task in task_schemas]
 
     async def get_task_by_id(self, task_id: uuid.UUID) -> Task | None:
         query = sa.select(self.task).where(self.task.id == task_id)
@@ -145,80 +105,39 @@ class PostrgresTaskService(TaskService):
             await session.execute(query)
 
 
-class SqliteTaskService(TaskService):
+class SqliteTaskService(TaskRepository):
     def __init__(self, session_provider: AsyncPostgresSessionProvider) -> None:
         self._session_provider = session_provider
         self.task = SqliteTask
 
-    async def get_tasks(  # noqa: PLR0913
+    async def find_tasks(  # noqa: PLR0913
         self,
-        page: int = 1,
-        per_page: int = 30,
+        name: str | None = None,
         status: TaskStatus | None = None,
-        name_search: str | None = None,
-        sort_by: str | None = None,
-        sort_order: str = 'desc',
-    ) -> tuple[list[Task], int]:
-        """
-        Get paginated and filtered tasks.
-
-        Args:
-            page: Page number (1-indexed)
-            per_page: Number of tasks per page
-            status: Filter by task status
-            name_search: Filter by task name (fuzzy search)
-            sort_by: Column to sort by ('started_at', 'finished_at', or None for default)
-            sort_order: Sort order ('asc' or 'desc')
-
-        Returns:
-            Tuple of (tasks_list, total_count)
-        """
-        # Build base query with filters
+        sort_by: tp.Literal['started_at', 'finished_at'] | None = None,
+        sort_order: tp.Literal['asc', 'desc'] = 'desc',
+        limit: int = 30,
+        offset: int = 0,
+    ) -> list[Task]:
         query = sa.select(self.task)
-        count_query = sa.select(sa.func.count(self.task.id))
-
-        # Apply status filter
-        if status is not None:
-            query = query.where(self.task.status == status)
-            count_query = count_query.where(self.task.status == status)
-
-        # Apply name search filter
-        if name_search and name_search.strip():
-            # Use ILIKE for case-insensitive pattern matching (PostgreSQL specific)
-            search_pattern = f'%{name_search.strip()}%'
+        if name and len(name) > 1:
+            search_pattern = f'%{name.strip()}%'
             query = query.where(self.task.name.ilike(search_pattern))
-            count_query = count_query.where(self.task.name.ilike(search_pattern))
-
-        # Get total count with applied filters
-        async with self._session_provider.session() as session:
-            total_count_result = await session.execute(count_query)
-            total_count = total_count_result.scalar()
-            total_count = total_count or 0
-
-        # Calculate offset
-        offset = (page - 1) * per_page
-
-        # Apply sorting
-        if sort_by == 'finished_at':
-            sort_column = self.task.finished_at
-        elif sort_by == 'started_at':
-            sort_column = self.task.started_at
-        else:
-            sort_column = self.task.started_at
-
-        query = query.order_by(sort_column.asc()) if sort_order.lower() == 'asc' else query.order_by(sort_column.desc())
-
-        # Get tasks for current page
-        query = query.limit(per_page).offset(offset)
-
+        if status is not None:
+            query = query.where(self.task.status == status.value)
+        if sort_by:
+            if sort_by == 'finished_at':
+                sort_column = self.task.finished_at
+            elif sort_by == 'started_at':
+                sort_column = self.task.started_at
+            else:
+                raise ValueError('Unsupported sort_by value: %s', sort_by)
+            query = query.order_by(sort_column.asc()) if sort_order == 'asc' else query.order_by(sort_column.desc())
+        query = query.limit(limit).offset(offset)
         async with self._session_provider.session() as session:
             result = await session.execute(query)
             task_schemas = result.scalars().all()
-
-        # Convert to DTOs
-        tasks = [Task.model_validate(task) for task in task_schemas]
-
-        return tasks, total_count
+        return [Task.model_validate(task) for task in task_schemas]
 
     async def get_task_by_id(self, task_id: uuid.UUID) -> Task | None:
         query = sa.select(self.task).where(self.task.id == task_id)

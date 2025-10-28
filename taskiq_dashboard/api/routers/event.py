@@ -8,7 +8,7 @@ from fastapi.responses import Response
 from starlette import status
 
 from taskiq_dashboard.domain.dto.task import ExecutedTask, QueuedTask, StartedTask
-from taskiq_dashboard.domain.services.task_service import TaskService
+from taskiq_dashboard.domain.services.task_service import TaskRepository
 
 
 router = fastapi.APIRouter(
@@ -26,7 +26,7 @@ logger = getLogger(__name__)
 async def handle_task_event(
     task_id: uuid.UUID,
     event: tp.Annotated[tp.Literal['queued', 'started', 'executed'], fastapi.Path(title='Event type')],
-    task_service: dishka_fastapi.FromDishka[TaskService],
+    task_service: dishka_fastapi.FromDishka[TaskRepository],
     body: tp.Annotated[dict[str, tp.Any], fastapi.Body(title='Event data')],
 ) -> Response:
     """
