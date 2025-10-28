@@ -56,3 +56,5 @@ jobs:
           TASKIQ_DASHBOARD__STORAGE_TYPE: postgres
           TASKIQ_DASHBOARD__POSTGRES__DSN: postgresql+asyncpg://taskiq-dashboard:look_in_vault@localhost:5432/taskiq-dashboard
         run: uv run pytest
+      - name: Check dead fixtures
+        run: uv run pytest --dead-fixtures

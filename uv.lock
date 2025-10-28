@@ -1386,6 +1386,18 @@ wheels = [
 ]
 
 [[package]]
+name = "pytest-deadfixtures"
+version = "2.2.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pytest" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/c5/d5/0472e7dd4c5794cd720f8add3ba59b35e45c1bb7482e04b6d6e60ff4eed0/pytest-deadfixtures-2.2.1.tar.gz", hash = "sha256:ca15938a4e8330993ccec9c6c847383d88b3cd574729530647dc6b492daa9c1e", size = 6616, upload-time = "2020-07-23T11:58:09.465Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/4a/c7/d8c3fa6d2de6814c92161fcce984a7d38a63186590a66238e7b749f7fe37/pytest_deadfixtures-2.2.1-py2.py3-none-any.whl", hash = "sha256:db71533f2d9456227084e00a1231e732973e299ccb7c37ab92e95032ab6c083e", size = 5059, upload-time = "2020-07-23T11:58:11.538Z" },
+]
+
+[[package]]
 name = "python-dateutil"
 version = "2.9.0.post0"
 source = { registry = "https://pypi.org/simple" }
@@ -1715,6 +1727,7 @@ dev = [
     { name = "pytest" },
     { name = "pytest-asyncio" },
     { name = "pytest-cov" },
+    { name = "pytest-deadfixtures" },
     { name = "ruff" },
     { name = "sqlalchemy-utils" },
     { name = "taskiq-postgres", extra = ["asyncpg"] },
@@ -1740,6 +1753,7 @@ test = [
     { name = "pytest" },
     { name = "pytest-asyncio" },
     { name = "pytest-cov" },
+    { name = "pytest-deadfixtures" },
     { name = "sqlalchemy-utils" },
 ]
 
@@ -1768,6 +1782,7 @@ dev = [
     { name = "pytest", specifier = ">=8.4.2" },
     { name = "pytest-asyncio", specifier = ">=1.1.0" },
     { name = "pytest-cov", specifier = ">=7.0.0" },
+    { name = "pytest-deadfixtures", specifier = ">=2.2.1" },
     { name = "ruff", specifier = ">=0.14.0" },
     { name = "sqlalchemy-utils", specifier = ">=0.42.0" },
     { name = "taskiq-postgres", extras = ["asyncpg"], specifier = ">=0.6.0" },
@@ -1791,6 +1806,7 @@ test = [
     { name = "pytest", specifier = ">=8.4.2" },
     { name = "pytest-asyncio", specifier = ">=1.1.0" },
     { name = "pytest-cov", specifier = ">=7.0.0" },
+    { name = "pytest-deadfixtures", specifier = ">=2.2.1" },
     { name = "sqlalchemy-utils", specifier = ">=0.42.0" },
 ]
 

@@ -72,6 +72,7 @@ test = [
     "pytest-asyncio>=1.1.0",
     "pytest-cov>=7.0.0",
     # for test databases management
+    "pytest-deadfixtures>=2.2.1",
     "sqlalchemy-utils>=0.42.0",
 ]
 docs = [
