@@ -9,7 +9,7 @@
 <body class="bg-ctp-base"
     hx-on:keydown='{% include "scripts/focus_on_search_field.js" %}'>
     {% include "partial/header.html" %}
-
+    <main class="container mx-auto pb-8">
     <section class="mb-6 p-5">
         <div id="filter-form" class="grid grid-cols-1 md:grid-cols-5 gap-4">
             <!-- Name Search -->
@@ -144,5 +144,6 @@
             </tbody>
         </table>
     </section>
+    </main>
 </body>
 </html>

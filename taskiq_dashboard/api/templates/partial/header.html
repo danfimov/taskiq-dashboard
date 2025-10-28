@@ -2,46 +2,57 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div class="flex items-center justify-between">
             <a href="{{ url_for('Task list view') }}" class="group">
-                <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 flex items-center justify-center">
-                        <img id="site-logo"
-                             src=""
-                             data-src-light="{{ url_for('static', path='snake-light.png') }}"
-                             data-src-dark="{{ url_for('static', path='snake-dark.png') }}"
-                             alt="Logo"
-                             class="w-12 h-12 rounded-full"
-                             width="40"
-                             height="40" />
-                    </div>
-                    <div>
-                        <h1 class="text-2xl font-bold text-ctp-text">Taskiq</h1>
-                        <p class="text-sm text-ctp-subtext0 group-hover:underline">Admin dashboard</p>
+                <div class="flex flex-col items-center gap-2">
+                    <div class="w-24 h-16 flex items-center justify-center">
+                        <svg class="w-48 h-16" aria-hidden="true">
+                            <use href="{{ url_for('static', path='logo_taskiq.svg') }}"></use>
+                        </svg>
                     </div>
                 </div>
             </a>
-            <!-- Theme switcher (dropdown), aligned to the right -->
-            <form id="flavour-switcher" class="flex items-center">
-                <label for="flavour" class="sr-only">Выбор темы</label>
-                <div class="relative">
-                    <select id="flavour"
-                            name="flavour"
-                            aria-haspopup="listbox"
-                            aria-expanded="false"
-                            class="px-3 pr-10 py-2 text-sm font-semibold rounded-[6px] border border-ctp-mauve-100 bg-ctp-base text-ctp-text focus:outline-none focus:ring-1 appearance-none"
-                            title="Выберите тему оформления">
-                        <option value="latte">🌻 Latte</option>
-                        <option value="frappe">🪴 Frappé</option>
-                        <option value="macchiato">🌺 Macchiato</option>
-                        <option value="mocha">🌿 Mocha</option>
-                        <option value="auto">🖥️ Auto</option>
-                    </select>
-                    <svg id="flavour-chevron"
-                         class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-ctp-mauve-100 transform transition-transform duration-200"
-                         aria-hidden="true">
-                        <use href="{{ url_for('static', path='icons.svg#chevron-left') }}"></use>
+            <div class="flex items-center gap-4">
+                <a href="https://github.com/danfimov/taskiq-dashboard"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   class="text-ctp-text hover:text-ctp-mauve transition-colors"
+                   title="GitHub">
+                    <svg class="w-5 h-5" aria-hidden="true">
+                        <use href="{{ url_for('static', path='icons.svg#github') }}"></use>
                     </svg>
-                </div>
-            </form>
+                </a>
+                <a href="https://danfimov.github.io/taskiq-dashboard/"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   class="text-ctp-text hover:text-ctp-mauve transition-colors"
+                   title="Documentation">
+                    <svg class="w-5 h-5" aria-hidden="true">
+                        <use href="{{ url_for('static', path='icons.svg#book-open') }}"></use>
+                    </svg>
+                </a>
+                <!-- Theme switcher -->
+                <form id="flavour-switcher" class="flex items-center">
+                    <label for="flavour" class="sr-only">Выбор темы</label>
+                    <div class="relative">
+                        <select id="flavour"
+                                name="flavour"
+                                aria-haspopup="listbox"
+                                aria-expanded="false"
+                                class="px-3 pr-8 py-2 text-sm font-semibold rounded-[6px] border border-ctp-mauve-100 bg-ctp-base text-ctp-text focus:outline-none focus:ring-1 appearance-none"
+                                title="Выберите тему оформления">
+                            <option value="latte">🌻 Latte</option>
+                            <option value="frappe">🪴 Frappé</option>
+                            <option value="macchiato">🌺 Macchiato</option>
+                            <option value="mocha">🌿 Mocha</option>
+                            <option value="auto">🖥️ Auto</option>
+                        </select>
+                        <svg id="flavour-chevron"
+                             class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-ctp-mauve-100 transform transition-transform duration-200"
+                             aria-hidden="true">
+                            <use href="{{ url_for('static', path='icons.svg#chevron-left') }}"></use>
+                        </svg>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
     <script>
@@ -49,17 +60,6 @@
             const THEMES = new Set(["latte", "frappe", "macchiato", "mocha", "auto"]);
             const selectEl = document.getElementById("flavour");
             const chevronEl = document.getElementById("flavour-chevron");
-            const logoEl = document.getElementById("site-logo");
-
-            function updateLogo() {
-                if (!logoEl) return;
-                // В Catppuccin светлая — только latte; остальные — тёмные
-                const isDark = !document.documentElement.classList.contains("latte");
-                const src = isDark ? logoEl.dataset.srcDark : logoEl.dataset.srcLight;
-                if (src) {
-                    logoEl.src = src;
-                }
-            }
 
             function applyTheme(theme) {
                 if (theme === "auto") {
@@ -73,7 +73,6 @@
                     localStorage.setItem("theme", theme);
                     localStorage.setItem("theme-auto", "false");
                 }
-                updateLogo();
             }
 
             // Handle select change
@@ -127,7 +126,6 @@
                     } else {
                         // Default UI shows Auto, but we don't override current document class unless user changes it
                         selectEl.value = "auto";
-                        updateLogo(); // обновим логотип согласно текущему классу документа
                     }
                 }
             });
@@ -140,19 +138,8 @@
                     const defaultTheme = event.matches ? "mocha" : "latte";
                     document.documentElement.className = defaultTheme;
                     localStorage.setItem("theme", defaultTheme);
-                    updateLogo();
                 }
             });
-        })();
-    </script>
-    <script>
-        (function() {
-            var el = document.getElementById('site-logo');
-            if (!el) return;
-            var isDark = !document.documentElement.classList.contains('latte');
-            var src = isDark ? el.dataset.srcDark : el.dataset.srcLight;
-            if (src) el.src = src;
-            el.setAttribute('data-ready', 'true');
         })();
     </script>
 </header>
