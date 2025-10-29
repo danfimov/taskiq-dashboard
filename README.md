@@ -1,5 +1,9 @@
 # taskiq-dashboard
 
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/taskiq-dashboard?style=for-the-badge&logo=python)](https://pypi.org/project/taskiq-dashboard/)
+[![PyPI](https://img.shields.io/pypi/v/taskiq-dashboard?style=for-the-badge&logo=pypi)](https://pypi.org/project/taskiq-dashboard/)
+[![Checks](https://img.shields.io/github/check-runs/danfimov/taskiq-dashboard/main?nameFilter=Tests%20(3.12)&style=for-the-badge)](https://github.com/danfimov/taskiq-dashboard)
+
 Broker-agnostic admin dashboard for Taskiq.
 
 Live demo of UI: [https://taskiq-dashboard.danfimov.com/](https://taskiq-dashboard.danfimov.com/)
