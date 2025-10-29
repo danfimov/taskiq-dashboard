@@ -40,6 +40,7 @@ build:  ## Build docker image with tag "local"
 lint:  ## Run linting
 	@uv run ruff check .
 	@uv run mypy taskiq_dashboard
+	@uv run djlint - --lint
 
 .PHONY: format
 format:  ## Run formatting

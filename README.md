@@ -1,5 +1,9 @@
 # taskiq-dashboard
 
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/taskiq-dashboard?style=for-the-badge&logo=python)](https://pypi.org/project/taskiq-dashboard/)
+[![PyPI](https://img.shields.io/pypi/v/taskiq-dashboard?style=for-the-badge&logo=pypi)](https://pypi.org/project/taskiq-dashboard/)
+[![Checks](https://img.shields.io/github/check-runs/danfimov/taskiq-dashboard/main?nameFilter=Tests%20(3.12)&style=for-the-badge)](https://github.com/danfimov/taskiq-dashboard)
+
 Broker-agnostic admin dashboard for Taskiq.
 
 Live demo of UI: [https://taskiq-dashboard.danfimov.com/](https://taskiq-dashboard.danfimov.com/)
@@ -47,6 +51,7 @@ docker pull ghcr.io/danfimov/taskiq-dashboard:latest
 
     ```python
     from taskiq_dashboard import TaskiqDashboard
+    from your_project.broker import broker  # your Taskiq broker instance
 
 
     def run_admin_panel() -> None:
@@ -54,6 +59,7 @@ docker pull ghcr.io/danfimov/taskiq-dashboard:latest
             api_token='supersecret', # the same secret as in middleware
             storage_type='postgresql',  # or 'sqlite'
             database_dsn="postgresql://taskiq-dashboard:look_in_vault@postgres:5432/taskiq-dashboard",
+            broker=broker,  # pass your broker instance here to enable additional features (optional)
             host='0.0.0.0',
             port=8000,
         )

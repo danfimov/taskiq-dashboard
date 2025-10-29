@@ -65,12 +65,14 @@ docker pull ghcr.io/danfimov/taskiq-dashboard:latest
 
         ```python
         from taskiq_dashboard import TaskiqDashboard
+        from your_project.broker import broker  # your Taskiq broker instance
 
         def run_admin_panel() -> None:
             app = TaskiqDashboard(
                 api_token='supersecret', # the same secret as in middleware
                 storage_type='postgres',
                 database_dsn="postgresql://taskiq-dashboard:look_in_vault@postgres:5432/taskiq-dashboard",
+                broker=broker,  # pass your broker instance here to enable additional features
                 host='0.0.0.0',
                 port=8000,
             )
@@ -84,12 +86,14 @@ docker pull ghcr.io/danfimov/taskiq-dashboard:latest
 
         ```python
         from taskiq_dashboard import TaskiqDashboard
+        from your_project.broker import broker  # your Taskiq broker instance
 
         def run_admin_panel() -> None:
             app = TaskiqDashboard(
                 api_token='supersecret', # the same secret as in middleware
                 storage_type='sqlite',
                 database_dsn="sqlite+aiosqlite:///taskiq_dashboard.db",
+                broker=broker,  # pass your broker instance here to enable additional features
                 host='0.0.0.0',
                 port=8000,
             )
@@ -98,6 +102,8 @@ docker pull ghcr.io/danfimov/taskiq-dashboard:latest
         if __name__ == '__main__':
             run_admin_panel()
         ```
+
+You can also pass `broker` instance directly to the `TaskiqDashboard` constructor and get additional features like task actions. Read more about it in the [Run with broker](./tutorial/run_with_broker.md) section.
 
 ### Run with docker compose
 

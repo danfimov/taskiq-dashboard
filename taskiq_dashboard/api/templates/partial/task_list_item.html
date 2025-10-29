@@ -1,0 +1,29 @@
+<tr id="task-list-item-{{ task.id }}" class="group whitespace-nowrap text-sm">
+    <td class="px-6 py-4 group-hover:bg-ctp-blue-100/20 w-min">
+        <a href="{{ url_for('Task details view', task_id=task.id) }}" class="text-ctp-text hover:text-ctp-subtext0 block w-full h-full">
+            {{ task.id }}
+        </a>
+    </td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm group-hover:bg-ctp-blue-100/20 w-auto">{{ task.name }}</td>
+    <td class="px-6 py-3 whitespace-nowrap group-hover:bg-ctp-blue-100/20 w-min">
+        <span
+            class="px-2 py-1 inline-flex text-sm leading-5 rounded text-ctp-base bg-linear-to-br
+                {% if task.status == 0 %} from-ctp-teal to-ctp-teal-600
+                {% elif task.status == 1 %}from-ctp-green to-ctp-green-600
+                {% elif task.status == 2 %}from-ctp-red to-ctp-red-600
+                {% elif task.status == 3 %}from-ctp-blue to-ctp-blue-600{% endif %}"
+        >
+            {% if task.status == 0 %}In progress
+            {% elif task.status == 1 %}Completed
+            {% elif task.status == 2 %}Failure
+            {% elif task.status == 3 %}Queued
+            {% else %}Unknown{% endif %}
+        </span>
+    </td>
+    <td class="px-6 py-4 group-hover:bg-ctp-blue-100/20 w-auto">{{ task.worker }}</td>
+    <td class="px-6 py-4 group-hover:bg-ctp-blue-100/20 w-min">{{ task.started_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+    <td class="px-6 py-4 group-hover:bg-ctp-blue-100/20 w-min">
+        {{ task.finished_at.strftime('%Y-%m-%d %H:%M:%S') if task.finished_at else '-' }}
+    </td>
+
+</tr>

@@ -30,8 +30,8 @@ class Task(pydantic.BaseModel):
 
 
 class QueuedTask(pydantic.BaseModel):
-    args: list[str] = pydantic.Field(default_factory=list)
-    kwargs: dict[str, str] = pydantic.Field(default_factory=dict)
+    args: list[tp.Any] = pydantic.Field(default_factory=list)
+    kwargs: dict[str, tp.Any] = pydantic.Field(default_factory=dict)
     task_name: str
     worker: str
     queued_at: datetime.datetime
@@ -44,8 +44,8 @@ class QueuedTask(pydantic.BaseModel):
 
 
 class StartedTask(pydantic.BaseModel):
-    args: list[str] = pydantic.Field(default_factory=list)
-    kwargs: dict[str, str] = pydantic.Field(default_factory=dict)
+    args: list[tp.Any] = pydantic.Field(default_factory=list)
+    kwargs: dict[str, tp.Any] = pydantic.Field(default_factory=dict)
     task_name: str
     worker: str
     started_at: datetime.datetime

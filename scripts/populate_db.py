@@ -9,7 +9,7 @@ from sqlalchemy.orm import sessionmaker
 
 from taskiq_dashboard.domain.dto.task_status import TaskStatus
 from taskiq_dashboard.infrastructure.database.schemas import PostgresTask as Task
-from taskiq_dashboard.infrastructure import Settings
+from taskiq_dashboard.infrastructure import get_settings
 
 
 # Константы для генерации данных
@@ -123,11 +123,11 @@ async def create_random_tasks(session: AsyncSession, count: int) -> None:
 async def main() -> None:
     """Основная функция для запуска скрипта."""
     # Загружаем настройки
-    settings = Settings()
+    settings = get_settings()
 
     # Создаем engine для SQLAlchemy
     engine = create_async_engine(
-        settings.db.dsn.get_secret_value(),
+        settings.postgres.dsn.get_secret_value(),
         echo=True,
     )
 
