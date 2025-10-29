@@ -8,8 +8,8 @@ edit_uri: edit/main/docs/
 nav:
   - Overview:
       - index.md
-  # - Tutorial:
-  #     - tutorial/schedule_source.md
+  - Tutorial:
+      - tutorial/run_with_broker.md
   #     - tutorial/common_issues.md
   - API:
       - reference.md

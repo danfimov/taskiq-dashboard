@@ -8,13 +8,61 @@
 </head>
 <body class="bg-ctp-base text-ctp-text">
     {% include "partial/header.html" %}
-
     <main class="container mx-auto px-4 py-8">
         <!-- Task summary card -->
         <section class="p-6 mb-6 bg-ctp-lavender/10 rounded-xl">
+            <div class="flex justify-between items-start mb-4">
             <div class="mb-4 pb-4">
                 <h1 class="font-bold text-xl">General Information</h1>
                 <p class="font-light">Description and general information about the task</p>
+            </div>
+            <div class="flex items-center gap-2 text-ctp-base">
+                  <!-- Actions -->
+                  {% if enable_actions %}
+                    <button
+                        class="px-3 py-1.5 bg-ctp-green rounded cursor-pointer hover:bg-ctp-green-600 transition focus:outline-2 focus:outline-offset-2 focus:outline-ctp-green-500 active:bg-ctp-green-700"
+                        hx-post="{{ url_for('Rerun task', task_id=task.id) }}"
+                        hx-target="#notification-list"
+                        hx-swap="beforeend"
+                    >Rerun</button>
+                    <a
+                        class="px-3 py-1.5 bg-ctp-red rounded cursor-pointer hover:bg-ctp-red-600 transition focus:outline-2 focus:outline-offset-2 focus:outline-ctp-red-500 active:bg-ctp-red-700"
+                        href="{{ url_for('Delete task', task_id=task.id) }}"
+                        type="link"
+                    >Delete</a>
+                {% endif %}
+
+                {% if enable_additional_actions %}
+                  <div class="relative">
+                    <button
+                      class="px-2 py-1.5 bg-ctp-lavender rounded hover:bg-ctp-lavender-600 transition focus:outline-2 focus:outline-offset-2 focus:outline-ctp-lavender-500 active:bg-ctp-lavender-700"
+                      id="actions-menu-button"
+                    >
+                      ⋮
+                    </button>
+                    <div
+                      class="hidden absolute right-0 mt-2 w-48 bg-ctp-lavender rounded py-2"
+                      id="actions-menu"
+                    >
+                      <button
+                        class="w-full text-left px-4 py-2 hover:bg-ctp-mauve-600 transition active:bg-ctp-mauve-700"
+                      >
+                          Rerun with different arguments
+                      </button>
+                    </div>
+                  </div>
+                  <script>
+                    const btn = document.getElementById('actions-menu-button');
+                    const menu = document.getElementById('actions-menu');
+                    btn.addEventListener('click', () => menu.classList.toggle('hidden'));
+                    document.addEventListener('click', (e) => {
+                      if (!btn.contains(e.target) && !menu.contains(e.target)) {
+                        menu.classList.add('hidden');
+                      }
+                    });
+                  </script>
+                  {% endif %}
+                </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4">
@@ -165,5 +213,8 @@
             </div>
         </section>
     </main>
+
+    <!-- Notification container -->
+    <div id="notification-list" class="fixed bottom-6 right-6 flex flex-col gap-3 w-fit"></div>
 </body>
 </html>

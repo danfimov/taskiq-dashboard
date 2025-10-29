@@ -55,6 +55,7 @@ dev = [
     {include-group = "test"},
     {include-group = "docs"},
     {include-group = "examples"},
+    "httpx>=0.28.1",
     "prek>=0.2.8",
 ]
 lint = [
@@ -67,6 +68,7 @@ lint = [
     "djlint>=1.36.4",
 ]
 test = [
+    "polyfactory>=2.22.3",
     "psycopg2-binary>=2.9.11",
     "pytest>=8.4.2",
     "pytest-asyncio>=1.1.0",
@@ -78,6 +80,7 @@ test = [
 docs = [
     "mkdocs-material>=9.6.22",
     "mkdocstrings-python>=1.18.2",
+    "pymdown-extensions>=10.16.1",
 ]
 examples = [
     "taskiq-postgres[asyncpg]>=0.6.0",
@@ -176,7 +179,7 @@ quote-style = "single"
 "scripts/*" = [
     "ALL",
 ]
-"examples/*" = [
+"docs/examples/*" = [
     "S",
     "INP",
 ]

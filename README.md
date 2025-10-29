@@ -47,6 +47,7 @@ docker pull ghcr.io/danfimov/taskiq-dashboard:latest
 
     ```python
     from taskiq_dashboard import TaskiqDashboard
+    from your_project.broker import broker  # your Taskiq broker instance
 
 
     def run_admin_panel() -> None:
@@ -54,6 +55,7 @@ docker pull ghcr.io/danfimov/taskiq-dashboard:latest
             api_token='supersecret', # the same secret as in middleware
             storage_type='postgresql',  # or 'sqlite'
             database_dsn="postgresql://taskiq-dashboard:look_in_vault@postgres:5432/taskiq-dashboard",
+            broker=broker,  # pass your broker instance here to enable additional features (optional)
             host='0.0.0.0',
             port=8000,
         )

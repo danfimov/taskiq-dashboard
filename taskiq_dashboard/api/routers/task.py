@@ -125,5 +125,7 @@ async def task_details(
             'request': request,
             'task': task,
             'task_json': task_json,
+            'enable_actions': request.app.state.broker is not None,
+            'enable_additional_actions': False,  # Placeholder for future features like retries with different args
         },
     )

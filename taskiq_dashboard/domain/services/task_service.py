@@ -51,3 +51,9 @@ class TaskRepository(ABC):
         task_id: uuid.UUID,
         task_arguments: StartedTask | ExecutedTask,
     ) -> None: ...
+
+    @abstractmethod
+    async def delete_task(
+        self,
+        task_id: uuid.UUID,
+    ) -> None: ...

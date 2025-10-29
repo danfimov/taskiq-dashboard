@@ -1,7 +1,6 @@
 import datetime as dt
 import uuid
 
-import pytest
 import sqlalchemy as sa
 
 from taskiq_dashboard.domain.dto.task import ExecutedTask, QueuedTask, StartedTask
@@ -9,14 +8,6 @@ from taskiq_dashboard.domain.dto.task_status import TaskStatus
 from taskiq_dashboard.domain.services.task_service import TaskRepository
 from taskiq_dashboard.infrastructure.database.schemas import PostgresTask
 from taskiq_dashboard.infrastructure.database.session_provider import AsyncPostgresSessionProvider
-from taskiq_dashboard.infrastructure.services.task_service import PostgresTaskRepository
-
-
-@pytest.fixture
-async def task_service(
-    session_provider: AsyncPostgresSessionProvider,
-) -> TaskRepository:
-    return PostgresTaskRepository(session_provider=session_provider)
 
 
 class TestTaskService:
@@ -156,7 +147,6 @@ class TestTaskService:
     async def test_when_updating_task_with_executed_task_without_error__then_task_status_is_completed(
         self,
         task_service: TaskRepository,
-
         session_provider: AsyncPostgresSessionProvider,
     ) -> None:
         # Given

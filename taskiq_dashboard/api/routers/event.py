@@ -13,7 +13,7 @@ from taskiq_dashboard.domain.services.task_service import TaskRepository
 
 router = fastapi.APIRouter(
     prefix='/api/tasks',
-    tags=['Dashboard'],
+    tags=['Event'],
     route_class=dishka_fastapi.DishkaRoute,
 )
 logger = getLogger(__name__)

@@ -104,6 +104,14 @@ class PostgresTaskRepository(TaskRepository):
         async with self._session_provider.session() as session:
             await session.execute(query)
 
+    async def delete_task(
+        self,
+        task_id: uuid.UUID,
+    ) -> None:
+        query = sa.delete(self.task).where(self.task.id == task_id)
+        async with self._session_provider.session() as session:
+            await session.execute(query)
+
 
 class SqliteTaskService(TaskRepository):
     def __init__(self, session_provider: AsyncPostgresSessionProvider) -> None:
@@ -192,5 +200,13 @@ class SqliteTaskService(TaskRepository):
                 result=json.dumps(task_arguments.return_value.get('return_value')),
                 error=task_arguments.error,
             )
+        async with self._session_provider.session() as session:
+            await session.execute(query)
+
+    async def delete_task(
+        self,
+        task_id: uuid.UUID,
+    ) -> None:
+        query = sa.delete(self.task).where(self.task.id == task_id)
         async with self._session_provider.session() as session:
             await session.execute(query)
