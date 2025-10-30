@@ -19,7 +19,8 @@ repos:
     -   id: check-added-large-files
         exclude: |
           (?x)^(
-            taskiq_dashboard/api/static/.*
+            taskiq_dashboard/api/static/.*|
+            uv.lock
           )$
     -   id: end-of-file-fixer
 
