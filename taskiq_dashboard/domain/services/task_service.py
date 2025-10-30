@@ -53,6 +53,13 @@ class TaskRepository(ABC):
     ) -> None: ...
 
     @abstractmethod
+    async def batch_update(
+        self,
+        old_status: TaskStatus,
+        new_status: TaskStatus,
+    ) -> None: ...
+
+    @abstractmethod
     async def delete_task(
         self,
         task_id: uuid.UUID,

@@ -2,6 +2,7 @@ import typing as tp
 
 import uvicorn
 from pydantic import SecretStr
+from taskiq import TaskiqScheduler
 from taskiq.abc import AsyncBroker
 
 from taskiq_dashboard.api.application import get_application
@@ -15,6 +16,7 @@ class TaskiqDashboard:
         storage_type: str = 'sqlite',
         database_dsn: str = 'sqlite+aiosqlite:///taskiq_dashboard.db',
         broker: AsyncBroker | None = None,
+        scheduler: TaskiqScheduler | None = None,
         **uvicorn_kwargs: tp.Any,
     ) -> None:
         """Initialize Taskiq Dashboard application.
@@ -24,6 +26,7 @@ class TaskiqDashboard:
             storage_type: Type of the storage backend ('sqlite' or 'postgres').
             database_dsn: URL for the database.
             broker: Optional Taskiq broker instance to integrate with the dashboard.
+            scheduler: Optional Taskiq scheduler instance to integrate with the dashboard.
             uvicorn_kwargs: Additional keyword arguments to pass to uvicorn.
         """
         self.settings = get_settings()
@@ -35,6 +38,7 @@ class TaskiqDashboard:
             self.settings.postgres = PostgresSettings(dsn=database_dsn)  # type: ignore[call-arg]
 
         self.broker = broker
+        self.scheduler = scheduler
 
         self._uvicorn_kwargs = {
             'host': 'localhost',
@@ -52,6 +56,7 @@ class TaskiqDashboard:
     def run(self) -> None:
         application = get_application()
         application.state.broker = self.broker
+        application.state.scheduler = self.scheduler
         uvicorn.run(
             application,
             **self._uvicorn_kwargs,  # type: ignore[arg-type]

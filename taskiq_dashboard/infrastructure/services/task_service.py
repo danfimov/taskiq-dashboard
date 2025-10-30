@@ -104,6 +104,15 @@ class PostgresTaskRepository(TaskRepository):
         async with self._session_provider.session() as session:
             await session.execute(query)
 
+    async def batch_update(
+        self,
+        old_status: TaskStatus,
+        new_status: TaskStatus,
+    ) -> None:
+        query = sa.update(self.task).where(self.task.status == old_status.value).values(status=new_status.value)
+        async with self._session_provider.session() as session:
+            await session.execute(query)
+
     async def delete_task(
         self,
         task_id: uuid.UUID,
@@ -200,6 +209,15 @@ class SqliteTaskService(TaskRepository):
                 result=json.dumps(task_arguments.return_value.get('return_value')),
                 error=task_arguments.error,
             )
+        async with self._session_provider.session() as session:
+            await session.execute(query)
+
+    async def batch_update(
+        self,
+        old_status: TaskStatus,
+        new_status: TaskStatus,
+    ) -> None:
+        query = sa.update(self.task).where(self.task.status == old_status.value).values(status=new_status.value)
         async with self._session_provider.session() as session:
             await session.execute(query)
 

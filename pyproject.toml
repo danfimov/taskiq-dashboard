@@ -63,9 +63,9 @@ lint = [
     "bandit>=1.8.6",
     "codespell>=2.4.1",
     "zizmor>=1.15.2",
+    "djlint>=1.36.4",
     # type check
     "mypy>=1.18.1",
-    "djlint>=1.36.4",
 ]
 test = [
     "polyfactory>=2.22.3",

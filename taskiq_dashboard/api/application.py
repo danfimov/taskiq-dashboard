@@ -9,13 +9,26 @@ from taskiq_dashboard import dependencies
 from taskiq_dashboard.api.middlewares import AccessTokenMiddleware
 from taskiq_dashboard.api.routers import action_router, event_router, system_router, task_router
 from taskiq_dashboard.api.routers.exception_handlers import exception_handler__not_found
+from taskiq_dashboard.domain.dto.task_status import TaskStatus
 from taskiq_dashboard.domain.services.schema_service import AbstractSchemaService
+from taskiq_dashboard.domain.services.task_service import TaskRepository
 
 
 @contextlib.asynccontextmanager
 async def lifespan(app: fastapi.FastAPI) -> tp.AsyncGenerator[None, None]:
     schema_service = await app.state.dishka_container.get(AbstractSchemaService)
     await schema_service.create_schema()
+
+    # we probably missed events about this tasks during the downtime, so we need to mark them as abandoned
+    task_repository = await app.state.dishka_container.get(TaskRepository)
+    await task_repository.batch_update(
+        old_status=TaskStatus.IN_PROGRESS,
+        new_status=TaskStatus.ABANDONED,
+    )
+    await task_repository.batch_update(
+        old_status=TaskStatus.QUEUED,
+        new_status=TaskStatus.ABANDONED,
+    )
 
     if app.state.broker is not None:
         await app.state.broker.startup()

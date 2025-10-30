@@ -73,12 +73,14 @@
                             {% if task.status == 0 %} from-ctp-teal to-ctp-teal-600
                             {% elif task.status == 1 %}from-ctp-green to-ctp-green-600
                             {% elif task.status == 2 %}from-ctp-red to-ctp-red-600
-                            {% elif task.status == 3 %}from-ctp-blue to-ctp-blue-600{% endif %}"
+                            {% elif task.status == 3 %}from-ctp-blue to-ctp-blue-600
+                            {% elif task.status == 4 %}from-ctp-mauve to-ctp-mauve-600{% endif %}"
                     >
                         {% if task.status == 0 %}In progress
                         {% elif task.status == 1 %}Completed
                         {% elif task.status == 2 %}Failure
                         {% elif task.status == 3 %}Queued
+                        {% elif task.status == 4 %}Abandoned
                         {% else %}Unknown{% endif %}
                     </span>
                 </div>
