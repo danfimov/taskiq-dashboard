@@ -19,7 +19,7 @@ async def lifespan(app: fastapi.FastAPI) -> tp.AsyncGenerator[None, None]:
     schema_service = await app.state.dishka_container.get(AbstractSchemaService)
     await schema_service.create_schema()
 
-    # we probably missed events about this tasks during the downtime, so we need to mark them as abandoned
+    # we probably missed events about these tasks during the downtime, so we need to mark them as abandoned
     task_repository = await app.state.dishka_container.get(TaskRepository)
     await task_repository.batch_update(
         old_status=TaskStatus.IN_PROGRESS,
