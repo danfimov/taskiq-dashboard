@@ -2200,7 +2200,7 @@ wheels = [
 
 [[package]]
 name = "taskiq"
-version = "0.11.19"
+version = "0.11.20"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiohttp" },
@@ -2214,9 +2214,9 @@ dependencies = [
     { name = "taskiq-dependencies" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/ed/f8/e26c3a6d169e8ecee228d67d12003d25192d663b27f8007e41575e7a710c/taskiq-0.11.19.tar.gz", hash = "sha256:b6f03e398f0c6e7eb784f22b3c63a2efeb9e113bdce792dbd9ccb81b9edb17c4", size = 55910, upload-time = "2025-10-23T15:01:10.071Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/2c/80/58b1aee0934d88b5558bfe013cc6b34f684985ec44b6952a294e96048876/taskiq-0.11.20.tar.gz", hash = "sha256:598fa9b03eafd4cc9521158917382f184ba613e5c71544b9b60934c1cc055f51", size = 55964, upload-time = "2025-10-30T13:15:15.38Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/9c/3a/55fe61591ba4d282cbfc12e66c6d8f5646b9ce81bbfbd958bca55eebbe5b/taskiq-0.11.19-py3-none-any.whl", hash = "sha256:630b39531284f802860fa28ec54707c7e68e57b2011bcb5f8ce9c71508a273f7", size = 81848, upload-time = "2025-10-23T15:01:08.907Z" },
+    { url = "https://files.pythonhosted.org/packages/f8/70/b5f91b22e7b6ca8b467f7a933fd7e1d4b5016186720729bb6a40bfa2251a/taskiq-0.11.20-py3-none-any.whl", hash = "sha256:29521bbd580af1b98052d4c24a33f6d4a6060bba73dcae4ce9c69c63b937cf87", size = 81873, upload-time = "2025-10-30T13:15:14.311Z" },
 ]
 
 [[package]]
