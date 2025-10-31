@@ -54,7 +54,7 @@ async def create_random_tasks(session: AsyncSession, count: int) -> None:
         kwargs = {f'param{i}': random.choice(['value', 123, True, None]) for i in range(random.randint(0, 3))}
 
         # Генерируем время начала (от недели назад до сейчас)
-        started_at = dt.datetime.now(dt.UTC) - dt.timedelta(
+        started_at = dt.datetime.now(dt.timezone.utc) - dt.timedelta(
             days=random.randint(0, 7),
             hours=random.randint(0, 23),
             minutes=random.randint(0, 59),

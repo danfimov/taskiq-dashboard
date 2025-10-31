@@ -93,7 +93,7 @@ class TestTaskService:
     ) -> None:
         # Given
         task_id = uuid.uuid4()
-        now = dt.datetime.now(dt.UTC)
+        now = dt.datetime.now(dt.timezone.utc)
         queued_task = QueuedTask(
             task_name='process_data',
             worker='worker_1',
@@ -125,7 +125,7 @@ class TestTaskService:
         PostgresTaskFactory.__async_session__ = session_provider.session
         task_queued = await PostgresTaskFactory.create_async(
             status=TaskStatus.QUEUED.value,
-            queued_at=dt.datetime.now(dt.UTC) - dt.timedelta(seconds=10),
+            queued_at=dt.datetime.now(dt.timezone.utc) - dt.timedelta(seconds=10),
             started_at=None,
         )
         started_task = StartedTask(
@@ -133,7 +133,7 @@ class TestTaskService:
             worker='worker_1',
             args=['arg1', 'arg2'],
             kwargs={'key1': 'value1'},
-            started_at=dt.datetime.now(dt.UTC),
+            started_at=dt.datetime.now(dt.timezone.utc),
         )
 
         # When
@@ -157,11 +157,11 @@ class TestTaskService:
         PostgresTaskFactory.__async_session__ = session_provider.session
         task_in_progress = await PostgresTaskFactory.create_async(
             status=TaskStatus.IN_PROGRESS.value,
-            queued_at=dt.datetime.now(dt.UTC) - dt.timedelta(seconds=10),
-            started_at=dt.datetime.now(dt.UTC) - dt.timedelta(seconds=5),
+            queued_at=dt.datetime.now(dt.timezone.utc) - dt.timedelta(seconds=10),
+            started_at=dt.datetime.now(dt.timezone.utc) - dt.timedelta(seconds=5),
         )
         executed_task = ExecutedTask(
-            finished_at=dt.datetime.now(dt.UTC),
+            finished_at=dt.datetime.now(dt.timezone.utc),
             execution_time=5.0,
             error=None,
             return_value={'return_value': 'success_result'},
@@ -189,11 +189,11 @@ class TestTaskService:
         PostgresTaskFactory.__async_session__ = session_provider.session
         task_in_progress = await PostgresTaskFactory.create_async(
             status=TaskStatus.IN_PROGRESS.value,
-            queued_at=dt.datetime.now(dt.UTC) - dt.timedelta(seconds=10),
-            started_at=dt.datetime.now(dt.UTC) - dt.timedelta(seconds=5),
+            queued_at=dt.datetime.now(dt.timezone.utc) - dt.timedelta(seconds=10),
+            started_at=dt.datetime.now(dt.timezone.utc) - dt.timedelta(seconds=5),
         )
         executed_task = ExecutedTask(
-            finished_at=dt.datetime.now(dt.UTC),
+            finished_at=dt.datetime.now(dt.timezone.utc),
             execution_time=2.5,
             error='Task execution failed: Division by zero',
             return_value={},
