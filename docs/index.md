@@ -103,7 +103,7 @@ docker pull ghcr.io/danfimov/taskiq-dashboard:latest
             run_admin_panel()
         ```
 
-You can also pass `broker` instance directly to the `TaskiqDashboard` constructor and get additional features like task actions. Read more about it in the [Run with broker](./tutorial/run_with_broker.md) section.
+You can also pass `broker` or `scheduler` instances directly to the `TaskiqDashboard` constructor and get additional features like actions with tasks or schedule configuration. Read more about it in the [tutorial](./tutorial/run_with_broker.md) section.
 
 ### Run with docker compose
 
