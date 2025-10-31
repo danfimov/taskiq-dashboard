@@ -101,7 +101,6 @@ async def handle_schedule_details(
         )
     for schedule_source in scheduler.sources:
         for schedule in await schedule_source.get_schedules():
-            print(schedule.schedule_id)
             if schedule.schedule_id == str(schedule_id):
                 schedule_dict = schedule.model_dump()
                 schedule_dict['source'] = schedule_source.__class__.__name__

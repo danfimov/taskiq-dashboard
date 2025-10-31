@@ -8,7 +8,7 @@ document.addEventListener('alpine:init', () => {
                 if (navigator.clipboard) {
                     await navigator.clipboard.writeText(this.textToCopy);
                 } else {
-                    // Fallback для старых браузеров
+                    // Fallback for old browsers
                     const textarea = document.createElement('textarea');
                     textarea.value = this.textToCopy;
                     document.body.appendChild(textarea);
