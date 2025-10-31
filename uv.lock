@@ -2231,6 +2231,7 @@ dependencies = [
     { name = "jinja2" },
     { name = "pydantic-settings" },
     { name = "sqlalchemy" },
+    { name = "taskiq" },
     { name = "uvicorn", extra = ["standard"] },
 ]
 
@@ -2291,6 +2292,7 @@ requires-dist = [
     { name = "jinja2", specifier = ">=3.1.6" },
     { name = "pydantic-settings", specifier = ">=2.11.0" },
     { name = "sqlalchemy", specifier = ">=2.0.43" },
+    { name = "taskiq", specifier = ">=0.11.20" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.34.1" },
 ]
 
