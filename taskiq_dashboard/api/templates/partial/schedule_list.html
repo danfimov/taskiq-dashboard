@@ -1,0 +1,14 @@
+{% for schedule in schedules %}
+    {% include "partial/schedule_list_item.html" with context %}
+{% endfor %}
+
+{% set _limit = limit|default(30) %}
+{% set _offset = offset|default(0) %}
+{% set _next_offset = _offset + schedules|length %}
+{% if schedules|length >= _limit %}
+    <tr class="infinite-sentinel"
+        hx-get="{{ url_for('Schedule list view') }}?limit={{ _limit }}&offset={{ _next_offset }}"
+        hx-trigger="revealed"
+        hx-swap="beforeend"
+        hx-target="#schedule-list-body"></tr>
+{% endif %}

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <title>Schedule Details</title>
+    <meta name="description" content="Schedule details in Taskiq Dashboard">
+    <meta name="keywords" content="python, taskiq, schedule">
+    {% include "partial/head.html" %}
+    <script defer>{% include "scripts/copy-button.js" %}</script>
+</head>
+<body class="bg-ctp-base text-ctp-text">
+    {% include "partial/header.html" %}
+    <main class="container mx-auto px-4 py-8">
+        <section class="p-6 mb-6 bg-ctp-lavender/10 rounded-xl">
+            <div class="flex justify-between items-start mb-4">
+            <div class="mb-4 pb-4">
+                <h1 class="font-bold text-xl">General Information</h1>
+                <p class="font-light">Description and general information about the schedule</p>
+            </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4">
+                <div>
+                    <h3 class="mb-2">Source</h3>
+                    <span
+                        class="px-2 py-1 inline-flex text-sm leading-5 rounded text-ctp-base bg-linear-to-br
+                            {% if schedule.source_id % 10 == 0 %} from-ctp-teal to-ctp-teal-600
+                            {% elif schedule.source_id % 10 == 1 %}from-ctp-green to-ctp-green-600
+                            {% elif schedule.source_id % 10 == 2 %}from-ctp-red to-ctp-red-600
+                            {% elif schedule.source_id % 10 == 3 %}from-ctp-blue to-ctp-blue-600
+                            {% elif schedule.source_id % 10 == 4 %}from-ctp-maroon to-ctp-maroon-600
+                            {% elif schedule.source_id % 10 == 5 %}from-ctp-sky to-ctp-sky-600
+                            {% elif schedule.source_id % 10 == 6 %}from-ctp-sapphire to-ctp-sapphire-600
+                            {% elif schedule.source_id % 10 == 7 %}from-ctp-flamingo to-ctp-flamingo-600
+                            {% elif schedule.source_id % 10 == 8 %}from-ctp-rosewater to-ctp-rosewater-600
+                            {% elif schedule.source_id % 10 == 9 %}from-ctp-mauve to-ctp-mauve-600{% endif %}"
+                    >
+                        {{ schedule.source }}
+                    </span>
+                </div>
+                <div>
+                    <h3 class="mb-2">Task name</h3>
+                    <p class="font-light">{{ schedule.task_name }}</p>
+                </div>
+                <div>
+                    <h3 class="mb-2">Cron</h3>
+                    <p class="font-light">{{ schedule.cron }}</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <div>
+                    <h3>Schedule ID</h3>
+                    <span class="font-light">{{ schedule.schedule_id }}</span>
+                    <div
+                        x-data="copyButton('{{ schedule.schedule_id }}')"
+                        @click="copy()"
+                        class="ml-2 p-1 rounded hover:bg-ctp-blue/20 cursor-pointer inline-flex items-center text-ctp-text hover:text-primary transition-colors"
+                    >
+                        <svg x-show="!copied" class="h-4 w-4">
+                            <use href="{{ url_for('static', path='icons.svg#copy') }}"></use>
+                        </svg>
+                        <svg x-show="copied" class="h-4 w-4">
+                            <use href="{{ url_for('static', path='icons.svg#copy-check') }}"></use>
+                        </svg>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="mb-2">Time</h3>
+                    <p>
+                        {{ schedule.time.strftime('%Y-%m-%d %H:%M:%S') if schedule.time else '-' }}
+                    </p>
+                </div>
+                <div>
+                    <h3 class="mb-2">Cron offset</h3>
+                    <p>{{ schedule.cron_offset }}</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Schedule arguments section -->
+        <section class="p-6 mb-6 bg-ctp-lavender/10 rounded-xl">
+            <div class="mb-4 pb-4">
+                <h2 class="font-bold text-xl">Scheduled task arguments</h2>
+                <p class="font-light">Information about positional and keyword arguments of scheduled task</p>
+            </div>
+
+            <div class="mb-4">
+                <h3 class="mb-2 font-normal">Positional arguments</h3>
+                {% if schedule.args %}
+                    <div class="bg-ctp-base rounded p-4 overflow-x-auto">
+                        <pre class="whitespace-pre-wrap text-sm">{{ schedule.args | tojson(indent=2) }}</pre>
+                    </div>
+                {% else %}
+                    <p class="text-ctp-subtext0">No arguments provided</p>
+                {% endif %}
+            </div>
+
+            <div class="mb-4">
+                <h3 class="mb-2 font-normal">Keyword arguments</h3>
+                {% if schedule.kwargs %}
+                    <div class="bg-ctp-base rounded p-4 overflow-x-auto">
+                        <pre class="whitespace-pre-wrap text-sm">{{ schedule.kwargs | tojson(indent=2) }}</pre>
+                    </div>
+                {% else %}
+                    <p class="text-ctp-subtext0">No keyword arguments provided</p>
+                {% endif %}
+            </div>
+
+            <div class="mb-4">
+                <h3 class="mb-2 font-normal">Labels</h3>
+                {% if schedule.labels %}
+                    <div class="bg-ctp-base rounded p-4 overflow-x-auto">
+                        <pre class="whitespace-pre-wrap text-sm">{{ schedule.labels | tojson(indent=2) }}</pre>
+                    </div>
+                {% else %}
+                    <p class="text-ctp-subtext0">No labels provided</p>
+                {% endif %}
+            </div>
+        </section>
+    </main>
+
+</body>
+</html>

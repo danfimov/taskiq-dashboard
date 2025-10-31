@@ -1,4 +1,5 @@
 import asyncio
+import datetime as dt
 import random
 import typing as tp
 
@@ -34,7 +35,10 @@ scheduler = TaskiqScheduler(
 
 @broker.task(
     task_name='solve_all_problems',
-    schedule=[{'cron': '*/1 * * * *'}],
+    schedule=[
+        {'cron': '*/1 * * * *'},
+        {'time': dt.datetime.now(dt.timezone.utc) + dt.timedelta(minutes=2)},
+    ],
 )
 async def best_task_ever(*args, **kwargs) -> dict[str, tp.Any]:
     """Solve all problems in the world."""
@@ -57,6 +61,7 @@ def run_admin_panel() -> None:
     app = TaskiqDashboard(
         api_token='supersecret',
         broker=broker,
+        scheduler=scheduler,
         host='0.0.0.0',
         port=8000,
     )

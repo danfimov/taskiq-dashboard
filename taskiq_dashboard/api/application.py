@@ -7,7 +7,7 @@ from fastapi.staticfiles import StaticFiles
 
 from taskiq_dashboard import dependencies
 from taskiq_dashboard.api.middlewares import AccessTokenMiddleware
-from taskiq_dashboard.api.routers import action_router, event_router, system_router, task_router
+from taskiq_dashboard.api.routers import action_router, event_router, schedule_router, system_router, task_router
 from taskiq_dashboard.api.routers.exception_handlers import exception_handler__not_found
 from taskiq_dashboard.domain.dto.task_status import TaskStatus
 from taskiq_dashboard.domain.services.schema_service import AbstractSchemaService
@@ -33,7 +33,19 @@ async def lifespan(app: fastapi.FastAPI) -> tp.AsyncGenerator[None, None]:
     if app.state.broker is not None:
         await app.state.broker.startup()
 
+    if app.state.scheduler is not None:
+        for schedule_source in app.state.scheduler.sources:
+            await schedule_source.startup()
+
     yield
+
+    if app.state.scheduler is not None:
+        for schedule_source in app.state.scheduler.sources:
+            await schedule_source.shutdown()
+
+    if app.state.broker is not None:
+        await app.state.broker.shutdown()
+
     await app.state.dishka_container.close()
 
 
@@ -52,6 +64,7 @@ def get_application() -> fastapi.FastAPI:
     app.include_router(router=task_router)
     app.include_router(router=event_router)
     app.include_router(router=action_router)
+    app.include_router(router=schedule_router)
     app.mount('/static', StaticFiles(directory='taskiq_dashboard/api/static'), name='static')
     app.add_middleware(AccessTokenMiddleware)
     setup_dishka(container=dependencies.container, app=app)

@@ -11,7 +11,7 @@ By passing `broker` instance to the `TaskiqDashboard` constructor, you will get 
 In this example, we will demonstrate how to set up Taskiq Dashboard using a PostgreSQL broker along with a task scheduler:
 
 ```python
---8<-- "docs/examples/example_with_schedule_source.py"
+--8<-- "docs/examples/example_with_broker.py"
 ```
 
 To run this example, execute the following commands in different terminals:
@@ -19,19 +19,21 @@ To run this example, execute the following commands in different terminals:
 1.  Run the worker:
 
     ```bash
-    uv run taskiq worker docs.examples.example_with_schedule_source:broker --workers 1
+    uv run taskiq worker docs.examples.example_with_broker:broker --workers 1
     ```
 
-2. Run the scheduler:
+2. Run the admin panel:
 
     ```bash
-    uv run taskiq scheduler docs.examples.example_with_schedule_source:scheduler
+    uv run python -m docs.examples.example_with_broker admin_panel
     ```
 
-3. Run the admin panel:
+
+3. Send task:
 
     ```bash
-    uv run python -m docs.examples.example_with_schedule_source
+    uv run python -m docs.examples.example_with_broker send_task
     ```
 
-After that, open your browser and navigate to `http://0.0.0.0:8000` to access the dashboard.
+
+After that, open your browser and navigate to `http://0.0.0.0:8000` to access the dashboard and see your task.

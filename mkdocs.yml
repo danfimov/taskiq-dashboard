@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=https://squidfunk.github.io/mkdocs-material/schema.json
 
-site_name: taskiq-dashboard
+site_name: Taskiq Dashboard
 repo_url: https://github.com/danfimov/taskiq-dashboard
 repo_name: taskiq-dashboard
 edit_uri: edit/main/docs/
@@ -10,7 +10,7 @@ nav:
       - index.md
   - Tutorial:
       - tutorial/run_with_broker.md
-  #     - tutorial/common_issues.md
+      - tutorial/run_with_scheduler.md
   - API:
       - reference.md
   - Contributing:

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <title>Taskiq Dashboard</title>
+    <meta name="description" content="Schedule list page of Taskiq Dashboard">
+    <meta name="keywords" content="python, taskiq, schedules">
+    {% include "partial/head.html" %}
+</head>
+<body class="bg-ctp-base"
+    hx-on:keydown='{% include "scripts/focus_on_search_field.js" %}'>
+    {% include "partial/header.html" %}
+    <main class="container mx-auto pb-8">
+    <section class="overflow-x-auto mb-6 p-5">
+        <table id="task-list" class="min-w-full divide-y divide-ctp-blue/20 table-auto">
+            <thead>
+                <tr class="sticky top-0">
+                    <th scope="col" class="px-6 py-3 text-left font-normal text-ctp-text tracking-wider">Schedule ID</th>
+                    <th scope="col" class="px-6 py-3 text-left font-normal text-ctp-text tracking-wider">Source</th>
+                    <th scope="col" class="px-6 py-3 text-left font-normal text-ctp-text tracking-wider">Task name</th>
+                    <th scope="col" class="px-6 py-3 text-left font-normal text-ctp-text tracking-wider">Cron</th>
+                    <th scope="col" class="px-6 py-3 text-left font-normal text-ctp-text tracking-wider">Cron offset</th>
+                    <th scope="col" class="px-6 py-3 text-left font-normal text-ctp-text tracking-wider">Time</th>
+                </tr>
+            </thead>
+            <tbody id="schedule-list-body" class="divide-y text-ctp-text divide-ctp-blue/20">
+                {% include "partial/schedule_list.html" with context %}
+            </tbody>
+        </table>
+    </section>
+    </main>
+</body>
+</html>

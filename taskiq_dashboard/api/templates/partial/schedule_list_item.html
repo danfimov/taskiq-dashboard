@@ -1,0 +1,46 @@
+<tr id="schedule-list-item-{{ schedule.schedule_id }}" class="group whitespace-nowrap text-sm">
+    <td class="px-6 py-4 group-hover:bg-ctp-blue-100/20 w-min">
+        <a href="{{ url_for('Schedule details view', schedule_id=schedule.schedule_id) }}" class="text-ctp-text hover:text-ctp-subtext0 block w-full h-full">
+            {{ schedule.schedule_id }}
+        </a>
+    </td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm group-hover:bg-ctp-blue-100/20 w-auto">
+        <span
+            class="px-2 py-1 inline-flex text-sm leading-5 rounded text-ctp-base bg-linear-to-br
+                {% if schedule.source_id % 10 == 0 %} from-ctp-teal to-ctp-teal-600
+                {% elif schedule.source_id % 10 == 1 %}from-ctp-green to-ctp-green-600
+                {% elif schedule.source_id % 10 == 2 %}from-ctp-red to-ctp-red-600
+                {% elif schedule.source_id % 10 == 3 %}from-ctp-blue to-ctp-blue-600
+                {% elif schedule.source_id % 10 == 4 %}from-ctp-maroon to-ctp-maroon-600
+                {% elif schedule.source_id % 10 == 5 %}from-ctp-sky to-ctp-sky-600
+                {% elif schedule.source_id % 10 == 6 %}from-ctp-sapphire to-ctp-sapphire-600
+                {% elif schedule.source_id % 10 == 7 %}from-ctp-flamingo to-ctp-flamingo-600
+                {% elif schedule.source_id % 10 == 8 %}from-ctp-rosewater to-ctp-rosewater-600
+                {% elif schedule.source_id % 10 == 9 %}from-ctp-mauve to-ctp-mauve-600{% endif %}"
+        >
+            {{ schedule.source }}
+        </span>
+    </td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm group-hover:bg-ctp-blue-100/20 w-auto">{{ schedule.task_name }}</td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm group-hover:bg-ctp-blue-100/20 w-auto">
+        {% if schedule.cron is not none %}
+            {{ schedule.cron }}
+        {% else %}
+            -
+        {% endif %}
+    </td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm group-hover:bg-ctp-blue-100/20 w-auto">
+        {% if schedule.cron_offset is not none %}
+            {{ schedule.cron_offset }}
+        {% else %}
+            -
+        {% endif %}
+    </td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm group-hover:bg-ctp-blue-100/20 w-auto">
+        {% if schedule.time is not none %}
+            {{ schedule.time.strftime('%Y-%m-%d %H:%M:%S') }}
+        {% else %}
+            -
+        {% endif %}
+    </td>
+</tr>

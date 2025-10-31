@@ -1,15 +1,21 @@
 <header class="bg-ctp-base">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-4 py-6">
         <div class="flex items-center justify-between">
-            <a href="{{ url_for('Task list view') }}" class="group">
-                <div class="flex flex-col items-center gap-2">
-                    <div class="w-24 h-16 flex items-center justify-center">
-                        <svg class="w-48 h-16" aria-hidden="true">
-                            <use href="{{ url_for('static', path='logo_taskiq.svg') }}"></use>
-                        </svg>
+            <div class="flex items-center gap-8">
+                <a href="{{ url_for('Task list view') }}" class="group">
+                    <div class="flex flex-col items-center gap-2">
+                        <div class="w-24 h-16 flex items-center justify-center">
+                            <svg class="w-48 h-16" aria-hidden="true">
+                                <use href="{{ url_for('static', path='logo_taskiq.svg') }}"></use>
+                            </svg>
+                        </div>
                     </div>
-                </div>
-            </a>
+                </a>
+                <nav class="hidden sm:flex items-center gap-6 ml-4 mt-2">
+                    <a href="{{ url_for('Task list view') }}" class="text-ctp-text hover:text-ctp-mauve transition-colors font-medium">Tasks</a>
+                    <a href="{{ url_for('Schedule list view') }}" class="text-ctp-text hover:text-ctp-mauve transition-colors font-medium">Schedules</a>
+                </nav>
+            </div>
             <div class="flex items-center gap-4">
                 <a href="https://github.com/danfimov/taskiq-dashboard"
                    target="_blank"

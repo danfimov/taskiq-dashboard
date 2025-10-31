@@ -3,8 +3,9 @@
 <head>
     <title>Task Details</title>
     <meta name="description" content="Task details in Taskiq Dashboard">
-    <meta name="keywords" content="python, packages, projects, libraries">
+    <meta name="keywords" content="python, taskiq, task">
     {% include "partial/head.html" %}
+    <script defer>{% include "scripts/copy-button.js" %}</script>
 </head>
 <body class="bg-ctp-base text-ctp-text">
     {% include "partial/header.html" %}
@@ -17,8 +18,8 @@
                 <p class="font-light">Description and general information about the task</p>
             </div>
             <div class="flex items-center gap-2 text-ctp-base">
-                  <!-- Actions -->
-                  {% if enable_actions %}
+                <!-- Actions -->
+                {% if enable_actions %}
                     <button
                         class="px-3 py-1.5 bg-ctp-green rounded cursor-pointer hover:bg-ctp-green-600 transition focus:outline-2 focus:outline-offset-2 focus:outline-ctp-green-500 active:bg-ctp-green-700"
                         hx-post="{{ url_for('Rerun task', task_id=task.id) }}"
@@ -99,21 +100,8 @@
                 <h3>Task ID</h3>
                 <span class="font-light">{{ task.id }}</span>
                 <div
-                    x-data="{ copied: false }"
-                    x-on:click="
-                        if (navigator.clipboard) {
-                            navigator.clipboard.writeText('{{ task.id }}');
-                        } else {
-                            const textarea = document.createElement('textarea');
-                            textarea.value = '{{ task.id }}';
-                            document.body.appendChild(textarea);
-                            textarea.select();
-                            document.execCommand('copy');
-                            document.body.removeChild(textarea);
-                        }
-                        copied = true;
-                        setTimeout(() => copied = false, 1500);
-                    "
+                    x-data="copyButton('{{ task.id }}')"
+                    @click="copy()"
                     class="ml-2 p-1 rounded hover:bg-ctp-blue/20 cursor-pointer inline-flex items-center text-ctp-text hover:text-primary transition-colors"
                 >
                     <svg x-show="!copied" class="h-4 w-4">
