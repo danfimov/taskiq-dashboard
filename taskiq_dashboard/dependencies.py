@@ -3,11 +3,12 @@ import typing as tp
 from dishka import Provider, Scope, make_async_container, provide
 
 from taskiq_dashboard.domain.services.schema_service import AbstractSchemaService
-from taskiq_dashboard.domain.services.task_service import TaskRepository
+from taskiq_dashboard.domain.services.task_service import AbstractTaskRepository
 from taskiq_dashboard.infrastructure import Settings, get_settings
+from taskiq_dashboard.infrastructure.database.schemas import PostgresTask, SqliteTask
 from taskiq_dashboard.infrastructure.database.session_provider import AsyncPostgresSessionProvider
 from taskiq_dashboard.infrastructure.services.schema_service import SchemaService
-from taskiq_dashboard.infrastructure.services.task_service import PostgresTaskRepository, SqliteTaskService
+from taskiq_dashboard.infrastructure.services.task_service import TaskRepository
 
 
 class TaskiqDashboardProvider(Provider):
@@ -34,13 +35,10 @@ class TaskiqDashboardProvider(Provider):
         self,
         settings: Settings,
         session_provider: AsyncPostgresSessionProvider,
-    ) -> TaskRepository:
-        if settings.storage_type == 'postgres':
-            return PostgresTaskRepository(
-                session_provider=session_provider,
-            )
-        return SqliteTaskService(
+    ) -> AbstractTaskRepository:
+        return TaskRepository(
             session_provider=session_provider,
+            task_model=PostgresTask if settings.storage_type == 'postgres' else SqliteTask,
         )
 
     @provide

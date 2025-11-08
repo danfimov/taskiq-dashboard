@@ -20,7 +20,7 @@ nav:
 theme:
   name: material
   language: ru
-  favicon: assets/favicon.ico
+  favicon: assets/favicon/favicon.svg
   features:
     - toc.follow
     - toc.integrate

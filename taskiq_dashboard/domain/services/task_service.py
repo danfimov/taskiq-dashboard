@@ -6,7 +6,7 @@ from taskiq_dashboard.domain.dto.task import ExecutedTask, QueuedTask, StartedTa
 from taskiq_dashboard.domain.dto.task_status import TaskStatus
 
 
-class TaskRepository(ABC):
+class AbstractTaskRepository(ABC):
     @abstractmethod
     async def find_tasks(  # noqa: PLR0913
         self,

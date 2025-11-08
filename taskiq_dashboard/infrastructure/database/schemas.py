@@ -2,7 +2,7 @@ import datetime as dt
 import uuid
 
 import sqlalchemy as sa
-from sqlalchemy.dialects import postgresql
+from sqlalchemy.dialects import postgresql, sqlite
 from sqlalchemy.orm import Mapped, as_declarative, mapped_column
 
 from taskiq_dashboard.domain.dto import task_status
@@ -33,8 +33,9 @@ class PostgresTask(BaseTableSchema):
 
     worker: Mapped[str] = mapped_column(postgresql.TEXT, nullable=False)
 
-    args: Mapped[str] = mapped_column(postgresql.JSONB, default='[]')
-    kwargs: Mapped[str] = mapped_column(postgresql.JSONB, default='{}')
+    args: Mapped[str] = mapped_column(postgresql.JSONB, nullable=False, default='[]')
+    kwargs: Mapped[str] = mapped_column(postgresql.JSONB, nullable=False, default='{}')
+    labels: Mapped[str] = mapped_column(postgresql.JSONB, nullable=False, default='{}')
 
     result: Mapped[str] = mapped_column(postgresql.JSONB, nullable=True, default=None)
     error: Mapped[str] = mapped_column(postgresql.TEXT, nullable=True, default=None)
@@ -46,8 +47,7 @@ class PostgresTask(BaseTableSchema):
     )
     started_at: Mapped[dt.datetime] = mapped_column(
         sa.DateTime(timezone=True),
-        nullable=False,
-        default=dt.datetime.now,
+        nullable=True,
     )
     finished_at: Mapped[dt.datetime] = mapped_column(
         sa.DateTime(timezone=True),
@@ -59,20 +59,21 @@ class SqliteTask(BaseTableSchema):
     __tablename__ = 'tasks'
 
     id: Mapped[uuid.UUID] = mapped_column(
-        sa.Uuid(native_uuid=False),
+        sa.Uuid(as_uuid=True),
         primary_key=True,
         default=uuid.uuid4,
     )
-    name: Mapped[str] = mapped_column(sa.String, nullable=False)
-    status: Mapped[task_status.TaskStatus] = mapped_column(sa.Integer, nullable=False)
+    name: Mapped[str] = mapped_column(sqlite.TEXT, nullable=False)
+    status: Mapped[task_status.TaskStatus] = mapped_column(sqlite.INTEGER, nullable=False)
 
-    worker: Mapped[str] = mapped_column(sa.String, nullable=False)
+    worker: Mapped[str] = mapped_column(sqlite.TEXT, nullable=False)
 
-    args: Mapped[str] = mapped_column(sa.String, default='[]')
-    kwargs: Mapped[str] = mapped_column(sa.String, default='{}')
+    args: Mapped[str] = mapped_column(sqlite.JSON, nullable=False, default='[]')
+    kwargs: Mapped[str] = mapped_column(sqlite.JSON, nullable=False, default='{}')
+    labels: Mapped[str] = mapped_column(sqlite.JSON, nullable=False, default='{}')
 
-    result: Mapped[str] = mapped_column(sa.String, nullable=True, default=None)
-    error: Mapped[str] = mapped_column(sa.String, nullable=True, default=None)
+    result: Mapped[str] = mapped_column(sqlite.JSON, nullable=True, default=None)
+    error: Mapped[str] = mapped_column(sqlite.TEXT, nullable=True, default=None)
 
     queued_at: Mapped[dt.datetime] = mapped_column(
         sa.DateTime(timezone=True),
@@ -81,8 +82,7 @@ class SqliteTask(BaseTableSchema):
     )
     started_at: Mapped[dt.datetime] = mapped_column(
         sa.DateTime(timezone=True),
-        nullable=False,
-        default=dt.datetime.now,
+        nullable=True,
     )
     finished_at: Mapped[dt.datetime] = mapped_column(
         sa.DateTime(timezone=True),

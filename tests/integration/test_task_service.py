@@ -7,7 +7,7 @@ from polyfactory.factories.sqlalchemy_factory import SQLAlchemyFactory
 
 from taskiq_dashboard.domain.dto.task import ExecutedTask, QueuedTask, StartedTask
 from taskiq_dashboard.domain.dto.task_status import TaskStatus
-from taskiq_dashboard.domain.services.task_service import TaskRepository
+from taskiq_dashboard.domain.services.task_service import AbstractTaskRepository
 from taskiq_dashboard.infrastructure.database.schemas import PostgresTask
 from taskiq_dashboard.infrastructure.database.session_provider import AsyncPostgresSessionProvider
 
@@ -17,12 +17,13 @@ class PostgresTaskFactory(SQLAlchemyFactory[PostgresTask]):
     __set_relationships__ = False
 
     status = Use(SQLAlchemyFactory.__random__.choice, [task_status.value for task_status in TaskStatus])
+    args = Use(list)
 
 
 class TestTaskService:
     async def test_when_task_batch_update__then_update_task_statuses(
         self,
-        task_service: TaskRepository,
+        task_service: AbstractTaskRepository,
         session_provider: AsyncPostgresSessionProvider,
     ) -> None:
         # Given
@@ -46,7 +47,7 @@ class TestTaskService:
 
     async def test_when_task_table_is_empty__then_return_empty_list(
         self,
-        task_service: TaskRepository,
+        task_service: AbstractTaskRepository,
     ) -> None:
         # Given & When
         tasks = await task_service.find_tasks()
@@ -56,7 +57,7 @@ class TestTaskService:
 
     async def test_when_getting_task_by_id_and_task_exists__then_return_task(
         self,
-        task_service: TaskRepository,
+        task_service: AbstractTaskRepository,
         session_provider: AsyncPostgresSessionProvider,
     ) -> None:
         # Given
@@ -75,7 +76,7 @@ class TestTaskService:
 
     async def test_when_getting_task_by_id_and_task_does_not_exist__then_return_none(
         self,
-        task_service: TaskRepository,
+        task_service: AbstractTaskRepository,
     ) -> None:
         # Given
         non_existent_id = uuid.uuid4()
@@ -88,7 +89,7 @@ class TestTaskService:
 
     async def test_when_creating_task__then_task_is_stored_with_queued_status(
         self,
-        task_service: TaskRepository,
+        task_service: AbstractTaskRepository,
         session_provider: AsyncPostgresSessionProvider,
     ) -> None:
         # Given
@@ -118,7 +119,7 @@ class TestTaskService:
 
     async def test_when_updating_task_with_started_task__then_task_status_is_in_progress(
         self,
-        task_service: TaskRepository,
+        task_service: AbstractTaskRepository,
         session_provider: AsyncPostgresSessionProvider,
     ) -> None:
         # Given
@@ -150,7 +151,7 @@ class TestTaskService:
 
     async def test_when_updating_task_with_executed_task_without_error__then_task_status_is_completed(
         self,
-        task_service: TaskRepository,
+        task_service: AbstractTaskRepository,
         session_provider: AsyncPostgresSessionProvider,
     ) -> None:
         # Given
@@ -182,7 +183,7 @@ class TestTaskService:
 
     async def test_when_updating_task_with_executed_task_with_error__then_task_status_is_failure(
         self,
-        task_service: TaskRepository,
+        task_service: AbstractTaskRepository,
         session_provider: AsyncPostgresSessionProvider,
     ) -> None:
         # Given
@@ -213,7 +214,7 @@ class TestTaskService:
 
     async def test_when_finding_tasks_with_status_filter__then_return_only_tasks_with_that_status(
         self,
-        task_service: TaskRepository,
+        task_service: AbstractTaskRepository,
         session_provider: AsyncPostgresSessionProvider,
     ) -> None:
         # Given
@@ -233,7 +234,7 @@ class TestTaskService:
 
     async def test_when_finding_tasks_with_name_search__then_return_only_matching_tasks(
         self,
-        task_service: TaskRepository,
+        task_service: AbstractTaskRepository,
         session_provider: AsyncPostgresSessionProvider,
     ) -> None:
         # Given
@@ -250,7 +251,7 @@ class TestTaskService:
 
     async def test_when_finding_tasks_with_pagination__then_return_correct_page(
         self,
-        task_service: TaskRepository,
+        task_service: AbstractTaskRepository,
         session_provider: AsyncPostgresSessionProvider,
     ) -> None:
         # Given
@@ -277,12 +278,15 @@ class TestTaskService:
 
     async def test_when_finding_tasks_sorted_by_started_at_descending__then_return_tasks_in_correct_order(
         self,
-        task_service: TaskRepository,
+        task_service: AbstractTaskRepository,
         session_provider: AsyncPostgresSessionProvider,
     ) -> None:
         # Given
         PostgresTaskFactory.__async_session__ = session_provider.session
-        await PostgresTaskFactory.create_batch_async(5)
+        for minutes in range(5):
+            await PostgresTaskFactory.create_async(
+                started_at=dt.datetime.now(dt.timezone.utc) + dt.timedelta(minutes=minutes)
+            )
 
         # When
         tasks = await task_service.find_tasks(sort_by='started_at', sort_order='desc')
@@ -293,12 +297,15 @@ class TestTaskService:
 
     async def test_when_finding_tasks_sorted_by_started_at_ascending__then_return_tasks_in_correct_order(
         self,
-        task_service: TaskRepository,
+        task_service: AbstractTaskRepository,
         session_provider: AsyncPostgresSessionProvider,
     ) -> None:
         # Given
         PostgresTaskFactory.__async_session__ = session_provider.session
-        await PostgresTaskFactory.create_batch_async(5)
+        for minutes in range(5):
+            await PostgresTaskFactory.create_async(
+                started_at=dt.datetime.now(dt.timezone.utc) + dt.timedelta(minutes=minutes)
+            )
 
         # When
         tasks = await task_service.find_tasks(sort_by='started_at', sort_order='asc')
@@ -309,12 +316,15 @@ class TestTaskService:
 
     async def test_when_finding_tasks_sorted_by_finished_at_descending__then_return_tasks_in_correct_order(
         self,
-        task_service: TaskRepository,
+        task_service: AbstractTaskRepository,
         session_provider: AsyncPostgresSessionProvider,
     ) -> None:
         # Given
         PostgresTaskFactory.__async_session__ = session_provider.session
-        await PostgresTaskFactory.create_batch_async(5)
+        for minutes in range(5):
+            await PostgresTaskFactory.create_async(
+                finished_at=dt.datetime.now(dt.timezone.utc) + dt.timedelta(minutes=minutes)
+            )
 
         # When
         tasks = await task_service.find_tasks(sort_by='finished_at', sort_order='desc')
@@ -325,7 +335,7 @@ class TestTaskService:
 
     async def test_when_finding_tasks_with_multiple_filters_applied__then_return_correct_tasks(
         self,
-        task_service: TaskRepository,
+        task_service: AbstractTaskRepository,
         session_provider: AsyncPostgresSessionProvider,
     ) -> None:
         # Given
