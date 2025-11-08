@@ -10,7 +10,7 @@ from fastapi.responses import HTMLResponse
 
 from taskiq_dashboard.api.templates import jinja_templates
 from taskiq_dashboard.domain.dto.task_status import TaskStatus
-from taskiq_dashboard.domain.services.task_service import TaskRepository
+from taskiq_dashboard.domain.services.task_service import AbstractTaskRepository
 
 
 router = fastapi.APIRouter(
@@ -59,7 +59,7 @@ class TaskFilter(pydantic.BaseModel):
 )
 async def search_tasks(
     request: fastapi.Request,
-    repository: dishka_fastapi.FromDishka[TaskRepository],
+    repository: dishka_fastapi.FromDishka[AbstractTaskRepository],
     query: tp.Annotated[TaskFilter, fastapi.Query(...)],
     hx_request: tp.Annotated[bool, fastapi.Header(description='Request from htmx')] = False,  # noqa: FBT002
 ) -> HTMLResponse:
@@ -96,7 +96,7 @@ async def search_tasks(
 )
 async def task_details(
     request: fastapi.Request,
-    repository: dishka_fastapi.FromDishka[TaskRepository],
+    repository: dishka_fastapi.FromDishka[AbstractTaskRepository],
     task_id: uuid.UUID,
 ) -> HTMLResponse:
     """

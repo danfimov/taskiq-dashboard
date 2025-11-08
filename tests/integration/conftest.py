@@ -6,12 +6,12 @@ import pytest
 import sqlalchemy as sa
 from sqlalchemy_utils import create_database, database_exists, drop_database
 
-from taskiq_dashboard.domain.services.task_service import TaskRepository
+from taskiq_dashboard.domain.services.task_service import AbstractTaskRepository
 from taskiq_dashboard.infrastructure import get_settings
 from taskiq_dashboard.infrastructure.database.schemas import PostgresTask
 from taskiq_dashboard.infrastructure.database.session_provider import AsyncPostgresSessionProvider
 from taskiq_dashboard.infrastructure.services.schema_service import SchemaService
-from taskiq_dashboard.infrastructure.services.task_service import PostgresTaskRepository
+from taskiq_dashboard.infrastructure.services.task_service import TaskRepository
 from taskiq_dashboard.infrastructure.settings import PostgresSettings
 
 
@@ -70,5 +70,5 @@ async def cleanup_database(session_provider: AsyncPostgresSessionProvider) -> No
 @pytest.fixture
 async def task_service(
     session_provider: AsyncPostgresSessionProvider,
-) -> TaskRepository:
-    return PostgresTaskRepository(session_provider=session_provider)
+) -> AbstractTaskRepository:
+    return TaskRepository(session_provider=session_provider, task_model=PostgresTask)

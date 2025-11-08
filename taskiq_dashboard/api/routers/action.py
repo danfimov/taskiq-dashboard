@@ -8,7 +8,7 @@ from fastapi.responses import RedirectResponse, Response
 from starlette import status
 
 from taskiq_dashboard.api.templates import jinja_templates
-from taskiq_dashboard.domain.services.task_service import TaskRepository
+from taskiq_dashboard.domain.services.task_service import AbstractTaskRepository
 
 
 if tp.TYPE_CHECKING:
@@ -53,7 +53,7 @@ async def handle_task_run(
 async def handle_task_rerun(
     request: fastapi.Request,
     task_id: uuid.UUID,
-    repository: dishka_fastapi.FromDishka[TaskRepository],
+    repository: dishka_fastapi.FromDishka[AbstractTaskRepository],
 ) -> Response:
     broker: AsyncBroker | None = request.app.state.broker
     if broker is None:
@@ -72,6 +72,7 @@ async def handle_task_rerun(
     await (
         task.kicker()
         .with_task_id(new_task_id)
+        .with_labels(**existing_task.labels)
         .kiq(
             *existing_task.args,
             **existing_task.kwargs,
@@ -101,7 +102,7 @@ async def handle_task_rerun(
 )
 async def handle_task_delete(
     task_id: uuid.UUID,
-    repository: dishka_fastapi.FromDishka[TaskRepository],
+    repository: dishka_fastapi.FromDishka[AbstractTaskRepository],
 ) -> Response:
     await repository.delete_task(task_id)
     return RedirectResponse(

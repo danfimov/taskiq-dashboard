@@ -167,6 +167,17 @@
                     <p class="text-ctp-subtext0">No keyword arguments provided</p>
                 {% endif %}
             </div>
+
+            <div class="mb-4">
+                <h3 class="mb-2 font-normal">Labels</h3>
+                {% if task.labels %}
+                    <div class="bg-ctp-base rounded p-4 overflow-x-auto">
+                        <pre class="whitespace-pre-wrap text-sm">{{ task.labels | tojson(indent=2) }}</pre>
+                    </div>
+                {% else %}
+                    <p class="text-ctp-subtext0">No labels provided</p>
+                {% endif %}
+            </div>
         </section>
 
         <!-- Task result section -->
