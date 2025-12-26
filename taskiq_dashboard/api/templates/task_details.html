@@ -116,7 +116,11 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                 <div>
                     <h3 class="mb-2">Started at</h3>
-                    <p class="font-light">{{ task.started_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                    {% if task.started_at %}
+                        <p class="font-light">{{ task.started_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                    {% else %}
+                        <p class="font-light">Not started yet</p>
+                    {% endif %}
                 </div>
                 <div>
                     <h3 class="mb-2">Finished at</h3>
@@ -189,9 +193,9 @@
 
             <div class="mb-4">
                 <h3 class="mb-2 font-normal">Result</h3>
-                {% if task.result %}
+                {% if task_result %}
                     <div class="bg-ctp-base rounded p-4 overflow-x-auto">
-                        <pre class="whitespace-pre-wrap text-sm">{{ task.result | tojson(indent=2) }}</pre>
+                        <pre class="whitespace-pre-wrap text-sm">{{ task_result | safe }}</pre>
                     </div>
                 {% elif task.status == 0 %}
                     <p class="font-light text-ctp-subtext0">Task is still in progress</p>

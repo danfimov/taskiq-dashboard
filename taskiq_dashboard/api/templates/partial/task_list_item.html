@@ -23,7 +23,12 @@
         </span>
     </td>
     <td class="px-6 py-4 group-hover:bg-ctp-blue-100/20 w-auto">{{ task.worker }}</td>
-    <td class="px-6 py-4 group-hover:bg-ctp-blue-100/20 w-min">{{ task.started_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+
+    {% if task.started_at %}
+        <td class="px-6 py-4 group-hover:bg-ctp-blue-100/20 w-min">{{ task.started_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+    {% else %}
+        <td class="px-6 py-4 group-hover:bg-ctp-blue-100/20 w-min">-</td>
+    {% endif %}
     <td class="px-6 py-4 group-hover:bg-ctp-blue-100/20 w-min">
         {{ task.finished_at.strftime('%Y-%m-%d %H:%M:%S') if task.finished_at else '-' }}
     </td>
