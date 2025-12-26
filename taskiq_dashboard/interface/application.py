@@ -13,7 +13,7 @@ class TaskiqDashboard:
     def __init__(
         self,
         api_token: str,
-        storage_type: str = 'sqlite',
+        storage_type: tp.Literal['sqlite', 'postgres'] = 'sqlite',
         database_dsn: str = 'sqlite+aiosqlite:///taskiq_dashboard.db',
         broker: AsyncBroker | None = None,
         scheduler: TaskiqScheduler | None = None,
@@ -31,7 +31,7 @@ class TaskiqDashboard:
         """
         self.settings = get_settings()
         self.settings.api.token = SecretStr(api_token)
-
+        self.settings.storage_type = storage_type
         if storage_type == 'sqlite':
             self.settings.sqlite = SqliteSettings(dsn=database_dsn)  # type: ignore[call-arg]
         else:
