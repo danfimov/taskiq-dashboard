@@ -19,7 +19,7 @@ class Task(pydantic.BaseModel):
     kwargs: dict[str, tp.Any] = pydantic.Field(default_factory=dict)
     labels: dict[str, tp.Any] = pydantic.Field(default_factory=dict)
 
-    result: dict | pydantic.Json | None = None
+    result: dict | list | pydantic.Json | None = None
     error: str | None = None
 
     queued_at: datetime.datetime | None = None
@@ -36,7 +36,7 @@ class QueuedTask(pydantic.BaseModel):
     kwargs: dict[str, tp.Any] = pydantic.Field(default_factory=dict)
     labels: dict[str, tp.Any] = pydantic.Field(default_factory=dict)
     task_name: str
-    worker: str
+    worker: str | None
     queued_at: datetime.datetime
 
     model_config = pydantic.ConfigDict(
