@@ -121,6 +121,7 @@ class Settings(pydantic_settings.BaseSettings):
         env_prefix='TASKIQ_DASHBOARD__',
         env_file=('conf/.env', os.getenv('ENV_FILE', '.env')),
         env_file_encoding='utf-8',
+        extra='ignore',
     )
 
 
