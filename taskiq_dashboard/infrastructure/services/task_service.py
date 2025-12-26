@@ -66,7 +66,7 @@ class TaskRepository(AbstractTaskRepository):
             id=task_id,
             name=task_arguments.task_name,
             status=TaskStatus.QUEUED.value,
-            worker=task_arguments.worker,
+            worker=task_arguments.worker or '',
             args=task_arguments.args,
             kwargs=task_arguments.kwargs,
             labels=task_arguments.labels,
@@ -91,7 +91,7 @@ class TaskRepository(AbstractTaskRepository):
                 kwargs=task_arguments.kwargs,
                 labels=task_arguments.labels,
                 name=task_arguments.task_name,
-                worker=task_arguments.worker,
+                worker=task_arguments.worker or '',
             )
         else:
             task_status = TaskStatus.FAILURE if task_arguments.error is not None else TaskStatus.COMPLETED
