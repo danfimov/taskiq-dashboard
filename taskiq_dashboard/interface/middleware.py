@@ -102,7 +102,7 @@ class DashboardMiddleware(TaskiqMiddleware):
         This hook is executed right after the task is sent.
 
         This is a client-side hook. It executes right
-        after the messages is kicked in broker.
+        after the message is kicked in broker.
 
         :param message: kicked message.
         """
