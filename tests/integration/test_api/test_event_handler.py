@@ -21,7 +21,7 @@ class TaskiqAdminWithTestClientMiddleware(DashboardMiddleware):
         self,
         url: str,
         api_token: str,
-        timeout: int = 5,
+        timeout: float = 5,
         broker_name: str = 'default_broker',
         test_client: AsyncClient | None = None,
     ) -> None:
