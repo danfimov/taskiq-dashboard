@@ -25,7 +25,7 @@ class DashboardMiddleware(TaskiqMiddleware):
         url (str): Base URL of the admin API.
         api_token (str): Token used for authenticating with the API.
         timeout (float): Timeout (in seconds) for API requests.
-        broker_name (str): Optional name of the broker instance to include in the payload.
+        broker_name (str): Name of the broker instance to include in the payload. Defaults to 'default_broker'.
         _pending (set[asyncio.Task]): Set of currently running background request tasks.
         _client (httpx.AsyncClient | None): HTTP client session used for sending requests.
     """
