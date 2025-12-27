@@ -3,10 +3,9 @@ import random
 import sys
 import typing as tp
 
-from taskiq.middlewares.taskiq_admin_middleware import TaskiqAdminMiddleware
 from taskiq_pg.asyncpg import AsyncpgBroker, AsyncpgResultBackend
 
-from taskiq_dashboard import TaskiqDashboard
+from taskiq_dashboard import DashboardMiddleware, TaskiqDashboard
 
 
 dsn = 'postgres://taskiq-dashboard:look_in_vault@localhost:5432/taskiq-dashboard'
@@ -14,10 +13,10 @@ broker = (
     AsyncpgBroker(dsn)
     .with_result_backend(AsyncpgResultBackend(dsn))
     .with_middlewares(
-        TaskiqAdminMiddleware(
+        DashboardMiddleware(
             url='http://0.0.0.0:8000',  # the url to your taskiq-admin instance
             api_token='supersecret',  # any secret enough string
-            taskiq_broker_name='my_worker',
+            broker_name='my_worker',
         )
     )
 )

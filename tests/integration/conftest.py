@@ -1,5 +1,6 @@
 import os
 import uuid
+from collections.abc import AsyncGenerator, Generator
 from contextlib import suppress
 
 import pytest
@@ -16,7 +17,7 @@ from taskiq_dashboard.infrastructure.settings import PostgresSettings
 
 
 @pytest.fixture(scope='session')
-def postgres() -> PostgresSettings:
+def postgres() -> Generator[PostgresSettings]:
     """
     Creates a temporary database for tests
     """
@@ -39,21 +40,21 @@ def postgres() -> PostgresSettings:
 
 
 @pytest.fixture
-async def database(postgres: PostgresSettings) -> str:
+async def database(postgres: PostgresSettings) -> PostgresSettings:
     session_provider = AsyncPostgresSessionProvider(connection_settings=postgres)
     await SchemaService(session_provider).create_schema()
     return postgres
 
 
 @pytest.fixture
-async def session_provider(database: PostgresSettings) -> AsyncPostgresSessionProvider:
+async def session_provider(database: PostgresSettings) -> AsyncGenerator[AsyncPostgresSessionProvider]:
     session_provider = AsyncPostgresSessionProvider(connection_settings=database)
     yield session_provider
     await session_provider.close()
 
 
 @pytest.fixture(autouse=True)
-async def cleanup_database(session_provider: AsyncPostgresSessionProvider) -> None:
+async def cleanup_database(session_provider: AsyncPostgresSessionProvider) -> AsyncGenerator[None]:
     """Clean up database before each test"""
     async with session_provider.session() as session:
         await session.execute(sa.delete(PostgresTask))

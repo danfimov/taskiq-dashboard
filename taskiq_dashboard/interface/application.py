@@ -52,12 +52,13 @@ class TaskiqDashboard:
             'access_log': True,
         }
         self._uvicorn_kwargs.update(uvicorn_kwargs or {})
+        self._application = get_application()
+        self._application.state.broker = self.broker
+        self._application.state.scheduler = self.scheduler
 
     def run(self) -> None:
-        application = get_application()
-        application.state.broker = self.broker
-        application.state.scheduler = self.scheduler
+        """Run the Taskiq Dashboard application using Uvicorn."""
         uvicorn.run(
-            application,
+            self._application,
             **self._uvicorn_kwargs,  # type: ignore[arg-type]
         )
