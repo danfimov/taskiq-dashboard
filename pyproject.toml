@@ -41,6 +41,8 @@ dependencies = [
     # db
     "asyncpg>=0.30.0",
     "sqlalchemy>=2.0.43",
+    # http client for middleware
+    "httpx>=0.28.1",
     # other
     "pydantic-settings>=2.11.0",
     "dishka>=1.7.2",
@@ -58,7 +60,6 @@ dev = [
     {include-group = "test"},
     {include-group = "docs"},
     {include-group = "examples"},
-    "httpx>=0.28.1",
     "prek>=0.2.8",
 ]
 lint = [
@@ -76,6 +77,8 @@ test = [
     "pytest>=8.4.2",
     "pytest-asyncio>=1.1.0",
     "pytest-cov>=7.0.0",
+    # for request mocking
+    "pytest-httpx>=0.30.0",
     # for test databases management
     "pytest-deadfixtures>=2.2.1",
     "sqlalchemy-utils>=0.42.0",
