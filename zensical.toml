@@ -56,6 +56,8 @@ nav = [
   { "Contributing" = "contributing.md" },
 ]
 
+use_directory_urls = true
+
 # With the "extra_css" option you can add your own CSS styling to customize
 # your Zensical project according to your needs. You can add any number of
 # CSS files.
@@ -329,8 +331,13 @@ repo = "fontawesome/brands/github"
 # icon = "fontawesome/brands/github"
 # link = "https://github.com/user/repo"
 
-[project.plugins.offline]
+[project.markdown_extensions.attr_list]
+
 [project.markdown_extensions.pymdownx.snippets]
+
 [project.markdown_extensions.pymdownx.superfences]
+
+[project.markdown_extensions.pymdownx.blocks.caption]
+
 [project.markdown_extensions.pymdownx.tabbed]
 alternate_style = true
