@@ -1,0 +1,15 @@
+:root  > * {
+  --md-primary-fg-color:        #FF1A3E;
+  --md-primary-fg-color--light: #B3001D;
+  --md-primary-fg-color--dark:  #FF1A3E;
+
+  --md-accent-fg-color: #B3001D;
+  --md-accent-fg-color--transparent: rgba(183.6, 20.4, 46.512, .14);
+
+
+}
+
+/*Customize background for text and code later
+[data-md-color-scheme="slate"] {
+    --md-default-bg-color: #1b1b1f;
+}*/

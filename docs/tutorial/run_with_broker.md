@@ -6,7 +6,7 @@ title: Run with broker
 You can run Taskiq Dashboard with any broker.
 By passing `broker` instance to the `TaskiqDashboard` constructor, you will get additional features like task actions.
 
-![interface with task actions](/assets/task_actions.png)
+![interface with task actions](../assets/task_actions.png)
 
 In this example, we will demonstrate how to set up Taskiq Dashboard using a PostgreSQL broker along with a task scheduler:
 

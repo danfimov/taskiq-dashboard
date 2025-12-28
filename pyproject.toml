@@ -84,9 +84,7 @@ test = [
     "sqlalchemy-utils>=0.42.1",
 ]
 docs = [
-    "mkdocs-material>=9.7.1",
-    "mkdocstrings-python>=2.0.1",
-    "pymdown-extensions>=10.19.1",
+    "zensical>=0.0.15",
 ]
 examples = [
     "taskiq-postgres[asyncpg]>=0.7.0",
