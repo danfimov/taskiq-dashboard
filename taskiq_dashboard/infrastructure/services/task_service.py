@@ -99,7 +99,7 @@ class TaskRepository(AbstractTaskRepository):
     ) -> None:
         async with self._session_provider.session() as session, session.begin():
             existing_task_query = (
-                sa.select(self.task.id).where(self.task.id == task_id).with_for_update(skip_locked=True)
+                sa.select(self.task.id).where(self.task.id == task_id).with_for_update()
             )
             result = await session.execute(existing_task_query)
             if result.scalar_one_or_none() is None:
