@@ -42,8 +42,7 @@ class PostgresTask(BaseTableSchema):
 
     queued_at: Mapped[dt.datetime] = mapped_column(
         sa.DateTime(timezone=True),
-        nullable=False,
-        default=dt.datetime.now,
+        nullable=True,
     )
     started_at: Mapped[dt.datetime] = mapped_column(
         sa.DateTime(timezone=True),
@@ -77,8 +76,7 @@ class SqliteTask(BaseTableSchema):
 
     queued_at: Mapped[dt.datetime] = mapped_column(
         sa.DateTime(timezone=True),
-        nullable=False,
-        default=dt.datetime.now,
+        nullable=True,
     )
     started_at: Mapped[dt.datetime] = mapped_column(
         sa.DateTime(timezone=True),

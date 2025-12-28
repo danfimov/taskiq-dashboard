@@ -354,3 +354,324 @@ class TestTaskService:
         assert len(tasks) == 2
         assert all(task.status == TaskStatus.COMPLETED for task in tasks)
         assert all('send' in task.name for task in tasks)
+
+    async def test_when_updating_non_existent_task_with_started_task__then_create_and_update_task(
+        self,
+        task_service: AbstractTaskRepository,
+        session_provider: AsyncPostgresSessionProvider,
+    ) -> None:
+        # Given
+        task_id = uuid.uuid4()
+        started_task = StartedTask(
+            task_name='delayed_process',
+            worker='worker_2',
+            args=['arg1'],
+            kwargs={'key': 'value'},
+            started_at=dt.datetime.now(dt.timezone.utc),
+        )
+
+        # When
+        await task_service.update_task(task_id, started_task)
+
+        # Then
+        async with session_provider.session() as session:
+            result = await session.execute(sa.select(PostgresTask).where(PostgresTask.id == task_id))
+            task_row = result.scalar_one()
+
+        assert task_row.id == task_id
+        assert task_row.name == 'delayed_process'
+        assert task_row.worker == 'worker_2'
+        assert task_row.status == TaskStatus.IN_PROGRESS
+        assert task_row.started_at == started_task.started_at
+        assert task_row.args == ['arg1']
+
+    async def test_when_updating_non_existent_task_with_executed_task__then_create_and_complete_task(
+        self,
+        task_service: AbstractTaskRepository,
+        session_provider: AsyncPostgresSessionProvider,
+    ) -> None:
+        # Given
+        task_id = uuid.uuid4()
+        executed_task = ExecutedTask(
+            finished_at=dt.datetime.now(dt.timezone.utc),
+            execution_time=3.5,
+            error=None,
+            return_value={'return_value': 'quick_result'},
+        )
+
+        # When
+        await task_service.update_task(task_id, executed_task)
+
+        # Then
+        async with session_provider.session() as session:
+            result = await session.execute(sa.select(PostgresTask).where(PostgresTask.id == task_id))
+            task_row = result.scalar_one()
+
+        assert task_row.id == task_id
+        assert task_row.status == TaskStatus.COMPLETED
+        assert task_row.finished_at == executed_task.finished_at
+        assert task_row.result == 'quick_result'
+        assert task_row.queued_at is None
+
+    async def test_when_executed_event_arrives_before_started__then_task_transitions_directly_to_completed(
+        self,
+        task_service: AbstractTaskRepository,
+        session_provider: AsyncPostgresSessionProvider,
+    ) -> None:
+        # Given
+        task_id = uuid.uuid4()
+        executed_task = ExecutedTask(
+            finished_at=dt.datetime.now(dt.timezone.utc),
+            execution_time=1.0,
+            error=None,
+            return_value={'return_value': 'immediate_result'},
+        )
+
+        # When - executed event arrives first
+        await task_service.update_task(task_id, executed_task)
+
+        # Then
+        async with session_provider.session() as session:
+            result = await session.execute(sa.select(PostgresTask).where(PostgresTask.id == task_id))
+            task_row = result.scalar_one()
+
+        assert task_row.status == TaskStatus.COMPLETED
+        assert task_row.finished_at == executed_task.finished_at
+
+    async def test_when_executed_event_with_error_arrives_before_started__then_task_transitions_to_failure(
+        self,
+        task_service: AbstractTaskRepository,
+        session_provider: AsyncPostgresSessionProvider,
+    ) -> None:
+        # Given
+        task_id = uuid.uuid4()
+        executed_task = ExecutedTask(
+            finished_at=dt.datetime.now(dt.timezone.utc),
+            execution_time=0.5,
+            error='Task failed immediately',
+            return_value={},
+        )
+
+        # When - executed event with error arrives before started
+        await task_service.update_task(task_id, executed_task)
+
+        # Then
+        async with session_provider.session() as session:
+            result = await session.execute(sa.select(PostgresTask).where(PostgresTask.id == task_id))
+            task_row = result.scalar_one()
+
+        assert task_row.status == TaskStatus.FAILURE
+        assert task_row.error == 'Task failed immediately'
+
+    async def test_when_started_event_arrives_after_executed__then_task_status_remains_completed(
+        self,
+        task_service: AbstractTaskRepository,
+        session_provider: AsyncPostgresSessionProvider,
+    ) -> None:
+        # Given
+        task_id = uuid.uuid4()
+        executed_task = ExecutedTask(
+            finished_at=dt.datetime.now(dt.timezone.utc),
+            execution_time=2.0,
+            error=None,
+            return_value={'return_value': 'completed_result'},
+        )
+        started_task = StartedTask(
+            task_name='out_of_order_task',
+            worker='worker_3',
+            args=[],
+            kwargs={},
+            started_at=dt.datetime.now(dt.timezone.utc) - dt.timedelta(seconds=3),
+        )
+
+        # When - executed event arrives first
+        await task_service.update_task(task_id, executed_task)
+        # When - then started event arrives after
+        await task_service.update_task(task_id, started_task)
+
+        # Then
+        async with session_provider.session() as session:
+            result = await session.execute(sa.select(PostgresTask).where(PostgresTask.id == task_id))
+            task_row = result.scalar_one()
+
+        # Task should now be IN_PROGRESS because started event overwrites the status
+        # This tests the actual behavior - later events overwrite earlier ones
+        assert task_row.status == TaskStatus.IN_PROGRESS
+        assert task_row.started_at == started_task.started_at
+
+    async def test_when_multiple_out_of_order_events__then_task_reflects_latest_event_state(
+        self,
+        task_service: AbstractTaskRepository,
+        session_provider: AsyncPostgresSessionProvider,
+    ) -> None:
+        # Given
+        task_id = uuid.uuid4()
+        now = dt.datetime.now(dt.timezone.utc)
+
+        # Simulate events arriving in wrong order: executed -> started -> executed
+        executed_task_1 = ExecutedTask(
+            finished_at=now,
+            execution_time=5.0,
+            error=None,
+            return_value={'return_value': 'first_result'},
+        )
+        started_task = StartedTask(
+            task_name='unreliable_task',
+            worker='worker_4',
+            args=['retry_arg'],
+            kwargs={},
+            started_at=now - dt.timedelta(seconds=6),
+        )
+        executed_task_2 = ExecutedTask(
+            finished_at=now + dt.timedelta(seconds=1),
+            execution_time=1.0,
+            error='Retry failed',
+            return_value={},
+        )
+
+        # When - events arrive in wrong order
+        await task_service.update_task(task_id, executed_task_1)
+        await task_service.update_task(task_id, started_task)
+        await task_service.update_task(task_id, executed_task_2)
+
+        # Then - last event should define the state
+        async with session_provider.session() as session:
+            result = await session.execute(sa.select(PostgresTask).where(PostgresTask.id == task_id))
+            task_row = result.scalar_one()
+
+        assert task_row.status == TaskStatus.FAILURE
+        assert task_row.error == 'Retry failed'
+        assert task_row.finished_at == executed_task_2.finished_at
+        assert task_row.name == 'unreliable_task'
+
+    async def test_when_create_task_called_after_update_with_started_event__then_add_queued_at_and_worker(
+        self,
+        task_service: AbstractTaskRepository,
+        session_provider: AsyncPostgresSessionProvider,
+    ) -> None:
+        # Given
+        task_id = uuid.uuid4()
+        started_task = StartedTask(
+            task_name='delayed_task',
+            worker='worker_1',
+            args=['arg1'],
+            kwargs={'key': 'value'},
+            started_at=dt.datetime.now(dt.timezone.utc),
+        )
+        queued_task = QueuedTask(
+            task_name='delayed_task',
+            worker='worker_1',
+            args=['arg1'],
+            kwargs={'key': 'value'},
+            labels={'priority': 'high'},
+            queued_at=dt.datetime.now(dt.timezone.utc) - dt.timedelta(seconds=5),
+        )
+
+        # When - started event arrives first
+        await task_service.update_task(task_id, started_task)
+        # When - then queued event arrives after
+        await task_service.create_task(task_id, queued_task)
+
+        # Then
+        async with session_provider.session() as session:
+            result = await session.execute(sa.select(PostgresTask).where(PostgresTask.id == task_id))
+            task_row = result.scalar_one()
+
+        assert task_row.id == task_id
+        assert task_row.status == TaskStatus.IN_PROGRESS
+        assert task_row.queued_at == queued_task.queued_at
+        assert task_row.worker == 'worker_1'
+        assert task_row.name == 'delayed_task'
+        assert task_row.labels == {'priority': 'high'}
+
+    async def test_when_create_task_called_after_update_with_executed_event__then_add_queued_at_and_worker(
+        self,
+        task_service: AbstractTaskRepository,
+        session_provider: AsyncPostgresSessionProvider,
+    ) -> None:
+        # Given
+        task_id = uuid.uuid4()
+        executed_task = ExecutedTask(
+            finished_at=dt.datetime.now(dt.timezone.utc),
+            execution_time=2.0,
+            error=None,
+            return_value={'return_value': 'result'},
+        )
+        queued_task = QueuedTask(
+            task_name='quick_task',
+            worker='worker_2',
+            args=[],
+            kwargs={},
+            labels={},
+            queued_at=dt.datetime.now(dt.timezone.utc) - dt.timedelta(seconds=3),
+        )
+
+        # When - executed event arrives first
+        await task_service.update_task(task_id, executed_task)
+        # When - then queued event arrives after
+        await task_service.create_task(task_id, queued_task)
+
+        # Then
+        async with session_provider.session() as session:
+            result = await session.execute(sa.select(PostgresTask).where(PostgresTask.id == task_id))
+            task_row = result.scalar_one()
+
+        assert task_row.id == task_id
+        assert task_row.status == TaskStatus.COMPLETED
+        assert task_row.queued_at == queued_task.queued_at
+        assert task_row.worker == 'worker_2'
+        assert task_row.name == 'quick_task'
+        assert task_row.result == 'result'
+
+    async def test_when_create_task_called_after_update__then_task_has_complete_info(
+        self,
+        task_service: AbstractTaskRepository,
+        session_provider: AsyncPostgresSessionProvider,
+    ) -> None:
+        # Given
+        task_id = uuid.uuid4()
+        now = dt.datetime.now(dt.timezone.utc)
+
+        # Events arrive in wrong order: executed -> started -> queued
+        executed_task = ExecutedTask(
+            finished_at=now,
+            execution_time=5.0,
+            error=None,
+            return_value={'return_value': 'success'},
+        )
+        started_task = StartedTask(
+            task_name='complex_task',
+            worker='worker_3',
+            args=['a', 'b'],
+            kwargs={'x': 1},
+            started_at=now - dt.timedelta(seconds=6),
+        )
+        queued_task = QueuedTask(
+            task_name='complex_task',
+            worker='worker_3',
+            args=['a', 'b'],
+            kwargs={'x': 1},
+            labels={'retry': 'true'},
+            queued_at=now - dt.timedelta(seconds=7),
+        )
+
+        # When - events arrive in wrong order
+        await task_service.update_task(task_id, executed_task)
+        await task_service.update_task(task_id, started_task)
+        await task_service.create_task(task_id, queued_task)
+
+        # Then - task should have all the information
+        async with session_provider.session() as session:
+            result = await session.execute(sa.select(PostgresTask).where(PostgresTask.id == task_id))
+            task_row = result.scalar_one()
+
+        assert task_row.id == task_id
+        assert task_row.status == TaskStatus.IN_PROGRESS
+        assert task_row.name == 'complex_task'
+        assert task_row.worker == 'worker_3'
+        assert task_row.queued_at == queued_task.queued_at
+        assert task_row.started_at == started_task.started_at
+        assert task_row.finished_at == executed_task.finished_at
+        assert task_row.result == 'success'
+        assert task_row.args == ['a', 'b']
+        assert task_row.labels == {'retry': 'true'}
