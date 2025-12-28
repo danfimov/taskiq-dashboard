@@ -27,7 +27,7 @@ jobs:
           enable-cache: true
           python-version: "3.12"
           version: "latest"
-      - run: uv sync --group docs
+      - run: uv sync --only-group docs
       - run: uv run zensical build --clean
       - uses: actions/upload-pages-artifact@v4
         with:
