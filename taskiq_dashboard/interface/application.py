@@ -28,7 +28,7 @@ class TaskiqDashboard:
             database_dsn: URL for the database.
             broker: Optional Taskiq broker instance to integrate with the dashboard.
             scheduler: Optional Taskiq scheduler instance to integrate with the dashboard.
-            server_kwargs: Additional keyword arguments to pass to uvicorn/gunicorn server.
+            server_kwargs: Additional keyword arguments to pass to the Granian server.
         """
         self.settings = get_settings()
         self.settings.api.token = SecretStr(api_token)
