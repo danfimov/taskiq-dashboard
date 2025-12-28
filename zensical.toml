@@ -14,7 +14,7 @@
 site_name = "Taskiq Dashboard"
 
 repo_url = "https://github.com/danfimov/taskiq-dashboard"
-repo_name = "anfimov/taskiq-dashboard"
+repo_name = "danfimov/taskiq-dashboard"
 
 # The site_description is included in the HTML head and should contain a
 # meaningful description of the site content for use by search engines.
