@@ -35,7 +35,7 @@ requires-python = ">=3.10"
 dependencies = [
     # api
     "fastapi>=0.120.0",
-    "uvicorn[standard]>=0.40.0",
+    "granian>=2.6.0",
     # html templates
     "jinja2>=3.1.6",
     # db

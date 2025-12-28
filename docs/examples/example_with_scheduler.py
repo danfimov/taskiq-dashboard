@@ -56,16 +56,18 @@ async def best_task_ever(*args, **kwargs) -> dict[str, tp.Any]:
     }
 
 
-def run_admin_panel() -> None:
+async def run_admin_panel() -> None:
     app = TaskiqDashboard(
         api_token='supersecret',
+        storage_type='postgres',
+        database_dsn=dsn.replace('postgres://', 'postgresql+asyncpg://'),
         broker=broker,
         scheduler=scheduler,
-        host='0.0.0.0',
+        address='0.0.0.0',
         port=8000,
     )
-    app.run()
+    await app.run()
 
 
 if __name__ == '__main__':
-    run_admin_panel()
+    asyncio.run(run_admin_panel())

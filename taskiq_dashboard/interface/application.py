@@ -1,6 +1,7 @@
 import typing as tp
 
-import uvicorn
+from granian.constants import Interfaces
+from granian.server.embed import Server
 from pydantic import SecretStr
 from taskiq import TaskiqScheduler
 from taskiq.abc import AsyncBroker
@@ -17,7 +18,7 @@ class TaskiqDashboard:
         database_dsn: str = 'sqlite+aiosqlite:///taskiq_dashboard.db',
         broker: AsyncBroker | None = None,
         scheduler: TaskiqScheduler | None = None,
-        **uvicorn_kwargs: tp.Any,
+        **server_kwargs: tp.Any,
     ) -> None:
         """Initialize Taskiq Dashboard application.
 
@@ -27,7 +28,7 @@ class TaskiqDashboard:
             database_dsn: URL for the database.
             broker: Optional Taskiq broker instance to integrate with the dashboard.
             scheduler: Optional Taskiq scheduler instance to integrate with the dashboard.
-            uvicorn_kwargs: Additional keyword arguments to pass to uvicorn.
+            server_kwargs: Additional keyword arguments to pass to uvicorn/gunicorn server.
         """
         self.settings = get_settings()
         self.settings.api.token = SecretStr(api_token)
@@ -40,25 +41,25 @@ class TaskiqDashboard:
         self.broker = broker
         self.scheduler = scheduler
 
-        self._uvicorn_kwargs = {
-            'host': 'localhost',
+        self._server_kwargs = {
+            'address': '127.0.0.0',
             'port': 8000,
-            'reload': False,
-            'workers': 1,
-            'lifespan': 'on',
-            'proxy_headers': True,
-            'forwarded_allow_ips': '*',
-            'timeout_keep_alive': 60,
-            'access_log': True,
+            'interface': Interfaces.ASGI,
+            'log_access': True,
         }
-        self._uvicorn_kwargs.update(uvicorn_kwargs or {})
+        self._server_kwargs.update(server_kwargs or {})
         self._application = get_application()
         self._application.state.broker = self.broker
         self._application.state.scheduler = self.scheduler
 
-    def run(self) -> None:
-        """Run the Taskiq Dashboard application using Uvicorn."""
-        uvicorn.run(
-            self._application,
-            **self._uvicorn_kwargs,  # type: ignore[arg-type]
-        )
+    @property
+    def application(self) -> tp.Any:
+        """Get the underlying ASGI application instance."""
+        return self._application
+
+    async def run(self) -> None:
+        """Run the Taskiq Dashboard application using Granian."""
+        await Server(
+            self.application,
+            **self._server_kwargs,
+        ).serve()
