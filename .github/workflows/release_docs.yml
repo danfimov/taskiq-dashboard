@@ -1,8 +1,10 @@
 name: Release docs
 on:
   pull_request:
-    types: [closed]
+    types: [ closed ]
     branches: [ main ]
+  push:  # for tests only
+    branches: [ try-zensical ]
 
 permissions:
   contents: write
@@ -11,7 +13,6 @@ permissions:
 
 jobs:
   deploy:
-    if: ${{ github.event_name == 'workflow_dispatch' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true) }}
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -20,7 +21,7 @@ jobs:
       - uses: actions/configure-pages@v5
       - uses: actions/checkout@v5
         with:
-          persist-credentials: false
+          persist-credentials: true
       - uses: astral-sh/setup-uv@3259c6206f993105e3a61b142c2d97bf4b9ef83d # v7.1.0
         with:
           enable-cache: true
