@@ -42,7 +42,7 @@ class TaskiqDashboard:
         self.scheduler = scheduler
 
         self._server_kwargs = {
-            'address': '127.0.0.0',
+            'address': '127.0.0.1',
             'port': 8000,
             'interface': Interfaces.ASGI,
             'log_access': True,
