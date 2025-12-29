@@ -101,11 +101,13 @@ async def handle_task_rerun(
     name='Delete task',
 )
 async def handle_task_delete(
+    request: fastapi.Request,
     task_id: uuid.UUID,
     repository: dishka_fastapi.FromDishka[AbstractTaskRepository],
 ) -> Response:
     await repository.delete_task(task_id)
+    mount_prefix = request.url.path.rsplit('/actions/delete/', 1)[0]
     return RedirectResponse(
-        url='/',
+        url=mount_prefix if mount_prefix else '/',
         status_code=status.HTTP_307_TEMPORARY_REDIRECT,
     )

@@ -62,47 +62,75 @@ class TaskRepository(AbstractTaskRepository):
         task_id: uuid.UUID,
         task_arguments: QueuedTask,
     ) -> None:
-        query = sa.insert(self.task).values(
-            id=task_id,
-            name=task_arguments.task_name,
-            status=TaskStatus.QUEUED.value,
-            worker=task_arguments.worker or '',
-            args=task_arguments.args,
-            kwargs=task_arguments.kwargs,
-            labels=task_arguments.labels,
-            queued_at=task_arguments.queued_at,
-        )
-        async with self._session_provider.session() as session:
-            await session.execute(query)
+        async with self._session_provider.session() as session, session.begin():
+            existing_task_query = sa.select(self.task.id).where(self.task.id == task_id)
+            result = await session.execute(existing_task_query)
+            if result.scalar_one_or_none() is None:
+                insert_query = sa.insert(self.task).values(
+                    id=task_id,
+                    name=task_arguments.task_name,
+                    status=TaskStatus.QUEUED.value,
+                    worker=task_arguments.worker or '',
+                    args=task_arguments.args,
+                    kwargs=task_arguments.kwargs,
+                    labels=task_arguments.labels,
+                    queued_at=task_arguments.queued_at,
+                )
+                await session.execute(insert_query)
+            else:
+                update_query = (
+                    sa.update(self.task)
+                    .where(self.task.id == task_id)
+                    .values(
+                        queued_at=task_arguments.queued_at,
+                        worker=task_arguments.worker or '',
+                        name=task_arguments.task_name,
+                        args=task_arguments.args,
+                        kwargs=task_arguments.kwargs,
+                        labels=task_arguments.labels,
+                    )
+                )
+                await session.execute(update_query)
 
     async def update_task(
         self,
         task_id: uuid.UUID,
         task_arguments: StartedTask | ExecutedTask,
     ) -> None:
-        query = sa.update(self.task).where(self.task.id == task_id)
-
-        if isinstance(task_arguments, StartedTask):
-            task_status = TaskStatus.IN_PROGRESS
-            query = query.values(
-                status=task_status.value,
-                started_at=task_arguments.started_at,
-                args=task_arguments.args,
-                kwargs=task_arguments.kwargs,
-                labels=task_arguments.labels,
-                name=task_arguments.task_name,
-                worker=task_arguments.worker or '',
+        async with self._session_provider.session() as session, session.begin():
+            existing_task_query = (
+                sa.select(self.task.id).where(self.task.id == task_id).with_for_update()
             )
-        else:
-            task_status = TaskStatus.FAILURE if task_arguments.error is not None else TaskStatus.COMPLETED
-            query = query.values(
-                status=task_status.value,
-                finished_at=task_arguments.finished_at,
-                result=task_arguments.return_value.get('return_value'),
-                error=task_arguments.error,
-            )
-        async with self._session_provider.session() as session:
-            await session.execute(query)
+            result = await session.execute(existing_task_query)
+            if result.scalar_one_or_none() is None:
+                insert_query = sa.insert(self.task).values(
+                    id=task_id,
+                    name='unknown',
+                    status=TaskStatus.QUEUED.value,
+                    worker='unknown',
+                )
+                await session.execute(insert_query)
+            update_query = sa.update(self.task).where(self.task.id == task_id)
+            if isinstance(task_arguments, StartedTask):
+                task_status = TaskStatus.IN_PROGRESS
+                update_query = update_query.values(
+                    status=task_status.value,
+                    started_at=task_arguments.started_at,
+                    args=task_arguments.args,
+                    kwargs=task_arguments.kwargs,
+                    labels=task_arguments.labels,
+                    name=task_arguments.task_name,
+                    worker=task_arguments.worker or '',
+                )
+            else:
+                task_status = TaskStatus.FAILURE if task_arguments.error is not None else TaskStatus.COMPLETED
+                update_query = update_query.values(
+                    status=task_status.value,
+                    finished_at=task_arguments.finished_at,
+                    result=task_arguments.return_value.get('return_value'),
+                    error=task_arguments.error,
+                )
+            await session.execute(update_query)
 
     async def batch_update(
         self,

@@ -99,7 +99,7 @@ class SqliteSettings(pydantic_settings.BaseSettings):
 
 
 class APISettings(pydantic_settings.BaseSettings):
-    host: str = '0.0.0.0'  # noqa: S104
+    address: str = '0.0.0.0'  # noqa: S104
     port: int = 8000
     token: SecretStr = SecretStr('supersecret')
 
