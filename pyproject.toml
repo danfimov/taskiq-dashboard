@@ -35,7 +35,6 @@ requires-python = ">=3.10"
 dependencies = [
     # api
     "fastapi>=0.120.0",
-    "granian>=2.6.0",
     # html templates
     "jinja2>=3.1.6",
     # db
@@ -48,6 +47,11 @@ dependencies = [
     "dishka>=1.7.2",
     "aiosqlite>=0.21.0",
     "taskiq>=0.12.1",
+]
+
+[project.optional-dependencies]
+server = [
+    "granian>=2.6.0",
 ]
 
 [project.urls]

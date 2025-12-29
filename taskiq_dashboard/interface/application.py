@@ -1,7 +1,5 @@
 import typing as tp
 
-from granian.constants import Interfaces
-from granian.server.embed import Server
 from pydantic import SecretStr
 from taskiq import TaskiqScheduler
 from taskiq.abc import AsyncBroker
@@ -44,7 +42,7 @@ class TaskiqDashboard:
         self._server_kwargs = {
             'address': '127.0.0.1',
             'port': 8000,
-            'interface': Interfaces.ASGI,
+            'interface': 'asgi',
             'log_access': True,
         }
         self._server_kwargs.update(server_kwargs or {})
@@ -59,6 +57,14 @@ class TaskiqDashboard:
 
     async def run(self) -> None:
         """Run the Taskiq Dashboard application using Granian."""
+        try:
+            from granian.server.embed import Server  # noqa: PLC0415
+        except ImportError as e:
+            raise ImportError(
+                'Granian is required to run the Taskiq Dashboard server. '
+                'Please install it with "pip install taskiq-dashboard[server]".',
+            ) from e
+
         await Server(
             self.application,
             **self._server_kwargs,

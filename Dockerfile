@@ -10,7 +10,7 @@ ENV UV_LINK_MODE=copy \
 
 # Install dependencies
 COPY ./pyproject.toml ./uv.lock ./
-RUN uv sync --no-dev --locked --no-install-project
+RUN uv sync --extra server --no-dev --locked --no-install-project
 
 FROM python:3.12-slim
 

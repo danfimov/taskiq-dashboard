@@ -2067,12 +2067,16 @@ dependencies = [
     { name = "asyncpg" },
     { name = "dishka" },
     { name = "fastapi" },
-    { name = "granian" },
     { name = "httpx" },
     { name = "jinja2" },
     { name = "pydantic-settings" },
     { name = "sqlalchemy" },
     { name = "taskiq" },
+]
+
+[package.optional-dependencies]
+server = [
+    { name = "granian" },
 ]
 
 [package.dev-dependencies]
@@ -2126,13 +2130,14 @@ requires-dist = [
     { name = "asyncpg", specifier = ">=0.31.0" },
     { name = "dishka", specifier = ">=1.7.2" },
     { name = "fastapi", specifier = ">=0.120.0" },
-    { name = "granian", specifier = ">=2.6.0" },
+    { name = "granian", marker = "extra == 'server'", specifier = ">=2.6.0" },
     { name = "httpx", specifier = ">=0.28.1" },
     { name = "jinja2", specifier = ">=3.1.6" },
     { name = "pydantic-settings", specifier = ">=2.12.0" },
     { name = "sqlalchemy", specifier = ">=2.0.45" },
     { name = "taskiq", specifier = ">=0.12.1" },
 ]
+provides-extras = ["server"]
 
 [package.metadata.requires-dev]
 dev = [
