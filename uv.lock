@@ -2077,6 +2077,7 @@ dependencies = [
 [package.optional-dependencies]
 server = [
     { name = "granian" },
+    { name = "greenlet" },
 ]
 
 [package.dev-dependencies]
@@ -2131,6 +2132,7 @@ requires-dist = [
     { name = "dishka", specifier = ">=1.7.2" },
     { name = "fastapi", specifier = ">=0.128.0" },
     { name = "granian", marker = "extra == 'server'", specifier = ">=2.6.0" },
+    { name = "greenlet", marker = "extra == 'server'", specifier = ">=3.2.4" },
     { name = "httpx", specifier = ">=0.28.1" },
     { name = "jinja2", specifier = ">=3.1.6" },
     { name = "pydantic-settings", specifier = ">=2.12.0" },

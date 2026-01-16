@@ -148,3 +148,13 @@ class TaskRepository(AbstractTaskRepository):
         query = sa.delete(self.task).where(self.task.id == task_id)
         async with self._session_provider.session() as session:
             await session.execute(query)
+
+    async def delete_tasks(
+        self,
+        task_ids: list[uuid.UUID],
+    ) -> None:
+        if not task_ids:
+            return
+        query = sa.delete(self.task).where(self.task.id.in_(task_ids))
+        async with self._session_provider.session() as session:
+            await session.execute(query)

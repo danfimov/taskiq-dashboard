@@ -129,6 +129,13 @@ async def main() -> None:
     engine = create_async_engine(
         settings.postgres.dsn.get_secret_value(),
         echo=True,
+        connect_args={
+            'server_settings': {
+                'application_name': 'populate_db',
+            },
+            'command_timeout': 60,  # таймаут для команд
+        },
+        pool_pre_ping=True,
     )
 
     # Создаем фабрику сессий
