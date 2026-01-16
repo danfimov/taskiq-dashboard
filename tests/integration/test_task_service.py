@@ -249,6 +249,25 @@ class TestTaskService:
         assert len(tasks) == 2
         assert all('send' in task.name for task in tasks)
 
+    async def test_when_finding_tasks_with_id_search__then_return_matching_tasks(
+        self,
+        task_service: AbstractTaskRepository,
+        session_provider: AsyncPostgresSessionProvider,
+    ) -> None:
+        # Given
+        PostgresTaskFactory.__async_session__ = session_provider.session
+        known_task_id = uuid.uuid4()
+        await PostgresTaskFactory.create_async(id=known_task_id, name='task_one')
+        await PostgresTaskFactory.create_async(name='task_two')
+
+        # When
+        task_id_str = str(known_task_id)[:8]
+        tasks = await task_service.find_tasks(name=task_id_str)
+
+        # Then
+        assert len(tasks) == 1
+        assert tasks[0].id == known_task_id
+
     async def test_when_finding_tasks_with_pagination__then_return_correct_page(
         self,
         task_service: AbstractTaskRepository,
