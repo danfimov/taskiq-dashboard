@@ -29,7 +29,13 @@ class TaskRepository(AbstractTaskRepository):
         query = sa.select(self.task)
         if name and len(name) > 1:
             search_pattern = f'%{name.strip()}%'
-            query = query.where(self.task.name.ilike(search_pattern))
+            id_text = sa.cast(self.task.id, sa.String)
+            query = query.where(
+                sa.or_(
+                    self.task.name.ilike(search_pattern),
+                    id_text.ilike(search_pattern)
+                )
+            )
         if status is not None:
             query = query.where(self.task.status == status.value)
         if sort_by:
@@ -146,5 +152,15 @@ class TaskRepository(AbstractTaskRepository):
         task_id: uuid.UUID,
     ) -> None:
         query = sa.delete(self.task).where(self.task.id == task_id)
+        async with self._session_provider.session() as session:
+            await session.execute(query)
+
+    async def delete_tasks(
+        self,
+        task_ids: list[uuid.UUID],
+    ) -> None:
+        if not task_ids:
+            return
+        query = sa.delete(self.task).where(self.task.id.in_(task_ids))
         async with self._session_provider.session() as session:
             await session.execute(query)
