@@ -64,3 +64,16 @@ class AbstractTaskRepository(ABC):
         self,
         task_id: uuid.UUID,
     ) -> None: ...
+
+    @abstractmethod
+    async def delete_tasks(
+        self,
+        task_ids: list[uuid.UUID],
+    ) -> None:
+        """
+        Delete multiple tasks by their IDs.
+
+        Args:
+            task_ids: List of task IDs to delete.
+        """
+        ...

@@ -99,7 +99,7 @@ class SqliteSettings(pydantic_settings.BaseSettings):
 
 
 class APISettings(pydantic_settings.BaseSettings):
-    host: str = '0.0.0.0'  # noqa: S104
+    address: str = '0.0.0.0'  # noqa: S104
     port: int = 8000
     token: SecretStr = SecretStr('supersecret')
 
@@ -121,6 +121,7 @@ class Settings(pydantic_settings.BaseSettings):
         env_prefix='TASKIQ_DASHBOARD__',
         env_file=('conf/.env', os.getenv('ENV_FILE', '.env')),
         env_file_encoding='utf-8',
+        extra='ignore',
     )
 
 

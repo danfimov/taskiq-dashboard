@@ -40,8 +40,6 @@ async def handle_task_event(
         task_id: The unique identifier of the task.
         event: The type of event (e.g., 'queued', 'started', 'executed').
     """
-    # Here you would implement the logic to handle the task event,
-    # such as updating a database record or logging the event.
     task_arguments: QueuedTask | StartedTask | ExecutedTask
     match event:
         case 'queued':

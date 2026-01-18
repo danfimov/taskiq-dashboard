@@ -1,5 +1,13 @@
 <tr id="task-list-item-{{ task.id }}" class="group whitespace-nowrap text-sm">
     <td class="px-6 py-4 group-hover:bg-ctp-blue-100/20 w-min">
+        <input
+            type="checkbox"
+            class="task-checkbox w-4 h-4 text-ctp-blue bg-ctp-base border-ctp-subtext0 rounded focus:ring-ctp-blue focus:ring-2"
+            data-task-id="{{ task.id }}"
+            value="{{ task.id }}"
+        >
+    </td>
+    <td class="px-6 py-4 group-hover:bg-ctp-blue-100/20 w-min">
         <a href="{{ url_for('Task details view', task_id=task.id) }}" class="text-ctp-text hover:text-ctp-subtext0 block w-full h-full">
             {{ task.id }}
         </a>
@@ -23,7 +31,12 @@
         </span>
     </td>
     <td class="px-6 py-4 group-hover:bg-ctp-blue-100/20 w-auto">{{ task.worker }}</td>
-    <td class="px-6 py-4 group-hover:bg-ctp-blue-100/20 w-min">{{ task.started_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+
+    {% if task.started_at %}
+        <td class="px-6 py-4 group-hover:bg-ctp-blue-100/20 w-min">{{ task.started_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+    {% else %}
+        <td class="px-6 py-4 group-hover:bg-ctp-blue-100/20 w-min">-</td>
+    {% endif %}
     <td class="px-6 py-4 group-hover:bg-ctp-blue-100/20 w-min">
         {{ task.finished_at.strftime('%Y-%m-%d %H:%M:%S') if task.finished_at else '-' }}
     </td>

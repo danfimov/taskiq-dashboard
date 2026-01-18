@@ -1,6 +1,7 @@
 services:
   postgres:
     image: postgres:18
+    container_name: taskiq-dashboard-postgres
     environment:
       POSTGRES_USER: taskiq-dashboard
       POSTGRES_PASSWORD: look_in_vault
@@ -12,6 +13,7 @@ services:
 
   dashboard:
     image: taskiq_dashboard:local
+    container_name: taskiq-dashboard-dashboard
     build:
       context: .
       dockerfile: Dockerfile
@@ -26,6 +28,7 @@ services:
 
   sqlite_dashboard:
     image: taskiq_dashboard:local
+    container_name: taskiq-dashboard-sqlite-dashboard
     build:
       context: .
       dockerfile: Dockerfile
