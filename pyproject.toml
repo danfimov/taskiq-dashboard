@@ -52,6 +52,7 @@ dependencies = [
 [project.optional-dependencies]
 server = [
     "granian>=2.6.0",
+    "greenlet>=3.2.4",
 ]
 
 [project.urls]
