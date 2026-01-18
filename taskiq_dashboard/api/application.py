@@ -1,4 +1,5 @@
 import contextlib
+import pathlib
 import typing as tp
 
 import fastapi
@@ -11,7 +12,7 @@ from taskiq_dashboard.api.routers import action_router, event_router, schedule_r
 from taskiq_dashboard.api.routers.exception_handlers import exception_handler__not_found
 from taskiq_dashboard.domain.dto.task_status import TaskStatus
 from taskiq_dashboard.domain.services.schema_service import AbstractSchemaService
-from taskiq_dashboard.domain.services.task_service import TaskRepository
+from taskiq_dashboard.domain.services.task_service import AbstractTaskRepository
 
 
 @contextlib.asynccontextmanager
@@ -20,7 +21,7 @@ async def lifespan(app: fastapi.FastAPI) -> tp.AsyncGenerator[None, None]:
     await schema_service.create_schema()
 
     # we probably missed events about these tasks during the downtime, so we need to mark them as abandoned
-    task_repository = await app.state.dishka_container.get(TaskRepository)
+    task_repository = await app.state.dishka_container.get(AbstractTaskRepository)
     await task_repository.batch_update(
         old_status=TaskStatus.IN_PROGRESS,
         new_status=TaskStatus.ABANDONED,
@@ -65,7 +66,7 @@ def get_application() -> fastapi.FastAPI:
     app.include_router(router=event_router)
     app.include_router(router=action_router)
     app.include_router(router=schedule_router)
-    app.mount('/static', StaticFiles(directory='taskiq_dashboard/api/static'), name='static')
+    app.mount('/static', StaticFiles(directory=pathlib.Path(__file__).parent / 'static'), name='static')
     app.add_middleware(AccessTokenMiddleware)
     setup_dishka(container=dependencies.container, app=app)
     return app

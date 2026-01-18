@@ -10,7 +10,7 @@ from fastapi.responses import HTMLResponse
 
 from taskiq_dashboard.api.templates import jinja_templates
 from taskiq_dashboard.domain.dto.task_status import TaskStatus
-from taskiq_dashboard.domain.services.task_service import TaskRepository
+from taskiq_dashboard.domain.services.task_service import AbstractTaskRepository
 
 
 router = fastapi.APIRouter(
@@ -59,7 +59,7 @@ class TaskFilter(pydantic.BaseModel):
 )
 async def search_tasks(
     request: fastapi.Request,
-    repository: dishka_fastapi.FromDishka[TaskRepository],
+    repository: dishka_fastapi.FromDishka[AbstractTaskRepository],
     query: tp.Annotated[TaskFilter, fastapi.Query(...)],
     hx_request: tp.Annotated[bool, fastapi.Header(description='Request from htmx')] = False,  # noqa: FBT002
 ) -> HTMLResponse:
@@ -96,17 +96,14 @@ async def search_tasks(
 )
 async def task_details(
     request: fastapi.Request,
-    repository: dishka_fastapi.FromDishka[TaskRepository],
+    repository: dishka_fastapi.FromDishka[AbstractTaskRepository],
     task_id: uuid.UUID,
 ) -> HTMLResponse:
     """
     Display detailed information for a specific task.
     """
-    # Get task by ID
     task = await repository.get_task_by_id(task_id)
-
     if task is None:
-        # If task is not found, return 404 page
         return jinja_templates.TemplateResponse(
             name='404.html',
             context={
@@ -115,16 +112,15 @@ async def task_details(
             },
             status_code=404,
         )
-
-    # Convert task to JSON for the frontend
-    task_json = json.dumps(task.model_dump(mode='json'))
-
+    result_json = None
+    if task.result:
+        result_json = json.dumps(task.result, indent=2, ensure_ascii=False)
     return jinja_templates.TemplateResponse(
         name='task_details.html',
         context={
             'request': request,
             'task': task,
-            'task_json': task_json,
+            'task_result': result_json,
             'enable_actions': request.app.state.broker is not None,
             'enable_additional_actions': False,  # Placeholder for future features like retries with different args
         },

@@ -6,7 +6,7 @@ title: Run with scheduler
 You can run Taskiq Dashboard with scheduler.
 By passing `scheduler` instance to the `TaskiqDashboard` constructor, you will get additional page at dashboard with scheduled tasks.
 
-![interface with task actions](/assets/schedules.png)
+![interface with task actions](../assets/schedules.png)
 
 In this example, we will demonstrate how to set up Taskiq Dashboard along with a task scheduler:
 

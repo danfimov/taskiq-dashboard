@@ -6,7 +6,7 @@ from taskiq_dashboard.domain.dto.task import ExecutedTask, QueuedTask, StartedTa
 from taskiq_dashboard.domain.dto.task_status import TaskStatus
 
 
-class TaskRepository(ABC):
+class AbstractTaskRepository(ABC):
     @abstractmethod
     async def find_tasks(  # noqa: PLR0913
         self,
@@ -64,3 +64,16 @@ class TaskRepository(ABC):
         self,
         task_id: uuid.UUID,
     ) -> None: ...
+
+    @abstractmethod
+    async def delete_tasks(
+        self,
+        task_ids: list[uuid.UUID],
+    ) -> None:
+        """
+        Delete multiple tasks by their IDs.
+
+        Args:
+            task_ids: List of task IDs to delete.
+        """
+        ...

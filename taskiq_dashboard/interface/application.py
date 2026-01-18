@@ -1,6 +1,5 @@
 import typing as tp
 
-import uvicorn
 from pydantic import SecretStr
 from taskiq import TaskiqScheduler
 from taskiq.abc import AsyncBroker
@@ -13,11 +12,11 @@ class TaskiqDashboard:
     def __init__(
         self,
         api_token: str,
-        storage_type: str = 'sqlite',
+        storage_type: tp.Literal['sqlite', 'postgres'] = 'sqlite',
         database_dsn: str = 'sqlite+aiosqlite:///taskiq_dashboard.db',
         broker: AsyncBroker | None = None,
         scheduler: TaskiqScheduler | None = None,
-        **uvicorn_kwargs: tp.Any,
+        **server_kwargs: tp.Any,
     ) -> None:
         """Initialize Taskiq Dashboard application.
 
@@ -27,11 +26,11 @@ class TaskiqDashboard:
             database_dsn: URL for the database.
             broker: Optional Taskiq broker instance to integrate with the dashboard.
             scheduler: Optional Taskiq scheduler instance to integrate with the dashboard.
-            uvicorn_kwargs: Additional keyword arguments to pass to uvicorn.
+            server_kwargs: Additional keyword arguments to pass to the Granian server.
         """
         self.settings = get_settings()
         self.settings.api.token = SecretStr(api_token)
-
+        self.settings.storage_type = storage_type
         if storage_type == 'sqlite':
             self.settings.sqlite = SqliteSettings(dsn=database_dsn)  # type: ignore[call-arg]
         else:
@@ -40,24 +39,33 @@ class TaskiqDashboard:
         self.broker = broker
         self.scheduler = scheduler
 
-        self._uvicorn_kwargs = {
-            'host': 'localhost',
+        self._server_kwargs = {
+            'address': '127.0.0.1',
             'port': 8000,
-            'reload': False,
-            'workers': 1,
-            'lifespan': 'on',
-            'proxy_headers': True,
-            'forwarded_allow_ips': '*',
-            'timeout_keep_alive': 60,
-            'access_log': True,
+            'interface': 'asgi',
+            'log_access': True,
         }
-        self._uvicorn_kwargs.update(uvicorn_kwargs or {})
+        self._server_kwargs.update(server_kwargs or {})
+        self._application = get_application()
+        self._application.state.broker = self.broker
+        self._application.state.scheduler = self.scheduler
 
-    def run(self) -> None:
-        application = get_application()
-        application.state.broker = self.broker
-        application.state.scheduler = self.scheduler
-        uvicorn.run(
-            application,
-            **self._uvicorn_kwargs,  # type: ignore[arg-type]
-        )
+    @property
+    def application(self) -> tp.Any:
+        """Get the underlying ASGI application instance."""
+        return self._application
+
+    async def run(self) -> None:
+        """Run the Taskiq Dashboard application using Granian."""
+        try:
+            from granian.server.embed import Server  # noqa: PLC0415
+        except ImportError as e:
+            raise ImportError(
+                'Granian is required to run the Taskiq Dashboard server. '
+                'Please install it with "pip install taskiq-dashboard[server]".',
+            ) from e
+
+        await Server(
+            self.application,
+            **self._server_kwargs,
+        ).serve()

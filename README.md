@@ -29,7 +29,7 @@ docker pull ghcr.io/danfimov/taskiq-dashboard:latest
 1. Import and connect middleware to your Taskiq broker:
 
     ```python
-    from taskiq.middlewares.taskiq_admin_middleware import TaskiqAdminMiddleware
+    from taskiq_dashboard import DashboardMiddleware
 
     broker = (
         RedisStreamBroker(
@@ -38,10 +38,10 @@ docker pull ghcr.io/danfimov/taskiq-dashboard:latest
         )
         .with_result_backend(result_backend)
         .with_middlewares(
-            TaskiqAdminMiddleware(
+            DashboardMiddleware(
                 url="http://localhost:8000", # the url to your taskiq-dashboard instance
                 api_token="supersecret",  # secret for accessing the dashboard API
-                taskiq_broker_name="my_worker",  # it will be worker name in the dashboard
+                broker_name="my_worker",  # it will be worker name in the dashboard
             )
         )
     )

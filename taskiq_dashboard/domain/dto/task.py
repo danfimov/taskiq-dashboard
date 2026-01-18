@@ -15,13 +15,15 @@ class Task(pydantic.BaseModel):
 
     worker: str
 
-    args: tp.Any = pydantic.Field(default='')
-    kwargs: tp.Any = pydantic.Field(default='')
+    args: list[tp.Any] = pydantic.Field(default_factory=list)
+    kwargs: dict[str, tp.Any] = pydantic.Field(default_factory=dict)
+    labels: dict[str, tp.Any] = pydantic.Field(default_factory=dict)
 
-    result: dict | pydantic.Json | None = None
+    result: dict | list | pydantic.Json | None = None
     error: str | None = None
 
-    started_at: datetime.datetime
+    queued_at: datetime.datetime | None = None
+    started_at: datetime.datetime | None = None
     finished_at: datetime.datetime | None = None
 
     model_config = pydantic.ConfigDict(
@@ -32,8 +34,9 @@ class Task(pydantic.BaseModel):
 class QueuedTask(pydantic.BaseModel):
     args: list[tp.Any] = pydantic.Field(default_factory=list)
     kwargs: dict[str, tp.Any] = pydantic.Field(default_factory=dict)
+    labels: dict[str, tp.Any] = pydantic.Field(default_factory=dict)
     task_name: str
-    worker: str
+    worker: str | None
     queued_at: datetime.datetime
 
     model_config = pydantic.ConfigDict(
@@ -46,6 +49,7 @@ class QueuedTask(pydantic.BaseModel):
 class StartedTask(pydantic.BaseModel):
     args: list[tp.Any] = pydantic.Field(default_factory=list)
     kwargs: dict[str, tp.Any] = pydantic.Field(default_factory=dict)
+    labels: dict[str, tp.Any] = pydantic.Field(default_factory=dict)
     task_name: str
     worker: str
     started_at: datetime.datetime

@@ -1,15 +1,24 @@
+import asyncio
+
 from taskiq_dashboard import TaskiqDashboard
 from taskiq_dashboard.infrastructure import get_settings
 
 
-if __name__ == '__main__':
+async def main() -> None:
     settings = get_settings()
-    if settings.storage_type == 'sqlite':
-        database_dsn = settings.sqlite.dsn.get_secret_value()
-    else:
-        database_dsn = settings.postgres.dsn.get_secret_value()
-    TaskiqDashboard(
+    storage_type = settings.storage_type
+    dashboard = TaskiqDashboard(
         api_token=settings.api.token.get_secret_value(),
-        database_dsn=database_dsn,
+        storage_type=storage_type,
+        database_dsn=(
+            settings.postgres.dsn.get_secret_value()
+            if storage_type == 'postgres'
+            else settings.sqlite.dsn.get_secret_value()
+        ),
         **settings.api.model_dump(exclude='token'),  # type: ignore[arg-type]
-    ).run()
+    )
+    await dashboard.run()
+
+
+if __name__ == '__main__':
+    asyncio.run(main())

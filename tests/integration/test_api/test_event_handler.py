@@ -1,4 +1,5 @@
 import uuid
+from collections.abc import AsyncGenerator
 from typing import Any
 
 import pytest
@@ -6,28 +7,28 @@ from fastapi.testclient import TestClient
 from httpx import ASGITransport, AsyncClient
 from pydantic import SecretStr
 from taskiq import TaskiqMessage
-from taskiq.middlewares.taskiq_admin_middleware import TaskiqAdminMiddleware
 
+from taskiq_dashboard import DashboardMiddleware
 from taskiq_dashboard.api.application import get_application
 from taskiq_dashboard.domain.dto.task_status import TaskStatus
 from taskiq_dashboard.infrastructure import get_settings
 
 
-class TaskiqAdminWithTestClientMiddleware(TaskiqAdminMiddleware):
-    """Test middleware where I replace aiohttp client with test client."""
+class TaskiqAdminWithTestClientMiddleware(DashboardMiddleware):
+    """Test middleware where I replace httpx client with test client."""
 
     def __init__(
         self,
         url: str,
         api_token: str,
-        timeout: int = 5,
-        taskiq_broker_name: str | None = None,
-        test_client: TestClient = None,
+        timeout: float = 5,
+        broker_name: str = 'default_broker',
+        test_client: AsyncClient | None = None,
     ) -> None:
         super().__init__(
             url=url,
             api_token=api_token,
-            taskiq_broker_name=taskiq_broker_name,
+            broker_name=broker_name,
             timeout=timeout,
         )
         self._test_client = test_client
@@ -42,7 +43,7 @@ class TaskiqAdminWithTestClientMiddleware(TaskiqAdminMiddleware):
 
 
 @pytest.fixture
-async def test_app() -> AsyncClient:
+async def test_app() -> AsyncGenerator[AsyncClient]:
     settings = get_settings()
     settings.api.token = SecretStr('test-token')
     async with AsyncClient(transport=ASGITransport(app=get_application()), base_url='http://test') as client:
@@ -54,7 +55,7 @@ async def middleware(test_app: AsyncClient) -> TaskiqAdminWithTestClientMiddlewa
     return TaskiqAdminWithTestClientMiddleware(
         url='http://test',
         api_token='test-token',
-        taskiq_broker_name='test-broker',
+        broker_name='test-broker',
         test_client=test_app,
     )
 
