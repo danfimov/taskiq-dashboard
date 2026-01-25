@@ -57,27 +57,26 @@ class CleanupService(AbstractCleanupService):
             return result.rowcount or 0  # type: ignore[possibly-missing-attribute]
 
     async def cleanup_by_count(self, max_tasks: int) -> int:
-        count_query = sa.select(sa.func.count()).select_from(self._task)
         async with self._session_provider.session() as session:
+            count_query = sa.select(sa.func.count()).select_from(self._task)
             result = await session.execute(count_query)
             total_count = result.scalar() or 0
 
-        if total_count <= max_tasks:
-            return 0
+            if total_count <= max_tasks:
+                return 0
 
-        tasks_to_delete = total_count - max_tasks
-        task_timestamp = sa.func.coalesce(
-            self._task.finished_at,
-            self._task.started_at,
-            self._task.queued_at,
-        )
-        subquery = (
-            sa.select(self._task.id)
-            .order_by(task_timestamp.asc())
-            .limit(tasks_to_delete)
-        )
-        delete_query = sa.delete(self._task).where(self._task.id.in_(subquery))
-        async with self._session_provider.session() as session:
+            tasks_to_delete = total_count - max_tasks
+            task_timestamp = sa.func.coalesce(
+                self._task.finished_at,
+                self._task.started_at,
+                self._task.queued_at,
+            )
+            subquery = (
+                sa.select(self._task.id)
+                .order_by(task_timestamp.asc())
+                .limit(tasks_to_delete)
+            )
+            delete_query = sa.delete(self._task).where(self._task.id.in_(subquery))
             result = await session.execute(delete_query)
             return result.rowcount or 0  # type: ignore[possibly-missing-attribute]
 
