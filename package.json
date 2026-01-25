@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "dev": "pnpx @tailwindcss/cli -i ./taskiq_dashboard/api/styles/main.css -o ./taskiq_dashboard/api/static/css/tailwind.css --watch"
+    "dev": "bunx @tailwindcss/cli -i ./taskiq_dashboard/api/styles/main.css -o ./taskiq_dashboard/api/static/css/tailwind.css --watch"
   },
   "devDependencies": {
     "@catppuccin/tailwindcss": "^1.0.0",
