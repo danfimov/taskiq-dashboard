@@ -36,11 +36,21 @@ build:  ## Build docker image with tag "local"
 
 ##@ Testing and formatting
 
-.PHONY: lint
-lint:  ## Run linting
+.PHONY: ruff
+ruff:  ## Run ruff linter
 	@uv run ruff check .
-	@uv run mypy taskiq_dashboard
+
+.PHONY: ty
+ty:  ## Run mypy type checker
+	@uv run ty check taskiq_dashboard
+
+.PHONY: djlint
+djlint:  ## Run djlint template linter
 	@uv run djlint - --lint
+
+.PHONY: lint
+lint: ruff ty djlint  ## Run all linters
+	@echo "All linters passed!"
 
 .PHONY: format
 format:  ## Run formatting

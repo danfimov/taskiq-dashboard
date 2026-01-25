@@ -69,12 +69,11 @@ dev = [
 ]
 lint = [
     "ruff>=0.14.10",
-    "bandit>=1.9.2",
     "codespell>=2.4.1",
     "zizmor>=1.19.0",
     "djlint>=1.36.4",
     # type check
-    "mypy>=1.19.1",
+    "ty>=0.0.13",
 ]
 test = [
     "polyfactory>=3.2.0",
@@ -226,34 +225,6 @@ omit = [
     "*/__init__.py",
     "venv/*",
     "tests/*"
-]
-
-[tool.mypy]
-plugins = ["pydantic.mypy"]
-python_version = "3.12"
-platform = "linux"
-follow_imports = "normal"
-ignore_missing_imports = false
-mypy_path = "stubs"
-disallow_untyped_defs = true
-disallow_untyped_calls = true
-warn_return_any = true
-warn_unreachable = true
-warn_no_return = true
-warn_unused_ignores = true
-warn_redundant_casts = true
-modules = ["speechkit"]
-
-[tool.pydantic-mypy]
-init_forbid_extra = true
-init_typed = true
-warn_required_dynamic_aliases = true
-warn_untyped_fields = true
-
-[tool.bandit]
-skips = [
-    "B104",
-    "B107",
 ]
 
 [tool.djlint]

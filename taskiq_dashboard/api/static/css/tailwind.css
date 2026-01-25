@@ -248,9 +248,6 @@
   .left-4 {
     left: calc(var(--spacing) * 4);
   }
-  .col-span-1 {
-    grid-column: span 1 / span 1;
-  }
   .container {
     width: 100%;
     @media (width >= 40rem) {
@@ -447,9 +444,6 @@
   }
   .justify-center {
     justify-content: center;
-  }
-  .justify-end {
-    justify-content: flex-end;
   }
   .gap-2 {
     gap: calc(var(--spacing) * 2);
@@ -923,13 +917,6 @@
       }
     }
   }
-  .hover\:text-ctp-lavender {
-    &:hover {
-      @media (hover: hover) {
-        color: var(--catppuccin-color-lavender);
-      }
-    }
-  }
   .hover\:text-ctp-mauve {
     &:hover {
       @media (hover: hover) {
@@ -1090,11 +1077,6 @@
   .md\:grid-cols-3 {
     @media (width >= 48rem) {
       grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-  }
-  .md\:grid-cols-5 {
-    @media (width >= 48rem) {
-      grid-template-columns: repeat(5, minmax(0, 1fr));
     }
   }
   .md\:flex-row {

@@ -67,5 +67,5 @@ class TaskiqDashboard:
 
         await Server(
             self.application,
-            **self._server_kwargs,
+            **self._server_kwargs,  # type: ignore[arg-type]
         ).serve()

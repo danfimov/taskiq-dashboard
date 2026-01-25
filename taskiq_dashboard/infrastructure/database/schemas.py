@@ -27,7 +27,7 @@ class BaseTableSchema:
 class PostgresTask(BaseTableSchema):
     __tablename__ = 'taskiq_dashboard__tasks'
 
-    id: Mapped[uuid.UUID] = mapped_column(postgresql.UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id: Mapped[uuid.UUID] = mapped_column(postgresql.UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)  # type: ignore[no-matching-overload]
     name: Mapped[str] = mapped_column(postgresql.TEXT, nullable=False)
     status: Mapped[task_status.TaskStatus] = mapped_column(sa.Integer, nullable=False)
 
@@ -58,7 +58,7 @@ class SqliteTask(BaseTableSchema):
     __tablename__ = 'tasks'
 
     id: Mapped[uuid.UUID] = mapped_column(
-        sa.Uuid(as_uuid=True),
+        sa.Uuid(as_uuid=True),  # type: ignore[no-matching-overload]
         primary_key=True,
         default=uuid.uuid4,
     )
