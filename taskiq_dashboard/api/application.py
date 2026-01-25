@@ -67,6 +67,6 @@ def get_application() -> fastapi.FastAPI:
     app.include_router(router=action_router)
     app.include_router(router=schedule_router)
     app.mount('/static', StaticFiles(directory=pathlib.Path(__file__).parent / 'static'), name='static')
-    app.add_middleware(AccessTokenMiddleware)
+    app.add_middleware(AccessTokenMiddleware)  # type: ignore[invalid-argument-type]
     setup_dishka(container=dependencies.container, app=app)
     return app

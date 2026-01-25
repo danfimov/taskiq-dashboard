@@ -163,18 +163,20 @@ async def handle_bulk_task_rerun(
             rerun_results.append((task_id, new_task_id))
         except Exception as e:
             logger.exception('Error rerunning task', extra={'task_id': str(task_id)})
-            errors.append(f'Error rerunning task {task_id}: {str(e)}')
+            errors.append(f'Error rerunning task {task_id}: {e!r}')
 
     success_count = len(rerun_results)
     total_count = len(body.task_ids)
 
     message_parts = [f'Rerun {success_count} of {total_count} tasks.']
     if errors:
+        number_of_errors_to_show = min(5, len(errors))
         message_parts.append(f'Errors: {len(errors)}')
-        for error in errors[:5]:  # Show first 5 errors
-            message_parts.append(f'<div class="text-ctp-red">{error}</div>')
-        if len(errors) > 5:
-            message_parts.append(f'<div>... and {len(errors) - 5} more errors</div>')
+        message_parts.extend(
+            [f'<div class="text-ctp-red">{error}</div>' for error in errors[:number_of_errors_to_show]]
+        )
+        if len(errors) > number_of_errors_to_show:
+            message_parts.append(f'<div>... and {len(errors) - number_of_errors_to_show} more errors</div>')
 
     return jinja_templates.TemplateResponse(
         'partial/notification.html',
@@ -191,7 +193,7 @@ async def handle_bulk_task_rerun(
     name='Bulk delete tasks',
 )
 async def handle_bulk_task_delete(
-    request: fastapi.Request,
+    _: fastapi.Request,
     body: BulkTaskRequest,
     repository: dishka_fastapi.FromDishka[AbstractTaskRepository],
 ) -> Response:

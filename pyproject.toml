@@ -69,12 +69,11 @@ dev = [
 ]
 lint = [
     "ruff>=0.14.10",
-    "bandit>=1.9.2",
     "codespell>=2.4.1",
     "zizmor>=1.19.0",
     "djlint>=1.36.4",
     # type check
-    "mypy>=1.19.1",
+    "ty>=0.0.13",
 ]
 test = [
     "polyfactory>=3.2.0",
@@ -249,12 +248,6 @@ init_forbid_extra = true
 init_typed = true
 warn_required_dynamic_aliases = true
 warn_untyped_fields = true
-
-[tool.bandit]
-skips = [
-    "B104",
-    "B107",
-]
 
 [tool.djlint]
 profile="jinja"

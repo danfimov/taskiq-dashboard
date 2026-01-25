@@ -259,7 +259,7 @@
                 }
 
                 const taskIds = Array.from(selectedTasks);
-                const url = action === 'rerun' 
+                const url = action === 'rerun'
                     ? '{{ url_for("Bulk rerun tasks") }}'
                     : '{{ url_for("Bulk delete tasks") }}';
 
