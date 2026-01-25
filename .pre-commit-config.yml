@@ -45,8 +45,7 @@ repos:
     -   id: ruff
         name: Ruff
         entry: make ruff
-        language: python
-        types: [python]
+        language: system
         require_serial: true
         verbose: true
         pass_filenames: false
@@ -54,15 +53,14 @@ repos:
     -   id: ty
         name: Type check
         entry: make ty
-        language: python
-        types: [python]
+        language: system
         require_serial: true
         verbose: true
         pass_filenames: false
 
     -   id: zizmor
         name: zizmor
-        language: python
+        language: system
         entry: uv run --active --frozen zizmor .
         files: ^\.github
         require_serial: true

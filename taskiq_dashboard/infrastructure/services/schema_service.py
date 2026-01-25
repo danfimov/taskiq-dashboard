@@ -16,4 +16,4 @@ class SchemaService(AbstractSchemaService):
     async def create_schema(self) -> None:
         async with self._session_provider.session() as session:
             connection = await session.connection()
-            await connection.run_sync(sa_metadata.create_all, tables=[self._table.__table__])
+            await connection.run_sync(sa_metadata.create_all, tables=[self._table.__table__])  # type: ignore[possibly-missing-attribute]

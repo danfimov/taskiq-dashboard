@@ -54,7 +54,7 @@ class CleanupService(AbstractCleanupService):
         query = sa.delete(self._task).where(task_timestamp < cutoff_date)
         async with self._session_provider.session() as session:
             result = await session.execute(query)
-            return result.rowcount or 0
+            return result.rowcount or 0  # type: ignore[possibly-missing-attribute]
 
     async def cleanup_by_count(self, max_tasks: int) -> int:
         count_query = sa.select(sa.func.count()).select_from(self._task)
@@ -79,7 +79,7 @@ class CleanupService(AbstractCleanupService):
         delete_query = sa.delete(self._task).where(self._task.id.in_(subquery))
         async with self._session_provider.session() as session:
             result = await session.execute(delete_query)
-            return result.rowcount or 0
+            return result.rowcount or 0  # type: ignore[possibly-missing-attribute]
 
 
 class PeriodicCleanupRunner:
