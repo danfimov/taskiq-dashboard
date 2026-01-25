@@ -39,7 +39,7 @@ To run the application locally for development, follow these steps:
 4. Run tailwindcss in watch mode to compile CSS:
 
     ```bash
-    pnpm run dev
+    bun run dev
     ```
 
 5. Start the dashboard application:
