@@ -2,22 +2,14 @@ import datetime as dt
 import uuid
 
 import sqlalchemy as sa
-from polyfactory import Use
-from polyfactory.factories.sqlalchemy_factory import SQLAlchemyFactory
+
+from tests.integration.factories import PostgresTaskFactory
 
 from taskiq_dashboard.domain.dto.task import ExecutedTask, QueuedTask, StartedTask
 from taskiq_dashboard.domain.dto.task_status import TaskStatus
 from taskiq_dashboard.domain.services.task_service import AbstractTaskRepository
 from taskiq_dashboard.infrastructure.database.schemas import PostgresTask
 from taskiq_dashboard.infrastructure.database.session_provider import AsyncPostgresSessionProvider
-
-
-class PostgresTaskFactory(SQLAlchemyFactory[PostgresTask]):
-    __check_model__ = True
-    __set_relationships__ = False
-
-    status = Use(SQLAlchemyFactory.__random__.choice, [task_status.value for task_status in TaskStatus])
-    args = Use(list)
 
 
 class TestTaskService:

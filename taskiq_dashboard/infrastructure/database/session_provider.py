@@ -29,6 +29,9 @@ class AsyncPostgresSessionProvider:
                     },
                 }
             )
+            self.storage_type = 'postgres'
+        else:
+            self.storage_type = 'sqlite'
 
         self._engine = sa_async.create_async_engine(
             connection_settings.dsn.get_secret_value(),

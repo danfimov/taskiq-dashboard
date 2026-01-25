@@ -11,8 +11,11 @@ from taskiq_dashboard.api.middlewares import AccessTokenMiddleware
 from taskiq_dashboard.api.routers import action_router, event_router, schedule_router, system_router, task_router
 from taskiq_dashboard.api.routers.exception_handlers import exception_handler__not_found
 from taskiq_dashboard.domain.dto.task_status import TaskStatus
+from taskiq_dashboard.domain.services.cleanup_service import AbstractCleanupService
 from taskiq_dashboard.domain.services.schema_service import AbstractSchemaService
 from taskiq_dashboard.domain.services.task_service import AbstractTaskRepository
+from taskiq_dashboard.infrastructure import get_settings
+from taskiq_dashboard.infrastructure.services.cleanup_service import PeriodicCleanupRunner
 
 
 @contextlib.asynccontextmanager
@@ -31,6 +34,18 @@ async def lifespan(app: fastapi.FastAPI) -> tp.AsyncGenerator[None, None]:
         new_status=TaskStatus.ABANDONED,
     )
 
+    settings = get_settings()
+    cleanup_service = await app.state.dishka_container.get(AbstractCleanupService)
+    if settings.cleanup.is_enabled and settings.cleanup.is_cleanup_on_startup_enabled:
+        await cleanup_service.cleanup()
+    cleanup_runner: PeriodicCleanupRunner | None = None
+    if settings.cleanup.is_enabled:
+        cleanup_runner = PeriodicCleanupRunner(
+            cleanup_service=cleanup_service,
+            interval_hours=settings.cleanup.periodic_interval_hours,
+        )
+        await cleanup_runner.start()
+
     if app.state.broker is not None:
         await app.state.broker.startup()
 
@@ -39,6 +54,9 @@ async def lifespan(app: fastapi.FastAPI) -> tp.AsyncGenerator[None, None]:
             await schedule_source.startup()
 
     yield
+
+    if cleanup_runner:
+        await cleanup_runner.stop()
 
     if app.state.scheduler is not None:
         for schedule_source in app.state.scheduler.sources:

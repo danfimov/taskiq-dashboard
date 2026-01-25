@@ -108,6 +108,20 @@ class APISettings(pydantic_settings.BaseSettings):
     )
 
 
+class CleanupSettings(pydantic_settings.BaseSettings):
+    """Settings for automatic task cleanup."""
+
+    is_enabled: bool = True
+    ttl_days: int = 30
+    max_tasks: int = 10_000
+    periodic_interval_hours: int = 24
+    is_cleanup_on_startup_enabled: bool = True
+
+    model_config = pydantic_settings.SettingsConfigDict(
+        extra='ignore',
+    )
+
+
 class Settings(pydantic_settings.BaseSettings):
     api: APISettings = APISettings()
 
@@ -115,6 +129,8 @@ class Settings(pydantic_settings.BaseSettings):
     storage_type: tp.Literal['postgres', 'sqlite'] = 'sqlite'
     postgres: PostgresSettings = PostgresSettings()
     sqlite: SqliteSettings = SqliteSettings()
+
+    cleanup: CleanupSettings = CleanupSettings()
 
     model_config = pydantic_settings.SettingsConfigDict(
         env_nested_delimiter='__',
