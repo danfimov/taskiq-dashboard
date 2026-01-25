@@ -40,7 +40,7 @@ build:  ## Build docker image with tag "local"
 ruff:  ## Run ruff linter
 	@uv run ruff check .
 
-.PHONY: mypy
+.PHONY: ty
 ty:  ## Run mypy type checker
 	@uv run ty check taskiq_dashboard
 
