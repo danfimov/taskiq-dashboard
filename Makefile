@@ -16,7 +16,7 @@ init:  ## Initialize development environment
 	@uv venv
 	@source .venv/bin/activate
 	@uv sync --all-extras
-	@prek install
+	@uv run prek install
 
 .PHONY: run
 run:  ## Run API part with hot reload
@@ -24,7 +24,7 @@ run:  ## Run API part with hot reload
 
 .PHONY: run_docs
 run_docs: ## Run documentation server
-	@uv run mkdocs serve --livereload
+	@uv run zensical serve
 
 .PHONY: run_infra
 run_infra: ## Run rabbitmq in docker for integration tests

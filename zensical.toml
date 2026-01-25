@@ -52,6 +52,7 @@ nav = [
   { "Tutorial" = [
     "tutorial/run_with_broker.md",
     "tutorial/run_with_scheduler.md",
+    "tutorial/cleanup.md",
   ]},
   { "Contributing" = "contributing.md" },
 ]
