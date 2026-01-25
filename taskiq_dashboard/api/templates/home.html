@@ -24,7 +24,7 @@
                         name="q"
                         id="search"
                         class=" w-full pl-12 pr-4 py-2 border rounded focus:outline-none focus:ring-2 transition-all duration-200 hover:shadow-md border-ctp-subtext0 group-hover:border-ctp-subtext1 "
-                        placeholder="Search by task name"
+                        placeholder="Search by id or name"
                         value="{{ q if q is defined else '' }}"
                         hx-get="{{ url_for('Task list view') }}"
                         hx-trigger="keyup changed delay:500ms"
