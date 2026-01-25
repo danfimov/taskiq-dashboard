@@ -56,16 +56,9 @@ async def session_provider(database: PostgresSettings) -> AsyncGenerator[AsyncPo
 @pytest.fixture(autouse=True)
 async def cleanup_database(session_provider: AsyncPostgresSessionProvider) -> AsyncGenerator[None]:
     """Clean up database before each test"""
-    async with session_provider.session() as session:
-        await session.execute(sa.delete(PostgresTask))
-        await session.commit()
-
     yield
-
-    # Cleanup after test
     async with session_provider.session() as session:
         await session.execute(sa.delete(PostgresTask))
-        await session.commit()
 
 
 @pytest.fixture
