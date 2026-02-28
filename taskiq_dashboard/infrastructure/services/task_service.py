@@ -1,7 +1,9 @@
 import typing as tp
 import uuid
+from contextlib import suppress
 
 import sqlalchemy as sa
+from sqlalchemy.exc import IntegrityError
 
 from taskiq_dashboard.domain.dto.task import ExecutedTask, QueuedTask, StartedTask, Task
 from taskiq_dashboard.domain.dto.task_status import TaskStatus
@@ -104,18 +106,23 @@ class TaskRepository(AbstractTaskRepository):
         task_arguments: StartedTask | ExecutedTask,
     ) -> None:
         async with self._session_provider.session() as session, session.begin():
-            existing_task_query = (
-                sa.select(self.task.id).where(self.task.id == task_id).with_for_update()
-            )
+            existing_task_query = sa.select(self.task.id).where(self.task.id == task_id)
             result = await session.execute(existing_task_query)
             if result.scalar_one_or_none() is None:
-                insert_query = sa.insert(self.task).values(
-                    id=task_id,
-                    name='unknown',
-                    status=TaskStatus.QUEUED.value,
-                    worker='unknown',
-                )
-                await session.execute(insert_query)
+                # other transaction might have created the task, so we can ignore integrity errors here
+                with suppress(IntegrityError):
+                    async with session.begin_nested():
+                        await session.execute(
+                            sa.insert(self.task).values(
+                                id=task_id,
+                                name='unknown',
+                                status=TaskStatus.QUEUED.value,
+                                worker='unknown',
+                                args=[],
+                                kwargs={},
+                                labels={},
+                            )
+                        )
             update_query = sa.update(self.task).where(self.task.id == task_id)
             if isinstance(task_arguments, StartedTask):
                 task_status = TaskStatus.IN_PROGRESS

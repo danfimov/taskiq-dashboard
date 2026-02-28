@@ -1,18 +1,24 @@
+import json
 import typing as tp
+from datetime import datetime
 from logging import getLogger
 from urllib.parse import urlencode
 
 import fastapi
 import pydantic
 from dishka.integrations import fastapi as dishka_fastapi
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, Response
 from starlette import status
+from taskiq import ScheduledTask
 
 from taskiq_dashboard.api.templates import jinja_templates
 
 
 if tp.TYPE_CHECKING:
     from taskiq import TaskiqScheduler
+
+
+logger = getLogger(__name__)
 
 
 router = fastapi.APIRouter(
@@ -121,3 +127,122 @@ async def handle_schedule_details(
         },
         status_code=status.HTTP_404_NOT_FOUND,
     )
+
+
+@router.delete(
+    '/{schedule_id}',
+    name='Delete schedule',
+)
+async def handle_schedule_delete(
+    request: fastapi.Request,
+    schedule_id: str,
+) -> Response:
+    scheduler: TaskiqScheduler | None = request.app.state.scheduler
+    if not scheduler:
+        return Response(status_code=status.HTTP_400_BAD_REQUEST, content=b'Scheduler not configured.')
+
+    for schedule_source in scheduler.sources:
+        for schedule in await schedule_source.get_schedules():
+            if schedule.schedule_id != str(schedule_id):
+                continue
+            try:
+                await schedule_source.delete_schedule(schedule_id)
+            except NotImplementedError:
+                return Response(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    content=b'This schedule source does not support deleting schedules.',
+                )
+            return Response(
+                status_code=status.HTTP_200_OK,
+                headers={'HX-Redirect': str(request.url_for('Schedule list view'))},
+            )
+
+    logger.warning('Schedule with id %s not found for deletion.', schedule_id)
+    return Response(
+        status_code=status.HTTP_200_OK,
+        headers={'HX-Redirect': str(request.url_for('Schedule list view'))},
+    )
+
+
+def create_error_notification(request: fastapi.Request, message: str) -> Response:
+    return jinja_templates.TemplateResponse(
+        'partial/notification.html',
+        {'request': request, 'message': message, 'level': 'error'},
+        status_code=status.HTTP_200_OK,
+    )
+
+
+@router.post(
+    '/{schedule_id}',
+    name='Edit schedule',
+)
+async def handle_schedule_edit(  # noqa: PLR0911, PLR0913, C901, PLR0912 Too
+    request: fastapi.Request,
+    schedule_id: str,
+    cron: tp.Annotated[str | None, fastapi.Form()] = None,
+    time: tp.Annotated[str | None, fastapi.Form()] = None,
+    cron_offset: tp.Annotated[str | None, fastapi.Form()] = None,
+    args: tp.Annotated[str, fastapi.Form()] = '[]',
+    kwargs: tp.Annotated[str, fastapi.Form()] = '{}',
+    labels: tp.Annotated[str, fastapi.Form()] = '{}',
+) -> Response:
+    scheduler: TaskiqScheduler | None = request.app.state.scheduler
+    if not scheduler:
+        return create_error_notification(request, 'Scheduler not configured.')
+
+    # Normalize empty strings to None for optional fields
+    cron = cron or None
+    cron_offset = cron_offset or None
+    parsed_time: datetime | None = None
+    if time:
+        try:
+            parsed_time = datetime.fromisoformat(time)
+        except ValueError:
+            return create_error_notification(request, 'Invalid time format. Expected YYYY-MM-DDTHH:MM.')
+
+    try:
+        parsed_args = json.loads(args)
+        if not isinstance(parsed_args, list):
+            return create_error_notification(request, 'Positional arguments must be a JSON array, e.g. [1, "two"].')
+    except json.JSONDecodeError:
+        return create_error_notification(request, 'Invalid JSON in "Positional arguments".')
+    try:
+        parsed_kwargs = json.loads(kwargs)
+        if not isinstance(parsed_kwargs, dict):
+            return create_error_notification(request, 'Keyword arguments must be a JSON object, e.g. {"key": "value"}.')
+    except json.JSONDecodeError:
+        return create_error_notification(request, 'Invalid JSON in "Keyword arguments".')
+    try:
+        parsed_labels = json.loads(labels)
+        if not isinstance(parsed_labels, dict):
+            return create_error_notification(request, 'Labels must be a JSON object, e.g. {"key": "value"}.')
+    except json.JSONDecodeError:
+        return create_error_notification(request, 'Invalid JSON in "Labels".')
+
+    for schedule_source in scheduler.sources:
+        for schedule in await schedule_source.get_schedules():
+            if schedule.schedule_id != str(schedule_id):
+                continue
+
+            updated = ScheduledTask(
+                task_name=schedule.task_name,
+                schedule_id=schedule.schedule_id,
+                cron=cron,
+                cron_offset=cron_offset,
+                time=parsed_time,
+                interval=schedule.interval,
+                args=parsed_args,
+                kwargs=parsed_kwargs,
+                labels=parsed_labels,
+            )
+            try:
+                await schedule_source.delete_schedule(schedule_id)
+                await schedule_source.add_schedule(updated)
+            except NotImplementedError:
+                return create_error_notification(request, 'This schedule source does not support editing schedules.')
+            return Response(
+                status_code=status.HTTP_200_OK,
+                headers={'HX-Redirect': str(request.url_for('Schedule details view', schedule_id=schedule_id))},
+            )
+
+    return create_error_notification(request, 'Schedule not found.')
