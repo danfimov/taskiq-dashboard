@@ -1,5 +1,5 @@
 <!-- Notification item with pop-up animation from bottom-right -->
-<div class="notification-item bg-ctp-blue text-ctp-base rounded-lg shadow-xl p-4 w-80"
+<div class="notification-item {{ 'bg-ctp-red' if level == 'error' else 'bg-ctp-blue' }} text-ctp-base rounded-lg shadow-xl p-4 w-80"
      x-data="{ show: true }"
      x-init="setTimeout(() => { show = false; }, 5000)"
      x-show="show"
