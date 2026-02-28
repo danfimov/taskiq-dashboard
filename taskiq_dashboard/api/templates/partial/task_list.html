@@ -2,6 +2,18 @@
     {% include "partial/task_list_item.html" with context %}
 {% endfor %}
 
+{% if not results %}
+    <tr>
+        <td colspan="7" class="px-6 pt-20 pb-16 text-center text-ctp-subtext0">
+            {% if q or status != 'null' %}
+                No tasks for this filters
+            {% else %}
+                No tasks created yet
+            {% endif %}
+        </td>
+    </tr>
+{% endif %}
+
 {% set _limit = limit|default(30) %}
 {% set _offset = offset|default(0) %}
 {% set _next_offset = _offset + results|length %}
