@@ -28,12 +28,27 @@
                         value="{{ q if q is defined else '' }}"
                         hx-get="{{ url_for('Task list view') }}"
                         hx-trigger="keyup changed delay:500ms"
-                        hx-target="#task-list"
+                        hx-target="#task-list-body"
                         hx-push-url="true"
                         hx-include="[name='status']"
                     >
-                    <div class="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-6 p-2 pt-1 rounded-sm bg-ctp-lavender/10 text-sm"
-                         title="Фокус на поисковой строке">/</div>
+                    <div id="search-slash-hint"
+                         class="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-center leading-5 text-xs rounded-sm bg-ctp-lavender/10 pointer-events-none"
+                         title="Focus on search field">/</div>
+                    <script>
+                    (function() {
+                        const input = document.getElementById('search');
+                        const hint = document.getElementById('search-slash-hint');
+                        if (!input || !hint) return;
+                        function update() {
+                            hint.style.display = (document.activeElement === input || input.value !== '') ? 'none' : '';
+                        }
+                        input.addEventListener('focus', update);
+                        input.addEventListener('blur', update);
+                        input.addEventListener('input', update);
+                        update();
+                    })();
+                    </script>
                 </div>
 
                 <!-- Status Filter -->
@@ -47,7 +62,7 @@
                         hx-trigger="change"
                         hx-target="#task-list-body"
                         hx-push-url="true"
-                        hx-include="[name='search']"
+                        hx-include="[name='q']"
                     >
                         {% set status = status if status is defined else "all" %}
                         <option class="bg-ctp-base" value="null" {% if status == "null" %}selected{% endif %}>All Statuses</option>
