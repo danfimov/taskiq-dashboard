@@ -47,6 +47,7 @@ async def handle_schedule_list(
     scheduler: TaskiqScheduler | None = request.app.state.scheduler
     if not scheduler:
         return jinja_templates.TemplateResponse(
+            request,
             name='404.html',
             context={
                 'request': request,
@@ -74,6 +75,7 @@ async def handle_schedule_list(
         }
 
     return jinja_templates.TemplateResponse(
+        request,
         name=template_name,
         context={
             'request': request,
@@ -98,6 +100,7 @@ async def handle_schedule_details(
     scheduler: TaskiqScheduler | None = request.app.state.scheduler
     if not scheduler:
         return jinja_templates.TemplateResponse(
+            request,
             name='404.html',
             context={
                 'request': request,
@@ -112,6 +115,7 @@ async def handle_schedule_details(
                 schedule_dict['source'] = schedule_source.__class__.__name__
                 schedule_dict['source_id'] = id(schedule_source)
                 return jinja_templates.TemplateResponse(
+                    request,
                     name='schedule_details.html',
                     context={
                         'request': request,
@@ -120,6 +124,7 @@ async def handle_schedule_details(
                     status_code=status.HTTP_200_OK,
                 )
     return jinja_templates.TemplateResponse(
+        request,
         name='404.html',
         context={
             'request': request,
@@ -166,6 +171,7 @@ async def handle_schedule_delete(
 
 def create_error_notification(request: fastapi.Request, message: str) -> Response:
     return jinja_templates.TemplateResponse(
+        request,
         'partial/notification.html',
         {'request': request, 'message': message, 'level': 'error'},
         status_code=status.HTTP_200_OK,

@@ -79,6 +79,7 @@ async def search_tasks(
         }
         template_name = 'partial/task_list.html'
     return jinja_templates.TemplateResponse(
+        request,
         template_name,
         {
             'request': request,
@@ -105,6 +106,7 @@ async def task_details(
     task = await repository.get_task_by_id(task_id)
     if task is None:
         return jinja_templates.TemplateResponse(
+            request,
             name='404.html',
             context={
                 'request': request,
@@ -116,6 +118,7 @@ async def task_details(
     if task.result:
         result_json = json.dumps(task.result, indent=2, ensure_ascii=False)
     return jinja_templates.TemplateResponse(
+        request,
         name='task_details.html',
         context={
             'request': request,

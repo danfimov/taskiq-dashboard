@@ -68,13 +68,14 @@ async def lifespan(app: fastapi.FastAPI) -> tp.AsyncGenerator[None, None]:
     await app.state.dishka_container.close()
 
 
-def get_application() -> fastapi.FastAPI:
+def get_application(root_path: str = '') -> fastapi.FastAPI:
     docs_path = '/docs'
     app = fastapi.FastAPI(
         title='Taskiq Dashboard',
         summary='Taskiq administration dashboard',
         docs_url=docs_path,
         lifespan=lifespan,
+        root_path=root_path,
         exception_handlers={
             404: exception_handler__not_found,
         },

@@ -9,13 +9,14 @@ from taskiq_dashboard.infrastructure import PostgresSettings, SqliteSettings, ge
 
 
 class TaskiqDashboard:
-    def __init__(
+    def __init__(  # noqa: PLR0913
         self,
         api_token: str,
         storage_type: tp.Literal['sqlite', 'postgres'] = 'sqlite',
         database_dsn: str = 'sqlite+aiosqlite:///taskiq_dashboard.db',
         broker: AsyncBroker | None = None,
         scheduler: TaskiqScheduler | None = None,
+        root_path: str = '',
         **server_kwargs: tp.Any,
     ) -> None:
         """Initialize Taskiq Dashboard application.
@@ -26,6 +27,9 @@ class TaskiqDashboard:
             database_dsn: URL for the database.
             broker: Optional Taskiq broker instance to integrate with the dashboard.
             scheduler: Optional Taskiq scheduler instance to integrate with the dashboard.
+            root_path: ASGI root_path for deployments behind a reverse proxy at a sub-path
+                (e.g. ``'/admin/taskiq'``). This is forwarded to the underlying FastAPI
+                instance so that ``url_for`` and static-asset URLs are generated correctly.
             server_kwargs: Additional keyword arguments to pass to the Granian server.
         """
         self.settings = get_settings()
@@ -46,7 +50,7 @@ class TaskiqDashboard:
             'log_access': True,
         }
         self._server_kwargs.update(server_kwargs or {})
-        self._application = get_application()
+        self._application = get_application(root_path=root_path)
         self._application.state.broker = self.broker
         self._application.state.scheduler = self.scheduler
 
