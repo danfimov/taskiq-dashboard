@@ -9,6 +9,7 @@ async def exception_handler__not_found(
     __: fastapi.HTTPException,
 ) -> HTMLResponse:
     return jinja_templates.TemplateResponse(
+        request,
         '404.html',
         {'request': request},
     )

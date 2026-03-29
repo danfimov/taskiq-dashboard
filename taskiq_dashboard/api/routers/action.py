@@ -85,6 +85,7 @@ async def handle_task_rerun(
     )
 
     return jinja_templates.TemplateResponse(
+        request,
         'partial/notification.html',
         {
             'request': request,
@@ -179,6 +180,7 @@ async def handle_bulk_task_rerun(
             message_parts.append(f'<div>... and {len(errors) - number_of_errors_to_show} more errors</div>')
 
     return jinja_templates.TemplateResponse(
+        request,
         'partial/notification.html',
         {
             'request': request,
