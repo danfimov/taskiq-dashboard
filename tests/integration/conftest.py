@@ -7,12 +7,12 @@ import pytest
 import sqlalchemy as sa
 from sqlalchemy_utils import create_database, database_exists, drop_database
 
-from taskiq_dashboard.domain.services.task_service import AbstractTaskRepository
+from taskiq_dashboard.domain.repositories import AbstractTaskRepository
 from taskiq_dashboard.infrastructure import get_settings
 from taskiq_dashboard.infrastructure.database.schemas import PostgresTask
 from taskiq_dashboard.infrastructure.database.session_provider import AsyncPostgresSessionProvider
+from taskiq_dashboard.infrastructure.repositories import TaskRepository
 from taskiq_dashboard.infrastructure.services.schema_service import SchemaService
-from taskiq_dashboard.infrastructure.services.task_service import TaskRepository
 from taskiq_dashboard.infrastructure.settings import PostgresSettings
 
 

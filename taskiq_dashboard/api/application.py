@@ -11,9 +11,8 @@ from taskiq_dashboard.api.middlewares import AccessTokenMiddleware
 from taskiq_dashboard.api.routers import action_router, event_router, schedule_router, system_router, task_router
 from taskiq_dashboard.api.routers.exception_handlers import exception_handler__not_found
 from taskiq_dashboard.domain.dto.task_status import TaskStatus
-from taskiq_dashboard.domain.services.cleanup_service import AbstractCleanupService
-from taskiq_dashboard.domain.services.schema_service import AbstractSchemaService
-from taskiq_dashboard.domain.services.task_service import AbstractTaskRepository
+from taskiq_dashboard.domain.repositories import AbstractTaskRepository
+from taskiq_dashboard.domain.services import AbstractCleanupService, AbstractSchemaService
 from taskiq_dashboard.infrastructure import get_settings
 from taskiq_dashboard.infrastructure.services.cleanup_service import PeriodicCleanupRunner
 

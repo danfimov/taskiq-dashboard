@@ -9,7 +9,7 @@ from fastapi.responses import RedirectResponse, Response
 from starlette import status
 
 from taskiq_dashboard.api.templates import jinja_templates
-from taskiq_dashboard.domain.services.task_service import AbstractTaskRepository
+from taskiq_dashboard.domain.repositories import AbstractTaskRepository
 
 
 if tp.TYPE_CHECKING:

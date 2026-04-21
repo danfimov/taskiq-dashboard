@@ -1,8 +1,8 @@
 import asyncio
 from unittest.mock import AsyncMock
 
-from taskiq_dashboard.domain.services.cleanup_service import CleanupResult
-from taskiq_dashboard.infrastructure.services.cleanup_service import PeriodicCleanupRunner
+from taskiq_dashboard.domain.dto.cleanup import CleanupResult
+from taskiq_dashboard.infrastructure.services import PeriodicCleanupRunner
 
 
 class TestPeriodicCleanupRunner:
