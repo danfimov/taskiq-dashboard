@@ -1,6 +1,5 @@
 [project]
 name = "taskiq-dashboard"
-version = "0.4.1"
 description = "An interactive dashboard for monitoring and managing Taskiq tasks."
 readme = "README.md"
 license = "MIT"
@@ -31,6 +30,7 @@ keywords = ["taskiq", "tasks", "distributed", "async", "admin"]
 authors = [
     {name = "Anfimov Dima", email = "lovesolaristics@gmail.com"}
 ]
+dynamic = ["version"]
 requires-python = ">=3.10"
 dependencies = [
     # api
@@ -96,12 +96,19 @@ examples = [
 ]
 
 [build-system]
-requires = ["uv_build>=0.9.5,<0.10.0"]
-build-backend = "uv_build"
+requires = ["hatchling", "versioningit"]
+build-backend = "hatchling.build"
 
-[tool.uv.build-backend]
-module-name = "taskiq_dashboard"
-module-root = ""
+[tool.hatch.build.targets.wheel]
+packages = ["taskiq_dashboard"]
+exclude = ["taskiq_dashboard/api/styles"]
+
+[tool.hatch.version]
+source = "versioningit"
+
+[tool.hatch.build.hooks.custom]
+
+
 
 [tool.ruff]
 line-length = 120
