@@ -19,7 +19,6 @@ class TestTaskService:
         session_provider: AsyncPostgresSessionProvider,
     ) -> None:
         # Given
-        PostgresTaskFactory.__async_session__ = session_provider.session
         tasks_queued = await PostgresTaskFactory.create_batch_async(2, status=TaskStatus.QUEUED.value)
 
         # When
@@ -53,7 +52,6 @@ class TestTaskService:
         session_provider: AsyncPostgresSessionProvider,
     ) -> None:
         # Given
-        PostgresTaskFactory.__async_session__ = session_provider.session
         task = await PostgresTaskFactory.create_async()
 
         # When
@@ -115,7 +113,6 @@ class TestTaskService:
         session_provider: AsyncPostgresSessionProvider,
     ) -> None:
         # Given
-        PostgresTaskFactory.__async_session__ = session_provider.session
         task_queued = await PostgresTaskFactory.create_async(
             status=TaskStatus.QUEUED.value,
             queued_at=dt.datetime.now(dt.timezone.utc) - dt.timedelta(seconds=10),
@@ -147,7 +144,6 @@ class TestTaskService:
         session_provider: AsyncPostgresSessionProvider,
     ) -> None:
         # Given
-        PostgresTaskFactory.__async_session__ = session_provider.session
         task_in_progress = await PostgresTaskFactory.create_async(
             status=TaskStatus.IN_PROGRESS.value,
             queued_at=dt.datetime.now(dt.timezone.utc) - dt.timedelta(seconds=10),
@@ -179,7 +175,6 @@ class TestTaskService:
         session_provider: AsyncPostgresSessionProvider,
     ) -> None:
         # Given
-        PostgresTaskFactory.__async_session__ = session_provider.session
         task_in_progress = await PostgresTaskFactory.create_async(
             status=TaskStatus.IN_PROGRESS.value,
             queued_at=dt.datetime.now(dt.timezone.utc) - dt.timedelta(seconds=10),
@@ -210,7 +205,6 @@ class TestTaskService:
         session_provider: AsyncPostgresSessionProvider,
     ) -> None:
         # Given
-        PostgresTaskFactory.__async_session__ = session_provider.session
         await PostgresTaskFactory.create_batch_async(2, status=TaskStatus.QUEUED.value)
         await PostgresTaskFactory.create_async(status=TaskStatus.IN_PROGRESS.value)
         await PostgresTaskFactory.create_async(status=TaskStatus.ABANDONED.value)
@@ -230,7 +224,6 @@ class TestTaskService:
         session_provider: AsyncPostgresSessionProvider,
     ) -> None:
         # Given
-        PostgresTaskFactory.__async_session__ = session_provider.session
         await PostgresTaskFactory.create_batch_async(2, name='send_email')
         await PostgresTaskFactory.create_async(name='process_data')
 
@@ -247,7 +240,6 @@ class TestTaskService:
         session_provider: AsyncPostgresSessionProvider,
     ) -> None:
         # Given
-        PostgresTaskFactory.__async_session__ = session_provider.session
         known_task_id = uuid.uuid4()
         await PostgresTaskFactory.create_async(id=known_task_id, name='task_one')
         await PostgresTaskFactory.create_async(name='task_two')
@@ -266,7 +258,6 @@ class TestTaskService:
         session_provider: AsyncPostgresSessionProvider,
     ) -> None:
         # Given
-        PostgresTaskFactory.__async_session__ = session_provider.session
         await PostgresTaskFactory.create_batch_async(13)
 
         # When - get first page with limit 30 and offset 0
@@ -293,7 +284,6 @@ class TestTaskService:
         session_provider: AsyncPostgresSessionProvider,
     ) -> None:
         # Given
-        PostgresTaskFactory.__async_session__ = session_provider.session
         for minutes in range(5):
             await PostgresTaskFactory.create_async(
                 started_at=dt.datetime.now(dt.timezone.utc) + dt.timedelta(minutes=minutes)
@@ -312,7 +302,6 @@ class TestTaskService:
         session_provider: AsyncPostgresSessionProvider,
     ) -> None:
         # Given
-        PostgresTaskFactory.__async_session__ = session_provider.session
         for minutes in range(5):
             await PostgresTaskFactory.create_async(
                 started_at=dt.datetime.now(dt.timezone.utc) + dt.timedelta(minutes=minutes)
@@ -331,7 +320,6 @@ class TestTaskService:
         session_provider: AsyncPostgresSessionProvider,
     ) -> None:
         # Given
-        PostgresTaskFactory.__async_session__ = session_provider.session
         for minutes in range(5):
             await PostgresTaskFactory.create_async(
                 finished_at=dt.datetime.now(dt.timezone.utc) + dt.timedelta(minutes=minutes)
@@ -350,7 +338,6 @@ class TestTaskService:
         session_provider: AsyncPostgresSessionProvider,
     ) -> None:
         # Given
-        PostgresTaskFactory.__async_session__ = session_provider.session
         await PostgresTaskFactory.create_batch_async(2, name='send_email_task', status=TaskStatus.COMPLETED.value)
         await PostgresTaskFactory.create_batch_async(2, name='publish_data', status=TaskStatus.COMPLETED.value)
         await PostgresTaskFactory.create_batch_async(2, name='send_progress', status=TaskStatus.IN_PROGRESS.value)
