@@ -36,9 +36,9 @@ class TaskiqDashboard:
         self.settings.api.token = SecretStr(api_token)
         self.settings.storage_type = storage_type
         if storage_type == 'sqlite':
-            self.settings.sqlite = SqliteSettings(dsn=database_dsn)  # type: ignore[call-arg]
+            self.settings.sqlite = SqliteSettings(dsn=database_dsn)  # ty: ignore[unknown-argument]
         else:
-            self.settings.postgres = PostgresSettings(dsn=database_dsn)  # type: ignore[call-arg]
+            self.settings.postgres = PostgresSettings(dsn=database_dsn)  # ty: ignore[unknown-argument]
 
         self.broker = broker
         self.scheduler = scheduler
@@ -50,6 +50,8 @@ class TaskiqDashboard:
             'log_access': True,
         }
         self._server_kwargs.update(server_kwargs or {})
+        self._trusted_hosts = str(self._server_kwargs.pop('trusted_hosts', '*'))
+
         self._application = get_application(root_path=root_path)
         self._application.state.broker = self.broker
         self._application.state.scheduler = self.scheduler
@@ -63,6 +65,7 @@ class TaskiqDashboard:
         """Run the Taskiq Dashboard application using Granian."""
         try:
             from granian.server.embed import Server  # noqa: PLC0415
+            from granian.utils.proxies import wrap_asgi_with_proxy_headers  # noqa: PLC0415
         except ImportError as e:
             raise ImportError(
                 'Granian is required to run the Taskiq Dashboard server. '
@@ -70,6 +73,6 @@ class TaskiqDashboard:
             ) from e
 
         await Server(
-            self.application,
-            **self._server_kwargs,  # type: ignore[arg-type]
+            wrap_asgi_with_proxy_headers(self.application, trusted_hosts=self._trusted_hosts),
+            **self._server_kwargs,  # ty: ignore[invalid-argument-type]
         ).serve()

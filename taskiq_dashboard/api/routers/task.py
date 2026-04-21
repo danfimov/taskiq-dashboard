@@ -10,7 +10,7 @@ from fastapi.responses import HTMLResponse
 
 from taskiq_dashboard.api.templates import jinja_templates
 from taskiq_dashboard.domain.dto.task_status import TaskStatus
-from taskiq_dashboard.domain.services.task_service import AbstractTaskRepository
+from taskiq_dashboard.domain.repositories import AbstractTaskRepository
 
 
 router = fastapi.APIRouter(
@@ -36,7 +36,7 @@ class TaskFilter(pydantic.BaseModel):
     ) -> TaskStatus | None:
         if isinstance(value, str) and value == 'null':
             return None
-        return value  # type: ignore[return-value]
+        return value  # ty: ignore[invalid-return-type]
 
     @pydantic.field_serializer('status', mode='plain')
     def serialize_status(

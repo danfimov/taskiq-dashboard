@@ -5,7 +5,8 @@ import logging
 
 import sqlalchemy as sa
 
-from taskiq_dashboard.domain.services.cleanup_service import AbstractCleanupService, CleanupResult
+from taskiq_dashboard.domain.dto.cleanup import CleanupResult
+from taskiq_dashboard.domain.services import AbstractCleanupService
 from taskiq_dashboard.infrastructure.database.schemas import PostgresTask, SqliteTask
 from taskiq_dashboard.infrastructure.database.session_provider import AsyncPostgresSessionProvider
 from taskiq_dashboard.infrastructure.settings import CleanupSettings
@@ -54,7 +55,7 @@ class CleanupService(AbstractCleanupService):
         query = sa.delete(self._task).where(task_timestamp < cutoff_date)
         async with self._session_provider.session() as session:
             result = await session.execute(query)
-            return result.rowcount or 0  # type: ignore[possibly-missing-attribute]
+            return result.rowcount or 0  # ty: ignore[unresolved-attribute]
 
     async def cleanup_by_count(self, max_tasks: int) -> int:
         async with self._session_provider.session() as session:
@@ -71,14 +72,10 @@ class CleanupService(AbstractCleanupService):
                 self._task.started_at,
                 self._task.queued_at,
             )
-            subquery = (
-                sa.select(self._task.id)
-                .order_by(task_timestamp.asc())
-                .limit(tasks_to_delete)
-            )
+            subquery = sa.select(self._task.id).order_by(task_timestamp.asc()).limit(tasks_to_delete)
             delete_query = sa.delete(self._task).where(self._task.id.in_(subquery))
             result = await session.execute(delete_query)
-            return result.rowcount or 0  # type: ignore[possibly-missing-attribute]
+            return result.rowcount or 0  # ty: ignore[unresolved-attribute]
 
 
 class PeriodicCleanupRunner:

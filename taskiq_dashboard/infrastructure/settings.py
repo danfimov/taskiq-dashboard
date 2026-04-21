@@ -102,6 +102,7 @@ class APISettings(pydantic_settings.BaseSettings):
     address: str = '0.0.0.0'  # noqa: S104
     port: int = 8000
     token: SecretStr = SecretStr('supersecret')
+    trusted_hosts: str = '*'
 
     model_config = pydantic_settings.SettingsConfigDict(
         extra='allow',

@@ -5,14 +5,17 @@ from contextlib import suppress
 
 import pytest
 import sqlalchemy as sa
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy_utils import create_database, database_exists, drop_database
 
-from taskiq_dashboard.domain.services.task_service import AbstractTaskRepository
+from tests.integration.factories import PostgresTaskFactory
+
+from taskiq_dashboard.domain.repositories import AbstractTaskRepository
 from taskiq_dashboard.infrastructure import get_settings
 from taskiq_dashboard.infrastructure.database.schemas import PostgresTask
 from taskiq_dashboard.infrastructure.database.session_provider import AsyncPostgresSessionProvider
+from taskiq_dashboard.infrastructure.repositories import TaskRepository
 from taskiq_dashboard.infrastructure.services.schema_service import SchemaService
-from taskiq_dashboard.infrastructure.services.task_service import TaskRepository
 from taskiq_dashboard.infrastructure.settings import PostgresSettings
 
 
@@ -51,6 +54,19 @@ async def session_provider(database: PostgresSettings) -> AsyncGenerator[AsyncPo
     session_provider = AsyncPostgresSessionProvider(connection_settings=database)
     yield session_provider
     await session_provider.close()
+
+
+@pytest.fixture
+async def session(session_provider: AsyncPostgresSessionProvider) -> AsyncGenerator[AsyncSession]:
+    """Open a single AsyncSession for the duration of a test."""
+    async with session_provider.session() as session:
+        yield session
+
+
+@pytest.fixture(autouse=True)
+async def setup_factory_session(session: AsyncSession) -> None:
+    """Automatically wire the shared session into PostgresTaskFactory."""
+    PostgresTaskFactory.__async_session__ = session
 
 
 @pytest.fixture(autouse=True)

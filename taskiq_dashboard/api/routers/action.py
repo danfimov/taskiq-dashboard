@@ -9,7 +9,7 @@ from fastapi.responses import RedirectResponse, Response
 from starlette import status
 
 from taskiq_dashboard.api.templates import jinja_templates
-from taskiq_dashboard.domain.services.task_service import AbstractTaskRepository
+from taskiq_dashboard.domain.repositories import AbstractTaskRepository
 
 
 if tp.TYPE_CHECKING:
@@ -114,7 +114,7 @@ async def handle_task_delete(
     await repository.delete_task(task_id)
     mount_prefix = request.url.path.rsplit('/actions/delete/', 1)[0]
     return RedirectResponse(
-        url=mount_prefix if mount_prefix else '/',
+        url=mount_prefix or '/',
         status_code=status.HTTP_307_TEMPORARY_REDIRECT,
     )
 

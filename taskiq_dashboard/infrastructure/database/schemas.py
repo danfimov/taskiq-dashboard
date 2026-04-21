@@ -1,4 +1,5 @@
 import datetime as dt
+import typing as tp
 import uuid
 
 import sqlalchemy as sa
@@ -27,17 +28,17 @@ class BaseTableSchema:
 class PostgresTask(BaseTableSchema):
     __tablename__ = 'taskiq_dashboard__tasks'
 
-    id: Mapped[uuid.UUID] = mapped_column(postgresql.UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)  # type: ignore[no-matching-overload]
+    id: Mapped[uuid.UUID] = mapped_column(postgresql.UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name: Mapped[str] = mapped_column(postgresql.TEXT, nullable=False)
     status: Mapped[task_status.TaskStatus] = mapped_column(sa.Integer, nullable=False)
 
     worker: Mapped[str] = mapped_column(postgresql.TEXT, nullable=False)
 
-    args: Mapped[str] = mapped_column(postgresql.JSONB, nullable=False, default='[]')
-    kwargs: Mapped[str] = mapped_column(postgresql.JSONB, nullable=False, default='{}')
-    labels: Mapped[str] = mapped_column(postgresql.JSONB, nullable=False, default='{}')
+    args: Mapped[list[tp.Any]] = mapped_column(postgresql.JSONB, nullable=False, default=list)
+    kwargs: Mapped[dict[str, tp.Any]] = mapped_column(postgresql.JSONB, nullable=False, default=dict)
+    labels: Mapped[dict[str, tp.Any]] = mapped_column(postgresql.JSONB, nullable=False, default=dict)
 
-    result: Mapped[str] = mapped_column(postgresql.JSONB, nullable=True, default=None)
+    result: Mapped[dict[str, tp.Any] | None] = mapped_column(postgresql.JSONB, nullable=True, default=None)
     error: Mapped[str] = mapped_column(postgresql.TEXT, nullable=True, default=None)
 
     queued_at: Mapped[dt.datetime] = mapped_column(
@@ -58,7 +59,7 @@ class SqliteTask(BaseTableSchema):
     __tablename__ = 'tasks'
 
     id: Mapped[uuid.UUID] = mapped_column(
-        sa.Uuid(as_uuid=True),  # type: ignore[no-matching-overload]
+        sa.Uuid(as_uuid=True),
         primary_key=True,
         default=uuid.uuid4,
     )
@@ -67,11 +68,11 @@ class SqliteTask(BaseTableSchema):
 
     worker: Mapped[str] = mapped_column(sqlite.TEXT, nullable=False)
 
-    args: Mapped[str] = mapped_column(sqlite.JSON, nullable=False, default='[]')
-    kwargs: Mapped[str] = mapped_column(sqlite.JSON, nullable=False, default='{}')
-    labels: Mapped[str] = mapped_column(sqlite.JSON, nullable=False, default='{}')
+    args: Mapped[list[tp.Any]] = mapped_column(sqlite.JSON, nullable=False, default=list)
+    kwargs: Mapped[dict[str, tp.Any]] = mapped_column(sqlite.JSON, nullable=False, default=dict)
+    labels: Mapped[dict[str, tp.Any]] = mapped_column(sqlite.JSON, nullable=False, default=dict)
 
-    result: Mapped[str] = mapped_column(sqlite.JSON, nullable=True, default=None)
+    result: Mapped[dict[str, tp.Any] | None] = mapped_column(sqlite.JSON, nullable=True, default=None)
     error: Mapped[str] = mapped_column(sqlite.TEXT, nullable=True, default=None)
 
     queued_at: Mapped[dt.datetime] = mapped_column(

@@ -8,7 +8,7 @@ from fastapi.responses import Response
 from starlette import status
 
 from taskiq_dashboard.domain.dto.task import ExecutedTask, QueuedTask, StartedTask
-from taskiq_dashboard.domain.services.task_service import AbstractTaskRepository
+from taskiq_dashboard.domain.repositories import AbstractTaskRepository
 
 
 router = fastapi.APIRouter(

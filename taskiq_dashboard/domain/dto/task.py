@@ -40,7 +40,7 @@ class QueuedTask(pydantic.BaseModel):
     queued_at: datetime.datetime
 
     model_config = pydantic.ConfigDict(
-        alias_generator=lambda field_name: to_camel(field_name),
+        alias_generator=to_camel,
         validate_by_alias=True,
         validate_by_name=True,
     )
@@ -55,7 +55,7 @@ class StartedTask(pydantic.BaseModel):
     started_at: datetime.datetime
 
     model_config = pydantic.ConfigDict(
-        alias_generator=lambda field_name: to_camel(field_name),
+        alias_generator=to_camel,
         validate_by_alias=True,
         validate_by_name=True,
     )
@@ -68,7 +68,7 @@ class ExecutedTask(pydantic.BaseModel):
     return_value: dict[str, tp.Any] = pydantic.Field(default_factory=dict)
 
     model_config = pydantic.ConfigDict(
-        alias_generator=lambda field_name: to_camel(field_name),
+        alias_generator=to_camel,
         validate_by_alias=True,
         validate_by_name=True,
     )

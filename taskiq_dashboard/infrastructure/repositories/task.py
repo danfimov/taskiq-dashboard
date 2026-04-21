@@ -3,11 +3,13 @@ import uuid
 from contextlib import suppress
 
 import sqlalchemy as sa
+from sqlalchemy.dialects.postgresql import insert as pg_insert
+from sqlalchemy.dialects.sqlite import insert as sqlite_insert
 from sqlalchemy.exc import IntegrityError
 
 from taskiq_dashboard.domain.dto.task import ExecutedTask, QueuedTask, StartedTask, Task
 from taskiq_dashboard.domain.dto.task_status import TaskStatus
-from taskiq_dashboard.domain.services.task_service import AbstractTaskRepository
+from taskiq_dashboard.domain.repositories import AbstractTaskRepository
 from taskiq_dashboard.infrastructure.database.schemas import PostgresTask, SqliteTask
 from taskiq_dashboard.infrastructure.database.session_provider import AsyncPostgresSessionProvider
 
@@ -70,35 +72,30 @@ class TaskRepository(AbstractTaskRepository):
         task_id: uuid.UUID,
         task_arguments: QueuedTask,
     ) -> None:
+        insert = pg_insert if self.task is PostgresTask else sqlite_insert
+        stmt = insert(self.task).values(
+            id=task_id,
+            name=task_arguments.task_name,
+            status=TaskStatus.QUEUED.value,
+            worker=task_arguments.worker or '',
+            args=task_arguments.args,
+            kwargs=task_arguments.kwargs,
+            labels=task_arguments.labels,
+            queued_at=task_arguments.queued_at,
+        )
+        upsert_query = stmt.on_conflict_do_update(
+            index_elements=[self.task.id],
+            set_={
+                'queued_at': stmt.excluded.queued_at,
+                'worker': stmt.excluded.worker,
+                'name': stmt.excluded.name,
+                'args': stmt.excluded.args,
+                'kwargs': stmt.excluded.kwargs,
+                'labels': stmt.excluded.labels,
+            },
+        )
         async with self._session_provider.session() as session, session.begin():
-            existing_task_query = sa.select(self.task.id).where(self.task.id == task_id)
-            result = await session.execute(existing_task_query)
-            if result.scalar_one_or_none() is None:
-                insert_query = sa.insert(self.task).values(
-                    id=task_id,
-                    name=task_arguments.task_name,
-                    status=TaskStatus.QUEUED.value,
-                    worker=task_arguments.worker or '',
-                    args=task_arguments.args,
-                    kwargs=task_arguments.kwargs,
-                    labels=task_arguments.labels,
-                    queued_at=task_arguments.queued_at,
-                )
-                await session.execute(insert_query)
-            else:
-                update_query = (
-                    sa.update(self.task)
-                    .where(self.task.id == task_id)
-                    .values(
-                        queued_at=task_arguments.queued_at,
-                        worker=task_arguments.worker or '',
-                        name=task_arguments.task_name,
-                        args=task_arguments.args,
-                        kwargs=task_arguments.kwargs,
-                        labels=task_arguments.labels,
-                    )
-                )
-                await session.execute(update_query)
+            await session.execute(upsert_query)
 
     async def update_task(
         self,
