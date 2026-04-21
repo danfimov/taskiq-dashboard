@@ -15,7 +15,7 @@ async def main() -> None:
             if storage_type == 'postgres'
             else settings.sqlite.dsn.get_secret_value()
         ),
-        **settings.api.model_dump(exclude='token'),  # type: ignore[arg-type]
+        **settings.api.model_dump(exclude='token'),  # ty: ignore[invalid-argument-type]
     )
     await dashboard.run()
 

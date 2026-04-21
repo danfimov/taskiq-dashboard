@@ -36,7 +36,7 @@ class TaskFilter(pydantic.BaseModel):
     ) -> TaskStatus | None:
         if isinstance(value, str) and value == 'null':
             return None
-        return value  # type: ignore[return-value]
+        return value  # ty: ignore[invalid-return-type]
 
     @pydantic.field_serializer('status', mode='plain')
     def serialize_status(
