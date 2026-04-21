@@ -48,6 +48,7 @@ class TaskiqDashboard:
             'port': 8000,
             'interface': 'asgi',
             'log_access': True,
+            'forwarded_allow_ips': '*',
         }
         self._server_kwargs.update(server_kwargs or {})
         self._application = get_application(root_path=root_path)
