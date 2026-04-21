@@ -48,9 +48,10 @@ class TaskiqDashboard:
             'port': 8000,
             'interface': 'asgi',
             'log_access': True,
-            'forwarded_allow_ips': '*',
         }
         self._server_kwargs.update(server_kwargs or {})
+        self._trusted_hosts = str(self._server_kwargs.pop('trusted_hosts', '*'))
+
         self._application = get_application(root_path=root_path)
         self._application.state.broker = self.broker
         self._application.state.scheduler = self.scheduler
@@ -64,6 +65,7 @@ class TaskiqDashboard:
         """Run the Taskiq Dashboard application using Granian."""
         try:
             from granian.server.embed import Server  # noqa: PLC0415
+            from granian.utils.proxies import wrap_asgi_with_proxy_headers  # noqa: PLC0415
         except ImportError as e:
             raise ImportError(
                 'Granian is required to run the Taskiq Dashboard server. '
@@ -71,6 +73,6 @@ class TaskiqDashboard:
             ) from e
 
         await Server(
-            self.application,
+            wrap_asgi_with_proxy_headers(self.application, trusted_hosts=self._trusted_hosts),
             **self._server_kwargs,  # ty: ignore[invalid-argument-type]
         ).serve()

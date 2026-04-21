@@ -225,6 +225,7 @@ You can also configure the database connection or API parameters using environme
     TASKIQ_DASHBOARD__API__HOST=localhost
     TASKIQ_DASHBOARD__API__PORT=8000
     TASKIQ_DASHBOARD__API__TOKEN=supersecret
+    TASKIQ_DASHBOARD__API__TRUSTED_HOSTS=*
     ```
 
 === "sqlite"
@@ -237,6 +238,7 @@ You can also configure the database connection or API parameters using environme
     TASKIQ_DASHBOARD__API__HOST=localhost
     TASKIQ_DASHBOARD__API__PORT=8000
     TASKIQ_DASHBOARD__API__TOKEN=supersecret
+    TASKIQ_DASHBOARD__API__TRUSTED_HOSTS=*
     ```
 
 
