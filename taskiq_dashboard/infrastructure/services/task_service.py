@@ -71,34 +71,32 @@ class TaskRepository(AbstractTaskRepository):
         task_arguments: QueuedTask,
     ) -> None:
         async with self._session_provider.session() as session, session.begin():
-            existing_task_query = sa.select(self.task.id).where(self.task.id == task_id)
-            result = await session.execute(existing_task_query)
-            if result.scalar_one_or_none() is None:
-                insert_query = sa.insert(self.task).values(
-                    id=task_id,
-                    name=task_arguments.task_name,
-                    status=TaskStatus.QUEUED.value,
-                    worker=task_arguments.worker or '',
-                    args=task_arguments.args,
-                    kwargs=task_arguments.kwargs,
-                    labels=task_arguments.labels,
-                    queued_at=task_arguments.queued_at,
-                )
-                await session.execute(insert_query)
-            else:
-                update_query = (
-                    sa.update(self.task)
-                    .where(self.task.id == task_id)
-                    .values(
-                        queued_at=task_arguments.queued_at,
-                        worker=task_arguments.worker or '',
+            with suppress(IntegrityError):
+                async with session.begin_nested():
+                    insert_query = sa.insert(self.task).values(
+                        id=task_id,
                         name=task_arguments.task_name,
+                        status=TaskStatus.QUEUED.value,
+                        worker=task_arguments.worker or '',
                         args=task_arguments.args,
                         kwargs=task_arguments.kwargs,
                         labels=task_arguments.labels,
+                        queued_at=task_arguments.queued_at,
                     )
+                    await session.execute(insert_query)
+            update_query = (
+                sa.update(self.task)
+                .where(self.task.id == task_id)
+                .values(
+                    queued_at=task_arguments.queued_at,
+                    worker=task_arguments.worker or '',
+                    name=task_arguments.task_name,
+                    args=task_arguments.args,
+                    kwargs=task_arguments.kwargs,
+                    labels=task_arguments.labels,
                 )
-                await session.execute(update_query)
+            )
+            await session.execute(update_query)
 
     async def update_task(
         self,
