@@ -26,7 +26,6 @@ class TestCleanupService:
         session_provider: AsyncPostgresSessionProvider,
     ) -> None:
         # Given
-        PostgresTaskFactory.__async_session__ = session_provider.session
         settings = CleanupSettings(is_enabled=False)
         cleanup_service = CleanupService(
             session_provider=session_provider,
@@ -51,7 +50,6 @@ class TestCleanupService:
         session_provider: AsyncPostgresSessionProvider,
     ) -> None:
         # Given
-        PostgresTaskFactory.__async_session__ = session_provider.session
         settings = CleanupSettings(
             is_enabled=True,
             ttl_days=30,
@@ -99,7 +97,6 @@ class TestCleanupService:
         session_provider: AsyncPostgresSessionProvider,
     ) -> None:
         # Given
-        PostgresTaskFactory.__async_session__ = session_provider.session
         settings = CleanupSettings(
             is_enabled=True,
             ttl_days=30,
@@ -146,7 +143,6 @@ class TestCleanupService:
         session_provider: AsyncPostgresSessionProvider,
     ) -> None:
         # Given
-        PostgresTaskFactory.__async_session__ = session_provider.session
         settings = CleanupSettings(
             is_enabled=True,
             ttl_days=30,
@@ -180,7 +176,6 @@ class TestCleanupService:
         session_provider: AsyncPostgresSessionProvider,
     ) -> None:
         # Given
-        PostgresTaskFactory.__async_session__ = session_provider.session
         settings = CleanupSettings(
             is_enabled=True,
             ttl_days=365,  # High TTL so it doesn't affect count-based cleanup
@@ -237,7 +232,6 @@ class TestCleanupService:
         session_provider: AsyncPostgresSessionProvider,
     ) -> None:
         # Given
-        PostgresTaskFactory.__async_session__ = session_provider.session
         settings = CleanupSettings(
             is_enabled=True,
             ttl_days=365,
@@ -272,7 +266,6 @@ class TestCleanupService:
         session_provider: AsyncPostgresSessionProvider,
     ) -> None:
         # Given
-        PostgresTaskFactory.__async_session__ = session_provider.session
         settings = CleanupSettings(
             is_enabled=True,
             ttl_days=30,
@@ -321,7 +314,6 @@ class TestCleanupService:
         session_provider: AsyncPostgresSessionProvider,
     ) -> None:
         # Given
-        PostgresTaskFactory.__async_session__ = session_provider.session
         settings = CleanupSettings(is_enabled=True)
         cleanup_service = CleanupService(
             session_provider=session_provider,
@@ -346,7 +338,6 @@ class TestCleanupService:
         session_provider: AsyncPostgresSessionProvider,
     ) -> None:
         # Given
-        PostgresTaskFactory.__async_session__ = session_provider.session
         settings = CleanupSettings(is_enabled=True)
         cleanup_service = CleanupService(
             session_provider=session_provider,
