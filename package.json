@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "dev": "bunx @tailwindcss/cli -i ./taskiq_dashboard/api/styles/main.css -o ./taskiq_dashboard/api/static/css/tailwind.css --watch"
+    "dev": "tailwindcss -i ./taskiq_dashboard/api/styles/main.css -o ./taskiq_dashboard/api/static/css/tailwind.css --watch",
+    "build": "tailwindcss -i ./taskiq_dashboard/api/styles/main.css -o ./taskiq_dashboard/api/static/css/tailwind.css --minify"
   },
   "devDependencies": {
     "@catppuccin/tailwindcss": "^1.0.0",
