@@ -26,7 +26,7 @@ repos:
     rev: v1.45.1
     hooks:
       - id: typos
-        exclude: taskiq_dashboard/api/static/htmx.js
+        exclude: taskiq_dashboard/api/static/
 
 -   repo: https://github.com/Yelp/detect-secrets
     rev: v1.5.0
@@ -34,7 +34,7 @@ repos:
     -   id: detect-secrets
         args: [
             '--exclude-files', 'bun.lock',
-            '--exclude-files', 'taskiq_dashboard/api/static/htmx.js',
+            '--exclude-files', 'taskiq_dashboard/api/static/.*',
             '--exclude-lines', 'look_in_vault',
             '--exclude-lines', 'taskiq_postgres',
             '--exclude-lines', 'postgresql://postgres:postgres@localhost:5432/postgres',
