@@ -1,4 +1,4 @@
-from taskiq_dashboard.domain.services.schema_service import AbstractSchemaService
+from taskiq_dashboard.domain.services import AbstractSchemaService
 from taskiq_dashboard.infrastructure.database.schemas import PostgresTask, SqliteTask, sa_metadata
 from taskiq_dashboard.infrastructure.database.session_provider import AsyncPostgresSessionProvider
 

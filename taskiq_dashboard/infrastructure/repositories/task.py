@@ -9,7 +9,7 @@ from sqlalchemy.exc import IntegrityError
 
 from taskiq_dashboard.domain.dto.task import ExecutedTask, QueuedTask, StartedTask, Task
 from taskiq_dashboard.domain.dto.task_status import TaskStatus
-from taskiq_dashboard.domain.services.task_service import AbstractTaskRepository
+from taskiq_dashboard.domain.repositories import AbstractTaskRepository
 from taskiq_dashboard.infrastructure.database.schemas import PostgresTask, SqliteTask
 from taskiq_dashboard.infrastructure.database.session_provider import AsyncPostgresSessionProvider
 

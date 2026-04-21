@@ -7,7 +7,7 @@ from tests.integration.factories import PostgresTaskFactory
 
 from taskiq_dashboard.domain.dto.task import ExecutedTask, QueuedTask, StartedTask
 from taskiq_dashboard.domain.dto.task_status import TaskStatus
-from taskiq_dashboard.domain.services.task_service import AbstractTaskRepository
+from taskiq_dashboard.domain.repositories import AbstractTaskRepository
 from taskiq_dashboard.infrastructure.database.schemas import PostgresTask
 from taskiq_dashboard.infrastructure.database.session_provider import AsyncPostgresSessionProvider
 
