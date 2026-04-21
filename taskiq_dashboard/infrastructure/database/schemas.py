@@ -1,4 +1,5 @@
 import datetime as dt
+import typing as tp
 import uuid
 
 import sqlalchemy as sa
@@ -33,11 +34,11 @@ class PostgresTask(BaseTableSchema):
 
     worker: Mapped[str] = mapped_column(postgresql.TEXT, nullable=False)
 
-    args: Mapped[str] = mapped_column(postgresql.JSONB, nullable=False, default='[]')
-    kwargs: Mapped[str] = mapped_column(postgresql.JSONB, nullable=False, default='{}')
-    labels: Mapped[str] = mapped_column(postgresql.JSONB, nullable=False, default='{}')
+    args: Mapped[list[tp.Any]] = mapped_column(postgresql.JSONB, nullable=False, default='[]')
+    kwargs: Mapped[dict[str, tp.Any]] = mapped_column(postgresql.JSONB, nullable=False, default='{}')
+    labels: Mapped[dict[str, tp.Any]] = mapped_column(postgresql.JSONB, nullable=False, default='{}')
 
-    result: Mapped[str] = mapped_column(postgresql.JSONB, nullable=True, default=None)
+    result: Mapped[dict[str, tp.Any] | None] = mapped_column(postgresql.JSONB, nullable=True, default=None)
     error: Mapped[str] = mapped_column(postgresql.TEXT, nullable=True, default=None)
 
     queued_at: Mapped[dt.datetime] = mapped_column(
@@ -67,11 +68,11 @@ class SqliteTask(BaseTableSchema):
 
     worker: Mapped[str] = mapped_column(sqlite.TEXT, nullable=False)
 
-    args: Mapped[str] = mapped_column(sqlite.JSON, nullable=False, default='[]')
-    kwargs: Mapped[str] = mapped_column(sqlite.JSON, nullable=False, default='{}')
-    labels: Mapped[str] = mapped_column(sqlite.JSON, nullable=False, default='{}')
+    args: Mapped[list[tp.Any]] = mapped_column(sqlite.JSON, nullable=False, default='[]')
+    kwargs: Mapped[dict[str, tp.Any]] = mapped_column(sqlite.JSON, nullable=False, default='{}')
+    labels: Mapped[dict[str, tp.Any]] = mapped_column(sqlite.JSON, nullable=False, default='{}')
 
-    result: Mapped[str] = mapped_column(sqlite.JSON, nullable=True, default=None)
+    result: Mapped[dict[str, tp.Any] | None] = mapped_column(sqlite.JSON, nullable=True, default=None)
     error: Mapped[str] = mapped_column(sqlite.TEXT, nullable=True, default=None)
 
     queued_at: Mapped[dt.datetime] = mapped_column(

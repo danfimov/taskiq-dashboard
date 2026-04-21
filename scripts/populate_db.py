@@ -53,13 +53,15 @@ async def create_random_tasks(session: AsyncSession, count: int) -> None:
         args = [random.randint(1, 100) for _ in range(random.randint(0, 3))]
         kwargs = {f'param{i}': random.choice(['value', 123, True, None]) for i in range(random.randint(0, 3))}
 
-        # Генерируем время начала (от недели назад до сейчас)
-        started_at = dt.datetime.now(dt.timezone.utc) - dt.timedelta(
+        # Генерируем время постановки в очередь (от недели назад до сейчас)
+        queued_at = dt.datetime.now(dt.timezone.utc) - dt.timedelta(
             days=random.randint(0, 7),
             hours=random.randint(0, 23),
             minutes=random.randint(0, 59),
             seconds=random.randint(0, 59),
         )
+        # Время начала — чуть позже постановки в очередь
+        started_at = queued_at + dt.timedelta(seconds=random.randint(1, 30))
 
         # Генерируем результат в зависимости от статуса
         result = None
@@ -107,6 +109,7 @@ async def create_random_tasks(session: AsyncSession, count: int) -> None:
             kwargs=kwargs,
             result=result,
             error=error,
+            queued_at=queued_at,
             started_at=started_at,
             finished_at=finished_at,
         )
