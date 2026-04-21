@@ -34,9 +34,9 @@ class PostgresTask(BaseTableSchema):
 
     worker: Mapped[str] = mapped_column(postgresql.TEXT, nullable=False)
 
-    args: Mapped[list[tp.Any]] = mapped_column(postgresql.JSONB, nullable=False, default='[]')
-    kwargs: Mapped[dict[str, tp.Any]] = mapped_column(postgresql.JSONB, nullable=False, default='{}')
-    labels: Mapped[dict[str, tp.Any]] = mapped_column(postgresql.JSONB, nullable=False, default='{}')
+    args: Mapped[list[tp.Any]] = mapped_column(postgresql.JSONB, nullable=False, default=list)
+    kwargs: Mapped[dict[str, tp.Any]] = mapped_column(postgresql.JSONB, nullable=False, default=dict)
+    labels: Mapped[dict[str, tp.Any]] = mapped_column(postgresql.JSONB, nullable=False, default=dict)
 
     result: Mapped[dict[str, tp.Any] | None] = mapped_column(postgresql.JSONB, nullable=True, default=None)
     error: Mapped[str] = mapped_column(postgresql.TEXT, nullable=True, default=None)
@@ -68,9 +68,9 @@ class SqliteTask(BaseTableSchema):
 
     worker: Mapped[str] = mapped_column(sqlite.TEXT, nullable=False)
 
-    args: Mapped[list[tp.Any]] = mapped_column(sqlite.JSON, nullable=False, default='[]')
-    kwargs: Mapped[dict[str, tp.Any]] = mapped_column(sqlite.JSON, nullable=False, default='{}')
-    labels: Mapped[dict[str, tp.Any]] = mapped_column(sqlite.JSON, nullable=False, default='{}')
+    args: Mapped[list[tp.Any]] = mapped_column(sqlite.JSON, nullable=False, default=list)
+    kwargs: Mapped[dict[str, tp.Any]] = mapped_column(sqlite.JSON, nullable=False, default=dict)
+    labels: Mapped[dict[str, tp.Any]] = mapped_column(sqlite.JSON, nullable=False, default=dict)
 
     result: Mapped[dict[str, tp.Any] | None] = mapped_column(sqlite.JSON, nullable=True, default=None)
     error: Mapped[str] = mapped_column(sqlite.TEXT, nullable=True, default=None)
