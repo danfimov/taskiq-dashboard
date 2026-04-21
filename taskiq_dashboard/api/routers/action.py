@@ -114,7 +114,7 @@ async def handle_task_delete(
     await repository.delete_task(task_id)
     mount_prefix = request.url.path.rsplit('/actions/delete/', 1)[0]
     return RedirectResponse(
-        url=mount_prefix if mount_prefix else '/',
+        url=mount_prefix or '/',
         status_code=status.HTTP_307_TEMPORARY_REDIRECT,
     )
 

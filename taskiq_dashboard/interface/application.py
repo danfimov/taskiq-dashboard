@@ -36,9 +36,9 @@ class TaskiqDashboard:
         self.settings.api.token = SecretStr(api_token)
         self.settings.storage_type = storage_type
         if storage_type == 'sqlite':
-            self.settings.sqlite = SqliteSettings(dsn=database_dsn)  # type: ignore[call-arg]
+            self.settings.sqlite = SqliteSettings(dsn=database_dsn)  # ty: ignore[unknown-argument]
         else:
-            self.settings.postgres = PostgresSettings(dsn=database_dsn)  # type: ignore[call-arg]
+            self.settings.postgres = PostgresSettings(dsn=database_dsn)  # ty: ignore[unknown-argument]
 
         self.broker = broker
         self.scheduler = scheduler
@@ -71,5 +71,5 @@ class TaskiqDashboard:
 
         await Server(
             self.application,
-            **self._server_kwargs,  # type: ignore[arg-type]
+            **self._server_kwargs,  # ty: ignore[invalid-argument-type]
         ).serve()

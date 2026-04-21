@@ -56,7 +56,7 @@ async def handle_schedule_list(
             status_code=status.HTTP_404_NOT_FOUND,
         )
     schedules = []
-    for schedule_source in sorted(scheduler.sources, key=lambda s: id(s)):
+    for schedule_source in sorted(scheduler.sources, key=id):
         schedules_from_source = [schedule.model_dump() for schedule in await schedule_source.get_schedules()]
         schedules_from_source.sort(key=lambda s: s['schedule_id'])
         for schedule in schedules_from_source:
