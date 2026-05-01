@@ -48,7 +48,7 @@ jobs:
         with:
           no-cache: true
       - id: setup-uv
-        uses: astral-sh/setup-uv@3259c6206f993105e3a61b142c2d97bf4b9ef83d # v7.1.0
+        uses: astral-sh/setup-uv@cec208311dfd045dd5311c1add060b2062131d57 # v8.0.0
         with:
           enable-cache: true
           cache-suffix: ${{ matrix.python-version }}
