@@ -1,13 +1,21 @@
 import asyncio
-import json
 import re
 from collections.abc import AsyncGenerator
 
-import httpx
 import pytest
+import zapros
 from polyfactory.factories.pydantic_factory import ModelFactory
-from pytest_httpx import HTTPXMock
 from taskiq import TaskiqMessage, TaskiqResult
+from zapros import Response
+from zapros.matchers import and_
+from zapros.mock import (
+    HeaderMatcher,
+    JsonMatcher,
+    Matcher,
+    MethodMatcher,
+    Mock,
+    mock_http,
+)
 
 from taskiq_dashboard import DashboardMiddleware
 
@@ -29,61 +37,81 @@ async def middleware() -> AsyncGenerator[DashboardMiddleware]:
     await middleware.shutdown()
 
 
+class PathRegexpMatcher(Matcher):
+    def __init__(self, path: str | re.Pattern[str]) -> None:
+        self._path = path
+
+    def match(self, request) -> bool:
+        if isinstance(self._path, re.Pattern):
+            return self._path.match(request.url.pathname) is not None
+        return self._path == request.url.pathname
+
+
 @pytest.mark.parametrize(
-    'method',
+    'taskiq_method',
     ['post_send', 'pre_execute', 'post_execute'],
 )
 async def test_when_middleware_method_called__then_request_send_with_auth_data(
-    httpx_mock: HTTPXMock,
     middleware: DashboardMiddleware,
-    method: str,
+    taskiq_method: str,
 ) -> None:
     # given
     message = TaskiqMessageFactory.build()
-    httpx_mock.add_response(
-        method='POST',
-        url=re.compile(f'http://test_dashboard/api/tasks/{message.task_id}/.*'),
-        status_code=200,
-    )
+    with mock_http() as router:
+        mocked = (
+            Mock.given(
+                and_(
+                    MethodMatcher('POST'),
+                    PathRegexpMatcher(re.compile(f'/api/tasks/{message.task_id}/.*')),
+                    HeaderMatcher('access-token', 'supersecret'),
+                )
+            )
+            .respond(Response(status=200))
+            .mount(router)
+            .once()
+        )
 
-    # when
-    if method == 'post_send':
-        await middleware.post_send(message)
-    elif method == 'pre_execute':
-        await middleware.pre_execute(message)
-    elif method == 'post_execute':
-        await middleware.post_execute(message, result=TaskiqResult(is_err=False, return_value=None, execution_time=1.0))
-    await asyncio.gather(*middleware._pending, return_exceptions=True)
+        # when
+        if taskiq_method == 'post_send':
+            await middleware.post_send(message)
+        elif taskiq_method == 'pre_execute':
+            await middleware.pre_execute(message)
+        elif taskiq_method == 'post_execute':
+            await middleware.post_execute(
+                message, result=TaskiqResult(is_err=False, return_value=None, execution_time=1.0)
+            )
+        await asyncio.gather(*middleware._pending, return_exceptions=True)
 
-    # then
-    request = httpx_mock.get_request()
-    assert request is not None
-    assert request.method == 'POST'
-    assert 'access-token' in request.headers
-    assert request.headers['access-token'] == 'supersecret'
+        # then
+        mocked.verify()
 
 
 async def test_when_middleware_shutdown__then_pending_requests_awaited(
-    httpx_mock: HTTPXMock,
     middleware: DashboardMiddleware,
 ) -> None:
     # given
     message = TaskiqMessageFactory.build()
-    httpx_mock.add_response(
-        method='POST',
-        url=re.compile(f'http://test_dashboard/api/tasks/{message.task_id}/.*'),
-        status_code=200,
-    )
+    with mock_http() as router:
+        mocked = (
+            Mock.given(
+                and_(
+                    MethodMatcher('POST'),
+                    PathRegexpMatcher(re.compile(f'/api/tasks/{message.task_id}/.*')),
+                    HeaderMatcher('access-token', 'supersecret'),
+                )
+            )
+            .respond(Response(status=200))
+            .mount(router)
+            .once()
+        )
 
-    # when
-    await middleware.post_send(message)
+        # when
+        await middleware.post_send(message)
 
-    # then
-    assert len(middleware._pending) > 0, 'Expected pending tasks'
-    await asyncio.gather(*middleware._pending, return_exceptions=True)
-    request = httpx_mock.get_request()
-    assert request is not None
-    assert request.method == 'POST'
+        # then
+        assert len(middleware._pending) > 0, 'Expected pending tasks'
+        await asyncio.gather(*middleware._pending, return_exceptions=True)
+        mocked.verify()
 
 
 async def test_when_middleware_startup__then_client_created(
@@ -92,7 +120,7 @@ async def test_when_middleware_startup__then_client_created(
     # given & when already done in fixture
     # then
     assert middleware._client is not None
-    assert isinstance(middleware._client, httpx.AsyncClient)
+    assert isinstance(middleware._client, zapros.AsyncClient)
 
 
 @pytest.mark.parametrize(
@@ -117,7 +145,6 @@ async def test_when_middleware_startup__then_client_created(
     ],
 )
 async def test_when_basic_parameters_are_passed__then_serialization_works(
-    httpx_mock: HTTPXMock,
     middleware: DashboardMiddleware,
     parameters: dict[str, list | dict],
 ) -> None:
@@ -126,25 +153,26 @@ async def test_when_basic_parameters_are_passed__then_serialization_works(
         args=parameters['args'],
         kwargs=parameters['kwargs'],
     )
-    httpx_mock.add_response(
-        method='POST',
-        url=re.compile(f'http://test_dashboard/api/tasks/{message.task_id}/.*'),
-        status_code=200,
-    )
+    with mock_http() as router:
+        mocked = (
+            Mock.given(
+                and_(
+                    MethodMatcher('POST'),
+                    PathRegexpMatcher(re.compile(f'/api/tasks/{message.task_id}/.*')),
+                    HeaderMatcher('access-token', 'supersecret'),
+                    JsonMatcher(
+                        lambda body: body['args'] == parameters['args'] and body['kwargs'] == parameters['kwargs']
+                    ),
+                )
+            )
+            .respond(Response(status=200))
+            .mount(router)
+            .once()
+        )
 
-    # when
-    await middleware.post_send(message)
-    await asyncio.gather(*middleware._pending, return_exceptions=True)
+        # when
+        await middleware.post_send(message)
+        await asyncio.gather(*middleware._pending, return_exceptions=True)
 
-    # then
-    request = httpx_mock.get_request()
-    assert request is not None
-    assert request.method == 'POST'
-
-    payload = request.content
-    assert b'"args"' in payload
-    assert b'"kwargs"' in payload
-
-    json_payload = json.loads(payload)
-    assert json_payload['args'] == parameters['args']
-    assert json_payload['kwargs'] == parameters['kwargs']
+        # then
+        mocked.verify()

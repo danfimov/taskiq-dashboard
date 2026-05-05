@@ -1,17 +1,31 @@
 import asyncio
+import sys
 from datetime import datetime, timezone
 from logging import getLogger
-from typing import Any
+from typing import Any, TypedDict
 from urllib.parse import urljoin
 
-import httpx
+import zapros
 from taskiq.abc.middleware import TaskiqMiddleware
 from taskiq.compat import model_dump
 from taskiq.message import TaskiqMessage
 from taskiq.result import TaskiqResult
 
 
+if sys.version_info >= (3, 11):
+    from typing import NotRequired
+else:
+    from typing_extensions import NotRequired
+
+
 logger = getLogger('taskiq_dashboard.admin_middleware')
+
+
+class Timeout(TypedDict):
+    total_timeout: NotRequired[float]
+    connect_timeout: NotRequired[float]
+    read_timeout: NotRequired[float]
+    write_timeout: NotRequired[float]
 
 
 class DashboardMiddleware(TaskiqMiddleware):
@@ -34,25 +48,26 @@ class DashboardMiddleware(TaskiqMiddleware):
         self,
         url: str,
         api_token: str,
-        timeout: float = 5.0,
+        timeout: float | Timeout = 5.0,
         broker_name: str = 'default_broker',
     ) -> None:
         super().__init__()
         self.url = url
-        self.timeout = timeout
+        if isinstance(timeout, float):
+            self.timeout = Timeout(total_timeout=timeout)
         self.api_token = api_token
         self.broker_name = broker_name
         self._pending: set[asyncio.Task[Any]] = set()
-        self._client: httpx.AsyncClient | None = None
+        self._client: zapros.AsyncClient | None = None
 
     @staticmethod
     def _now_iso() -> str:
         return datetime.now(timezone.utc).replace(tzinfo=None).isoformat()
 
-    def _get_client(self) -> httpx.AsyncClient:
+    def _get_client(self) -> zapros.AsyncClient:
         """Create and cache session."""
         if self._client is None:
-            self._client = httpx.AsyncClient(timeout=self.timeout)
+            self._client = zapros.AsyncClient(handler=zapros.AsyncStdNetworkHandler(**self.timeout))
         return self._client
 
     async def startup(self) -> None:
@@ -86,11 +101,9 @@ class DashboardMiddleware(TaskiqMiddleware):
                     json=payload,
                 )
                 resp.raise_for_status()
-                if not resp.is_success:
-                    logger.error('POST %s - %s', endpoint, resp.status_code)
-            except httpx.HTTPStatusError:
-                logger.exception('POST %s failed with HTTP error', endpoint)
-            except httpx.RequestError:
+                if resp.status >= 400:  # noqa: PLR2004
+                    logger.error('POST %s - %s', endpoint, resp.status)
+            except zapros.ZaprosError:
                 logger.exception('POST %s failed with request error', endpoint)
 
         task = asyncio.create_task(_send())

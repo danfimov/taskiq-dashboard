@@ -1,21 +1,22 @@
 import uuid
 from collections.abc import AsyncGenerator
 from typing import Any
+from urllib.parse import urljoin
 
 import pytest
-from fastapi.testclient import TestClient
-from httpx import ASGITransport, AsyncClient
 from pydantic import SecretStr
 from taskiq import TaskiqMessage
+from zapros import AsgiHandler, AsyncClient
 
 from taskiq_dashboard import DashboardMiddleware
 from taskiq_dashboard.api.application import get_application
 from taskiq_dashboard.domain.dto.task_status import TaskStatus
 from taskiq_dashboard.infrastructure import get_settings
+from taskiq_dashboard.infrastructure.settings import PostgresSettings
 
 
 class TaskiqAdminWithTestClientMiddleware(DashboardMiddleware):
-    """Test middleware where I replace httpx client with test client."""
+    """Test middleware where I replace zapros client with test client."""
 
     def __init__(
         self,
@@ -35,18 +36,18 @@ class TaskiqAdminWithTestClientMiddleware(DashboardMiddleware):
 
     async def _spawn_request(self, endpoint: str, payload: dict[str, Any]) -> None:
         response = await self._test_client.post(
-            url=endpoint,
+            urljoin(self.url, endpoint),
             headers={'access-token': self.api_token},
             json=payload,
         )
-        assert response.status_code == 204
+        assert response.status == 204
 
 
 @pytest.fixture
-async def test_app() -> AsyncGenerator[AsyncClient]:
+async def test_app(database: PostgresSettings) -> AsyncGenerator[AsyncClient]:
     settings = get_settings()
     settings.api.token = SecretStr('test-token')
-    async with AsyncClient(transport=ASGITransport(app=get_application()), base_url='http://test') as client:
+    async with AsyncClient(handler=AsgiHandler(app=get_application(), startup_timeout=5.0)) as client:
         yield client
 
 
@@ -64,7 +65,7 @@ async def middleware(test_app: AsyncClient) -> TaskiqAdminWithTestClientMiddlewa
 class TestAppHandlesMiddlewareRequests:
     async def test_when_post_send_event_send__then_creates_task_with_status_queued(
         self,
-        test_app: TestClient,
+        test_app: AsyncClient,
         middleware: TaskiqAdminWithTestClientMiddleware,
         task_service,
     ) -> None:
