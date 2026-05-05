@@ -21,9 +21,23 @@ class TaskRepository(AbstractTaskRepository):
         self._session_provider = session_provider
         self.task = task_model
 
+    async def find_task_names(self) -> list[str]:
+        query = (
+            sa.select(sa.distinct(self.task.name))
+            .where(self.task.name.is_not(None))
+            .where(self.task.name != '')
+            .order_by(self.task.name.asc())
+        )
+        async with self._session_provider.session() as session:
+            rows = (await session.execute(query)).scalars().all()
+        return [name for name in rows if isinstance(name, str) and name]
+
     async def find_tasks(  # noqa: PLR0913
         self,
         name: str | None = None,
+        task_name: str | None = None,
+        arg_key: str | None = None,
+        arg_value: str | None = None,
         status: TaskStatus | None = None,
         sort_by: tp.Literal['started_at', 'finished_at'] | None = None,
         sort_order: tp.Literal['asc', 'desc'] = 'desc',
@@ -40,6 +54,20 @@ class TaskRepository(AbstractTaskRepository):
                     id_text.ilike(search_pattern)
                 )
             )
+        normalized_task_name = task_name.strip() if task_name else ''
+        if normalized_task_name:
+            query = query.where(self.task.name == normalized_task_name)
+
+        normalized_arg_key = arg_key.strip() if arg_key else ''
+        normalized_arg_value = arg_value.strip() if arg_value else ''
+        if normalized_task_name and normalized_arg_key and normalized_arg_value:
+            if self.task is PostgresTask:
+                kwargs_condition = self.task.kwargs[normalized_arg_key].astext == normalized_arg_value
+            else:
+                kwargs_condition = (
+                    sa.func.json_extract(self.task.kwargs, f'$.{normalized_arg_key}') == normalized_arg_value
+                )
+            query = query.where(kwargs_condition)
         if status is not None:
             query = query.where(self.task.status == status.value)
         if sort_by:
@@ -48,13 +76,50 @@ class TaskRepository(AbstractTaskRepository):
             elif sort_by == 'started_at':
                 sort_column = self.task.started_at
             else:
-                raise ValueError('Unsupported sort_by value: %s', sort_by)
+                message = f'Unsupported sort_by value: {sort_by}'
+                raise ValueError(message)
             query = query.order_by(sort_column.asc()) if sort_order == 'asc' else query.order_by(sort_column.desc())
         query = query.limit(limit).offset(offset)
         async with self._session_provider.session() as session:
             result = await session.execute(query)
             task_schemas = result.scalars().all()
         return [Task.model_validate(task) for task in task_schemas]
+
+    async def find_argument_keys(self, task_name: str | None = None) -> list[str]:
+        normalized_task_name = task_name.strip() if task_name else ''
+        if not normalized_task_name:
+            return []
+
+        if self.task is PostgresTask:
+            keys_subquery = (
+                sa.select(
+                    sa.func.jsonb_object_keys(self.task.kwargs).label('key'),
+                )
+                .where(self.task.name == normalized_task_name)
+                .subquery()
+            )
+            query = (
+                sa.select(sa.distinct(keys_subquery.c.key))
+                .where(keys_subquery.c.key.is_not(None))
+                .where(keys_subquery.c.key != '')
+                .order_by(keys_subquery.c.key.asc())
+            )
+        else:
+            json_each = sa.func.json_each(self.task.kwargs).table_valued('key', 'value').alias('json_each')
+            query = (
+                sa.select(sa.distinct(json_each.c.key))
+                .select_from(self.task)
+                .join(json_each, sa.true())
+                .where(self.task.name == normalized_task_name)
+                .where(json_each.c.key.is_not(None))
+                .where(json_each.c.key != '')
+                .order_by(json_each.c.key.asc())
+            )
+
+        async with self._session_provider.session() as session:
+            rows = (await session.execute(query)).scalars().all()
+
+        return [str(key) for key in rows if isinstance(key, str)]
 
     async def get_task_by_id(self, task_id: uuid.UUID) -> Task | None:
         query = sa.select(self.task).where(self.task.id == task_id)

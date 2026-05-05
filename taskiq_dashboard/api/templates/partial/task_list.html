@@ -5,7 +5,7 @@
 {% if not results %}
     <tr>
         <td colspan="7" class="px-6 pt-20 pb-16 text-center text-ctp-subtext0">
-            {% if q or status != 'null' %}
+            {% if q or task_name or arg_key or arg_value or status != 'null' %}
                 No tasks for this filters
             {% else %}
                 No tasks created yet
@@ -19,7 +19,7 @@
 {% set _next_offset = _offset + results|length %}
 {% if results|length >= _limit %}
     <tr class="infinite-sentinel"
-        hx-get="{{ url_for('Task list view') }}?status={{ status }}&q={{ q }}&sort_by={{ sort_by }}&sort_order={{ sort_order }}&limit={{ _limit }}&offset={{ _next_offset }}"
+        hx-get="{{ url_for('Task list view') }}?status={{ status }}&q={{ q }}&task_name={{ task_name }}&arg_key={{ arg_key }}&arg_value={{ arg_value }}&sort_by={{ sort_by }}&sort_order={{ sort_order }}&limit={{ _limit }}&offset={{ _next_offset }}"
         hx-trigger="revealed"
         hx-swap="beforeend"
         hx-target="#task-list-body"></tr>

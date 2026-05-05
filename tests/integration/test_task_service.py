@@ -252,6 +252,163 @@ class TestTaskService:
         assert len(tasks) == 1
         assert tasks[0].id == known_task_id
 
+    async def test_when_filtering_by_task_name__then_return_only_selected_task(
+        self,
+        task_service: AbstractTaskRepository,
+    ) -> None:
+        # Given
+        await PostgresTaskFactory.create_async(name='task_one')
+        await PostgresTaskFactory.create_async(name='task_two')
+
+        # When
+        tasks = await task_service.find_tasks(task_name='task_one')
+
+        # Then
+        assert len(tasks) == 1
+        assert tasks[0].name == 'task_one'
+
+    async def test_when_filtering_by_arg_key_value__then_match_only_kwargs_for_selected_task(
+        self,
+        task_service: AbstractTaskRepository,
+    ) -> None:
+        # Given
+        await PostgresTaskFactory.create_async(
+            name='task_one',
+            args=['legacy-only'],
+            kwargs={'comment': 'first payload', 'entity_id': 'A-100'},
+        )
+        await PostgresTaskFactory.create_async(
+            name='task_one',
+            args=[],
+            kwargs={'entity_id': 'A-200', 'operation': 'update', 'actor': 'worker-2'},
+        )
+        await PostgresTaskFactory.create_async(
+            name='task_two',
+            args=[],
+            kwargs={'external_id': 'EXT-1001'},
+        )
+
+        # When
+        first_match = await task_service.find_tasks(
+            task_name='task_one',
+            arg_key='entity_id',
+            arg_value='A-100',
+        )
+        second_match = await task_service.find_tasks(
+            task_name='task_one',
+            arg_key='entity_id',
+            arg_value='A-200',
+        )
+
+        # Then
+        assert len(first_match) == 1
+        assert first_match[0].kwargs.get('entity_id') == 'A-100'
+        assert len(second_match) == 1
+        assert second_match[0].kwargs.get('entity_id') == 'A-200'
+
+    async def test_when_filtering_by_arg_key_without_value__then_arg_filter_is_not_applied(
+        self,
+        task_service: AbstractTaskRepository,
+    ) -> None:
+        # Given
+        await PostgresTaskFactory.create_async(
+            name='task_one',
+            kwargs={'entity_id': 'A-111'},
+        )
+        await PostgresTaskFactory.create_async(
+            name='task_one',
+            kwargs={'entity_id': 'A-222'},
+        )
+
+        # When
+        tasks = await task_service.find_tasks(
+            task_name='task_one',
+            arg_key='entity_id',
+            arg_value='',
+        )
+
+        # Then
+        assert len(tasks) == 2
+
+    async def test_when_filtering_by_arg_key_value_without_task_name__then_arg_filter_is_not_applied(
+        self,
+        task_service: AbstractTaskRepository,
+    ) -> None:
+        # Given
+        await PostgresTaskFactory.create_async(
+            name='task_one',
+            kwargs={'entity_id': 'A-111'},
+        )
+        await PostgresTaskFactory.create_async(
+            name='task_two',
+            kwargs={'entity_id': 'A-222'},
+        )
+
+        # When
+        tasks = await task_service.find_tasks(
+            task_name='',
+            arg_key='entity_id',
+            arg_value='A-111',
+        )
+
+        # Then
+        assert len(tasks) == 2
+
+    async def test_when_requesting_argument_keys_for_selected_task__then_return_actual_keys(
+        self,
+        task_service: AbstractTaskRepository,
+    ) -> None:
+        # Given
+        await PostgresTaskFactory.create_async(
+            name='task_one',
+            kwargs={'entity_id': 'A-111', 'operation': 'create'},
+        )
+        await PostgresTaskFactory.create_async(
+            name='task_two',
+            kwargs={'external_id': 'EXT-1001', 'priority': 'high'},
+        )
+
+        # When
+        request_action_keys = await task_service.find_argument_keys(task_name='task_one')
+        external_task_keys = await task_service.find_argument_keys(task_name='task_two')
+
+        # Then
+        assert 'entity_id' in request_action_keys
+        assert 'operation' in request_action_keys
+        assert 'external_id' not in request_action_keys
+        assert set(external_task_keys) == {'external_id', 'priority'}
+
+    async def test_when_requesting_argument_keys_without_task_name__then_return_empty_list(
+        self,
+        task_service: AbstractTaskRepository,
+    ) -> None:
+        # Given
+        await PostgresTaskFactory.create_async(
+            name='task_one',
+            kwargs={'entity_id': 'A-111', 'operation': 'create'},
+        )
+
+        # When
+        all_keys = await task_service.find_argument_keys()
+
+        # Then
+        assert all_keys == []
+
+    async def test_when_requesting_task_name_options__then_return_distinct_sorted_names(
+        self,
+        task_service: AbstractTaskRepository,
+    ) -> None:
+        # Given
+        await PostgresTaskFactory.create_async(name='task_two')
+        await PostgresTaskFactory.create_async(name='task_one')
+        await PostgresTaskFactory.create_async(name='task_one')
+
+        # When
+        task_names = await task_service.find_task_names()
+
+        # Then
+        assert task_names == ['task_one', 'task_two']
+
     async def test_when_finding_tasks_with_pagination__then_return_correct_page(
         self,
         task_service: AbstractTaskRepository,

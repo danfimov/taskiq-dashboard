@@ -1,0 +1,6 @@
+<option class="bg-ctp-base" value="" {% if not selected_arg_key %}selected{% endif %}>None</option>
+{% for key in keys %}
+    <option class="bg-ctp-base" value="{{ key }}" {% if selected_arg_key == key %}selected{% endif %}>
+        {{ key }}
+    </option>
+{% endfor %}
