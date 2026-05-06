@@ -105,18 +105,8 @@ docker pull ghcr.io/danfimov/taskiq-dashboard:latest
 
 You can also pass `broker` or `scheduler` instances directly to the `TaskiqDashboard` constructor and get additional features like actions with tasks or schedule configuration. Read more about it in the [tutorial](./tutorial/run_with_broker.md) section.
 
-!!! note "Dashboard can be a part of your existing API server"
-
-    If you already have an API server running, you can mount admin panel routes to it:
-
-    ```python
-    from taskiq_dashboard import TaskiqDashboard
-    import fastapi
-
-    app = fastapi.FastAPI(...)
-    admin_dashboard = TaskiqDashboard(...)
-    app.mount('/admin', admin_dashboard.application)
-    ```
+If you already have an API server running, you can mount admin panel routes to it.
+You can check complete instruction on a [dedicated page](./tutorial/run_as_mounted_app.md).
 
 ### Run with docker compose
 
