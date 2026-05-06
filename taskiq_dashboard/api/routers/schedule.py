@@ -71,7 +71,9 @@ async def handle_schedule_list(
     if hx_request:
         template_name = 'partial/schedule_list.html'
         headers = {
-            'HX-Push-Url': '/schedules/?' + urlencode(query.model_dump(exclude={'limit', 'offset'})),
+            'HX-Push-Url': str(request.url_for('Schedule list view'))
+            + '?'
+            + urlencode(query.model_dump(exclude={'limit', 'offset'})),
         }
 
     return jinja_templates.TemplateResponse(

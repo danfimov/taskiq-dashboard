@@ -37,7 +37,7 @@ site_author = "Dima Anfimov"
 #
 # Read more: https://zensical.org/docs/setup/basics/#copyright
 copyright = """
-Copyright &copy; 2025 Dima Anfimov
+Copyright &copy; 2025-2026 Dima Anfimov
 """
 
 # Zensical supports both implicit navigation and explicitly defined navigation.
@@ -52,6 +52,7 @@ nav = [
   { "Tutorial" = [
     "tutorial/run_with_broker.md",
     "tutorial/run_with_scheduler.md",
+    "tutorial/run_as_mounted_app.md",
     "tutorial/cleanup.md",
   ]},
   { "Contributing" = "contributing.md" },

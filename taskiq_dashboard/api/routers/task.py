@@ -100,7 +100,9 @@ async def search_tasks(
             }
         )
         headers = {
-            'HX-Push-Url': '/?' + urlencode(query_params),
+            'HX-Push-Url': (
+                str(request.url_for('Task list view')) + '?' + urlencode(query_params)
+            ),
         }
         template_name = 'partial/task_list.html'
     template_context = query.model_dump()

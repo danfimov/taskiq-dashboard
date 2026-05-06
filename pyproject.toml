@@ -38,8 +38,7 @@ dependencies = [
     # html templates
     "jinja2>=3.1.6",
     # db
-    "asyncpg>=0.31.0",
-    "sqlalchemy>=2.0.45",
+    "sqlalchemy[asyncio,postgresql-asyncpg]>=2.0.45",
     # http client for middleware
     "httpx>=0.28.1",
     # other
@@ -52,7 +51,6 @@ dependencies = [
 [project.optional-dependencies]
 server = [
     "granian>=2.6.0",
-    "greenlet>=3.2.4",
 ]
 
 [project.urls]
@@ -73,7 +71,7 @@ lint = [
     "zizmor>=1.24.1",
     "djlint>=1.36.4",
     # type check
-    "ty>=0.0.32",
+    "ty>=0.0.34",
 ]
 test = [
     "polyfactory>=3.3.0",
