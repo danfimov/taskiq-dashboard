@@ -75,7 +75,9 @@ async def search_tasks(
     template_name = 'home.html'
     if hx_request:
         headers = {
-            'HX-Push-Url': '/?' + urlencode(query.model_dump(exclude={'limit', 'offset'})),
+            'HX-Push-Url': (
+                str(request.url_for('Task list view')) + '?' + urlencode(query.model_dump(exclude={'limit', 'offset'}))
+            ),
         }
         template_name = 'partial/task_list.html'
     return jinja_templates.TemplateResponse(
