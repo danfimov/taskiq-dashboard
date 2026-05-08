@@ -1912,7 +1912,7 @@ requires-dist = [
     { name = "python-multipart", specifier = ">=0.0.22" },
     { name = "sqlalchemy", extras = ["asyncio", "postgresql-asyncpg"], specifier = ">=2.0.45" },
     { name = "taskiq", specifier = ">=0.12.1" },
-    { name = "zapros", git = "https://github.com/kap-sh/zapros?rev=f35c63bfbe3975ebee3b2de7cbf51a3bb1ffc1d0" },
+    { name = "zapros", specifier = ">=0.11.1" },
 ]
 provides-extras = ["server"]
 
@@ -2227,12 +2227,16 @@ wheels = [
 
 [[package]]
 name = "zapros"
-version = "0.11.0"
-source = { git = "https://github.com/kap-sh/zapros?rev=f35c63bfbe3975ebee3b2de7cbf51a3bb1ffc1d0#f35c63bfbe3975ebee3b2de7cbf51a3bb1ffc1d0" }
+version = "0.11.1"
+source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "h11" },
     { name = "pywhatwgurl" },
     { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/20/47/42c85e3eaa4e2cdabe22a2f3d4255e135c975f725c169bae4ba9ef4ec0c0/zapros-0.11.1.tar.gz", hash = "sha256:cfb8da486d2d68ff37b3c2c647cd7a0329e64e228f5e8f929856f4a4a5c41f38", size = 928904, upload-time = "2026-05-07T06:48:00.022Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/49/f8/1c40af1077b23de28d669e3389f6e75150c671b743c00e498408acceb036/zapros-0.11.1-py3-none-any.whl", hash = "sha256:600119d063377b5eb7136572dbadbe6c6e8233eda5cb895b82eec7386e793c08", size = 96468, upload-time = "2026-05-07T06:47:58.802Z" },
 ]
 
 [[package]]

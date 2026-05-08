@@ -40,7 +40,7 @@ dependencies = [
     # db
     "sqlalchemy[asyncio,postgresql-asyncpg]>=2.0.45",
     # http client for middleware
-    "zapros>=0.11.0",
+    "zapros>=0.11.1",
     # other
     "pydantic-settings>=2.12.0",
     "dishka>=1.7.2",
@@ -102,10 +102,6 @@ exclude = ["taskiq_dashboard/api/styles"]
 source = "versioningit"
 
 [tool.hatch.build.hooks.custom]
-
-# TODO: remove this after 0.11.1 version will be released
-[tool.uv.sources]
-zapros = { git = "https://github.com/kap-sh/zapros", rev = "f35c63bfbe3975ebee3b2de7cbf51a3bb1ffc1d0" }  # pragma: allowlist secret
 
 [tool.ruff]
 line-length = 120
