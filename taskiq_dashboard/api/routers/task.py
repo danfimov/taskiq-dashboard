@@ -22,6 +22,9 @@ router = fastapi.APIRouter(
 
 class TaskFilter(pydantic.BaseModel):
     q: str = ''
+    task_name: str = ''
+    arg_key: str = ''
+    arg_value: str = ''
     status: TaskStatus | None = None
     limit: int = 30
     offset: int = 0
@@ -63,32 +66,93 @@ async def search_tasks(
     query: tp.Annotated[TaskFilter, fastapi.Query(...)],
     hx_request: tp.Annotated[bool, fastapi.Header(description='Request from htmx')] = False,  # noqa: FBT002
 ) -> HTMLResponse:
+    normalized_task_name = query.task_name.strip()
+    normalized_arg_value = query.arg_value.strip()
+    normalized_arg_key = query.arg_key.strip() if normalized_task_name and normalized_arg_value else ''
+    if not normalized_task_name:
+        normalized_arg_value = ''
     tasks = await repository.find_tasks(
         name=query.q,
+        task_name=normalized_task_name,
+        arg_key=normalized_arg_key,
+        arg_value=normalized_arg_value,
         status=query.status,
         limit=query.limit,
         offset=query.offset,
         sort_by=query.sort_by,
         sort_order=query.sort_order,
     )
+    keys: list[str] = []
+    task_names: list[str] = []
+    if not hx_request:
+        keys = await repository.find_argument_keys(task_name=normalized_task_name)
+        task_names = await repository.find_task_names()
+
     headers: dict[str, str] = {}
     template_name = 'home.html'
     if hx_request:
+        query_params = query.model_dump(exclude={'limit', 'offset'})
+        query_params.update(
+            {
+                'task_name': normalized_task_name,
+                'arg_key': normalized_arg_key,
+                'arg_value': normalized_arg_value,
+            }
+        )
         headers = {
             'HX-Push-Url': (
-                str(request.url_for('Task list view')) + '?' + urlencode(query.model_dump(exclude={'limit', 'offset'}))
+                str(request.url_for('Task list view')) + '?' + urlencode(query_params)
             ),
         }
         template_name = 'partial/task_list.html'
+    template_context = query.model_dump()
+    template_context.update(
+        {
+            'task_name': normalized_task_name,
+            'arg_key': normalized_arg_key,
+            'arg_value': normalized_arg_value,
+        }
+    )
+
     return jinja_templates.TemplateResponse(
         request,
         template_name,
         {
             'request': request,
             'results': [task.model_dump() for task in tasks],
-            **query.model_dump(),
+            'keys': keys,
+            'selected_arg_key': normalized_arg_key,
+            'task_names': task_names,
+            **template_context,
         },
         headers=headers,
+    )
+
+
+@router.get(
+    '/filters/arg-keys',
+    name='Task argument key options',
+    response_class=HTMLResponse,
+)
+async def argument_key_options(
+    request: fastapi.Request,
+    repository: dishka_fastapi.FromDishka[AbstractTaskRepository],
+    task_name: str = '',
+    arg_key: str = '',
+) -> HTMLResponse:
+    normalized_task_name = task_name.strip()
+    normalized_arg_key = arg_key.strip()
+    keys = await repository.find_argument_keys(task_name=normalized_task_name)
+    if normalized_arg_key not in keys:
+        normalized_arg_key = ''
+    return jinja_templates.TemplateResponse(
+        request,
+        'partial/arg_key_options.html',
+        {
+            'request': request,
+            'keys': keys,
+            'selected_arg_key': normalized_arg_key,
+        },
     )
 
 

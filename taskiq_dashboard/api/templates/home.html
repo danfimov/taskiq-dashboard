@@ -30,7 +30,7 @@
                         hx-trigger="keyup changed delay:500ms"
                         hx-target="#task-list-body"
                         hx-push-url="true"
-                        hx-include="[name='status']"
+                        hx-include="[name='status'], [name='task_name'], [name='arg_key'], [name='arg_value']"
                     >
                     <div id="search-slash-hint"
                          class="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-center leading-5 text-xs rounded-sm bg-ctp-lavender/10 pointer-events-none"
@@ -51,6 +51,83 @@
                     </script>
                 </div>
 
+                <!-- Task Name Filter -->
+                <div class="relative group text-ctp-subtext0 hover:text-ctp-subtext1 focus:text-ctp-subtext1 md:w-auto min-w-[200px]">
+                    <select
+                        name="task_name"
+                        id="task-name-select"
+                        class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 transition-all duration-200 hover:shadow-md border-ctp-subtext0 group-hover:border-ctp-subtext1 appearance-none"
+                        hx-get="{{ url_for('Task list view') }}"
+                        hx-trigger="change"
+                        hx-target="#task-list-body"
+                        hx-push-url="true"
+                        hx-include="[name='q'], [name='status']"
+                        hx-vals='js:{arg_key:"", arg_value:""}'
+                    >
+                        {% set selected_task_name = task_name if task_name is defined else '' %}
+                        <option class="bg-ctp-base" value="" {% if not selected_task_name %}selected{% endif %}>
+                            Select task name
+                        </option>
+                        {% for available_task_name in task_names|default([]) %}
+                            <option
+                                class="bg-ctp-base"
+                                value="{{ available_task_name }}"
+                                {% if selected_task_name == available_task_name %}selected{% endif %}
+                            >
+                                {{ available_task_name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Argument Key Filter -->
+                <div
+                    id="arg-key-container"
+                    class="relative group text-ctp-subtext0 hover:text-ctp-subtext1 focus:text-ctp-subtext1 md:w-auto min-w-[180px] {% if not task_name %}hidden{% endif %}"
+                >
+                    <select
+                        id="arg-key-select"
+                        name="arg_key"
+                        class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 transition-all duration-200 hover:shadow-md border-ctp-subtext0 group-hover:border-ctp-subtext1 appearance-none"
+                        {% if not task_name %}disabled{% endif %}
+                    >
+                        {% set keys = keys if keys is defined else [] %}
+                        {% set selected_arg_key = arg_key if arg_key is defined else '' %}
+                        {% include "partial/arg_key_options.html" with context %}
+                    </select>
+                </div>
+
+                <!-- Argument Value Filter -->
+                <div
+                    id="arg-value-container"
+                    class="relative group text-ctp-subtext0 hover:text-ctp-subtext1 focus:text-ctp-subtext1 md:w-auto min-w-[200px] {% if not arg_key %}hidden{% endif %}"
+                >
+                    <input
+                        type="text"
+                        name="arg_value"
+                        id="arg-value-search"
+                        class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 transition-all duration-200 hover:shadow-md border-ctp-subtext0 group-hover:border-ctp-subtext1"
+                        placeholder="Argument value"
+                        value="{{ arg_value if arg_value is defined else '' }}"
+                        hx-get="{{ url_for('Task list view') }}"
+                        hx-trigger="keyup changed delay:500ms"
+                        hx-target="#task-list-body"
+                        hx-push-url="true"
+                        hx-include="[name='q'], [name='status'], [name='task_name']"
+                        hx-vals='js:{arg_key: (document.getElementById("arg-value-search").value.trim() && document.getElementById("arg-key-select").value) ? document.getElementById("arg-key-select").value : ""}'
+                        {% if not arg_key %}disabled{% endif %}
+                    >
+                </div>
+
+                <div
+                    id="arg-key-loader"
+                    hx-get="{{ url_for('Task argument key options') }}"
+                    hx-trigger="load, change from:#task-name-select"
+                    hx-include="[name='task_name'], [name='arg_key']"
+                    hx-target="#arg-key-select"
+                    hx-swap="innerHTML"
+                ></div>
+
                 <!-- Status Filter -->
                 <div class="text-ctp-subtext0 hover:text-ctp-subtext1 focus:text-ctp-subtext1 md:w-auto min-w-[150px]">
                     <div class="relative">
@@ -62,7 +139,7 @@
                         hx-trigger="change"
                         hx-target="#task-list-body"
                         hx-push-url="true"
-                        hx-include="[name='q']"
+                        hx-include="[name='q'], [name='task_name'], [name='arg_key'], [name='arg_value']"
                     >
                         {% set status = status if status is defined else "all" %}
                         <option class="bg-ctp-base" value="null" {% if status == "null" %}selected{% endif %}>All Statuses</option>
@@ -158,7 +235,7 @@
                     <th scope="col" class="px-6 py-3 text-left font-normal text-ctp-text tracking-wider">Status</th>
                     <th scope="col" class="px-6 py-3 text-left font-normal text-ctp-text tracking-wider">Worker</th>
                     <th scope="col" class="px-6 py-3 text-left font-normal text-ctp-text tracking-wider">
-                        <a href="{{ url_for('Task list view') }}?status={{ status }}&q={{ q }}&sort_by=started_at&sort_order={%- if sort_by == 'started_at' and sort_order == 'asc' -%}desc{%- else -%}asc{%- endif -%}"
+                        <a href="{{ url_for('Task list view') }}?status={{ status }}&q={{ q }}&task_name={{ task_name }}&arg_key={{ arg_key }}&arg_value={{ arg_value }}&sort_by=started_at&sort_order={%- if sort_by == 'started_at' and sort_order == 'asc' -%}desc{%- else -%}asc{%- endif -%}"
                            class="flex items-center gap-2 hover:text-ctp-subtext0 transition-colors">
                             Started At
                             <span class="inline-flex">
@@ -175,7 +252,7 @@
                         </a>
                     </th>
                     <th scope="col" class="px-6 py-3 text-left font-normal text-ctp-text tracking-wider">
-                        <a href="{{ url_for('Task list view') }}?status={{ status }}&q={{ q }}&sort_by=finished_at&sort_order={%- if sort_by == 'finished_at' and sort_order == 'asc' -%}desc{%- else -%}asc{%- endif -%}"
+                        <a href="{{ url_for('Task list view') }}?status={{ status }}&q={{ q }}&task_name={{ task_name }}&arg_key={{ arg_key }}&arg_value={{ arg_value }}&sort_by=finished_at&sort_order={%- if sort_by == 'finished_at' and sort_order == 'asc' -%}desc{%- else -%}asc{%- endif -%}"
                            class="flex items-center gap-2 hover:text-ctp-subtext0 transition-colors">
                             Finished At
                             <span class="inline-flex">
@@ -202,6 +279,64 @@
 
     <!-- Notification container -->
     <div id="notification-list" class="fixed bottom-6 right-6 flex flex-col gap-3 w-fit"></div>
+
+    <script>
+        (function() {
+            const taskNameSelect = document.getElementById('task-name-select');
+            const argKeyContainer = document.getElementById('arg-key-container');
+            const argKeySelect = document.getElementById('arg-key-select');
+            const argValueContainer = document.getElementById('arg-value-container');
+            const argValueInput = document.getElementById('arg-value-search');
+            if (!taskNameSelect || !argKeyContainer || !argKeySelect || !argValueContainer || !argValueInput) {
+                return;
+            }
+
+            function syncFilterState() {
+                const hasTaskName = taskNameSelect.value.trim() !== '';
+                if (!hasTaskName) {
+                    argKeySelect.value = '';
+                    argValueInput.value = '';
+                }
+                const hasArgKey = hasTaskName && argKeySelect.value.trim() !== '';
+                if (!hasArgKey) {
+                    argValueInput.value = '';
+                }
+                const hasArgValue = hasArgKey && argValueInput.value.trim() !== '';
+
+                argKeyContainer.classList.toggle('hidden', !hasTaskName);
+                argKeySelect.disabled = !hasTaskName;
+                argValueContainer.classList.toggle('hidden', !hasArgKey);
+                argValueInput.disabled = !hasArgKey;
+
+                if (hasArgValue) {
+                    argKeySelect.name = 'arg_key';
+                } else {
+                    argKeySelect.removeAttribute('name');
+                }
+            }
+
+            taskNameSelect.addEventListener('change', () => {
+                argKeySelect.value = '';
+                argValueInput.value = '';
+                syncFilterState();
+            });
+
+            argKeySelect.addEventListener('change', () => {
+                argValueInput.value = '';
+                syncFilterState();
+            });
+
+            argValueInput.addEventListener('input', syncFilterState);
+
+            document.body.addEventListener('htmx:afterSwap', (event) => {
+                if (event.detail.target.id === 'arg-key-select') {
+                    syncFilterState();
+                }
+            });
+
+            syncFilterState();
+        })();
+    </script>
 
     <script>
         // Bulk actions management

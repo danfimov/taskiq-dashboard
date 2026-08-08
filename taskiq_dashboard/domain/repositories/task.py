@@ -8,9 +8,17 @@ from taskiq_dashboard.domain.dto.task_status import TaskStatus
 
 class AbstractTaskRepository(ABC):
     @abstractmethod
+    async def find_task_names(self) -> list[str]:
+        """Return distinct task names available for filtering."""
+        ...
+
+    @abstractmethod
     async def find_tasks(  # noqa: PLR0913
         self,
         name: str | None = None,
+        task_name: str | None = None,
+        arg_key: str | None = None,
+        arg_value: str | None = None,
         status: TaskStatus | None = None,
         sort_by: tp.Literal['started_at', 'finished_at'] | None = None,
         sort_order: tp.Literal['asc', 'desc'] = 'desc',
@@ -23,6 +31,9 @@ class AbstractTaskRepository(ABC):
         Args:
             status: Filter by task status
             name: Filter by task name (fuzzy search)
+            task_name: Exact task name filter
+            arg_key: Task argument key to search
+            arg_value: Task argument value for selected key
             sort_by: Column to sort by ('started_at' or 'finished_at')
             sort_order: Sort order ('asc' or 'desc')
             limit: Number of tasks to retrieve
@@ -31,6 +42,11 @@ class AbstractTaskRepository(ABC):
         Returns:
             List of tasks matching the criteria.
         """
+        ...
+
+    @abstractmethod
+    async def find_argument_keys(self, task_name: str | None = None) -> list[str]:
+        """Return available kwargs keys for selected task."""
         ...
 
     @abstractmethod
