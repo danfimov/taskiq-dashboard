@@ -54,6 +54,7 @@ nav = [
     "tutorial/run_with_scheduler.md",
     "tutorial/run_as_mounted_app.md",
     "tutorial/cleanup.md",
+    "tutorial/columns.md",
   ]},
   { "Contributing" = "contributing.md" },
 ]

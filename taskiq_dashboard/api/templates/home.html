@@ -154,44 +154,29 @@
                             title="Select all tasks"
                         >
                     </th>
-                    <th scope="col" class="px-6 py-3 text-left font-normal text-ctp-text tracking-wider">Task ID</th>
-                    <th scope="col" class="px-6 py-3 text-left font-normal text-ctp-text tracking-wider">Name</th>
-                    <th scope="col" class="px-6 py-3 text-left font-normal text-ctp-text tracking-wider">Status</th>
-                    <th scope="col" class="px-6 py-3 text-left font-normal text-ctp-text tracking-wider">Worker</th>
-                    <th scope="col" class="px-6 py-3 text-left font-normal text-ctp-text tracking-wider">
-                        <a href="{{ url_for('Task list view') }}?status={{ status }}&q={{ q }}&sort_by=started_at&sort_order={%- if sort_by == 'started_at' and sort_order == 'asc' -%}desc{%- else -%}asc{%- endif -%}"
-                           class="flex items-center gap-2 hover:text-ctp-subtext0 transition-colors">
-                            Started At
-                            <span class="inline-flex">
-                            {% if sort_by == 'started_at' %}
-                                {% if sort_order == 'asc' %}
-                                    <svg class="w-4 h-4 rotate-90"><use href="{{ url_for('static', path='icons.svg#chevron-left') }}"></use></svg>
-                                {% else %}
-                                    <svg class="w-4 h-4 -rotate-90"><use href="{{ url_for('static', path='icons.svg#chevron-left') }}"></use></svg>
-                                {% endif %}
-                            {% else %}
-                                <svg class="w-4 h-4"><use href="{{ url_for('static', path='icons.svg#arrow-up-down') }}"></use></svg>
-                            {% endif %}
-                            </span>
-                        </a>
-                    </th>
-                    <th scope="col" class="px-6 py-3 text-left font-normal text-ctp-text tracking-wider">
-                        <a href="{{ url_for('Task list view') }}?status={{ status }}&q={{ q }}&sort_by=finished_at&sort_order={%- if sort_by == 'finished_at' and sort_order == 'asc' -%}desc{%- else -%}asc{%- endif -%}"
-                           class="flex items-center gap-2 hover:text-ctp-subtext0 transition-colors">
-                            Finished At
-                            <span class="inline-flex">
-                            {% if sort_by == 'finished_at' %}
-                                {% if sort_order == 'asc' %}
-                                    <svg class="w-4 h-4 rotate-90"><use href="{{ url_for('static', path='icons.svg#chevron-left') }}"></use></svg>
-                                {% else %}
-                                    <svg class="w-4 h-4 -rotate-90"><use href="{{ url_for('static', path='icons.svg#chevron-left') }}"></use></svg>
-                                {% endif %}
-                            {% else %}
-                                <svg class="w-4 h-4"><use href="{{ url_for('static', path='icons.svg#arrow-up-down') }}"></use></svg>
-                            {% endif %}
-                            </span>
-                        </a>
-                    </th>
+                    {% for column in columns %}
+                        {% if column.sortable %}
+                            <th scope="col" class="px-6 py-3 text-left font-normal text-ctp-text tracking-wider">
+                                <a href="{{ url_for('Task list view') }}?status={{ status }}&q={{ q }}&sort_by={{ column.key }}&sort_order={%- if sort_by == column.key and sort_order == 'asc' -%}desc{%- else -%}asc{%- endif -%}"
+                                   class="flex items-center gap-2 hover:text-ctp-subtext0 transition-colors">
+                                    {{ column.title }}
+                                    <span class="inline-flex">
+                                    {% if sort_by == column.key %}
+                                        {% if sort_order == 'asc' %}
+                                            <svg class="w-4 h-4 rotate-90"><use href="{{ url_for('static', path='icons.svg#chevron-left') }}"></use></svg>
+                                        {% else %}
+                                            <svg class="w-4 h-4 -rotate-90"><use href="{{ url_for('static', path='icons.svg#chevron-left') }}"></use></svg>
+                                        {% endif %}
+                                    {% else %}
+                                        <svg class="w-4 h-4"><use href="{{ url_for('static', path='icons.svg#arrow-up-down') }}"></use></svg>
+                                    {% endif %}
+                                    </span>
+                                </a>
+                            </th>
+                        {% else %}
+                            <th scope="col" class="px-6 py-3 text-left font-normal text-ctp-text tracking-wider">{{ column.title }}</th>
+                        {% endif %}
+                    {% endfor %}
                 </tr>
             </thead>
             <tbody id="task-list-body" class="divide-y text-ctp-text divide-ctp-blue/20">
