@@ -11,10 +11,12 @@ Column behavior is configured using environment variables:
 
 | Variable | Default | Description |
 |----------|---------|--------------|
-| `TASKIQ_DASHBOARD__COLUMNS__VISIBLE` | `["id", "name", "status", "worker", "started_at", "finished_at"]` | Built-in columns to show, in order |
+| `TASKIQ_DASHBOARD__COLUMNS__VISIBLE` | `["id", "name", "status", "worker", "started_at", "finished_at", "runtime"]` | Built-in columns to show, in order |
 | `TASKIQ_DASHBOARD__COLUMNS__LABELS` | `{}` | Maps a task label key to the column title shown for it, appended after the built-in columns |
 
 `id` must always be present in `TASKIQ_DASHBOARD__COLUMNS__VISIBLE` — it's the only column that links to the task details page, so the application refuses to start without it.
+
+The `runtime` column (labeled "Duration") shows the elapsed time between `started_at` and `finished_at` (e.g. `3m 4s`) and can be sorted; tasks with no `finished_at` yet sort last.
 
 ### Hide unhelpful built-in columns
 
@@ -36,5 +38,5 @@ Tasks that don't have that label show `-` in the corresponding cell.
 
 ## Limitations
 
-- Label columns are not sortable — only `started_at` and `finished_at` support sorting.
+- Label columns are not sortable — only `started_at`, `finished_at` and `runtime` support sorting.
 - Column configuration is global (set at deployment time via environment variables), not per-user.

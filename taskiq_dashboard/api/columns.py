@@ -15,9 +15,10 @@ BUILTIN_COLUMN_TITLES: dict[str, str] = {
     'worker': 'Worker',
     'started_at': 'Started At',
     'finished_at': 'Finished At',
+    'runtime': 'Duration',
 }
 
-SORTABLE_COLUMNS = {'started_at', 'finished_at'}
+SORTABLE_COLUMNS = {'started_at', 'finished_at', 'runtime'}
 
 
 class Column(pydantic.BaseModel):

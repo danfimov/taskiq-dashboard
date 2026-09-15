@@ -332,6 +332,70 @@ class TestTaskService:
         finished_times = [task.finished_at for task in tasks if task.finished_at is not None]
         assert finished_times == sorted(finished_times, reverse=True)
 
+    async def test_when_finding_tasks_sorted_by_runtime_descending__then_return_longest_running_tasks_first(
+        self,
+        task_service: AbstractTaskRepository,
+        session_provider: AsyncPostgresSessionProvider,
+    ) -> None:
+        # Given
+        started_at = dt.datetime.now(dt.UTC)
+        for minutes in range(5):
+            await PostgresTaskFactory.create_async(
+                started_at=started_at,
+                finished_at=started_at + dt.timedelta(minutes=minutes),
+            )
+
+        # When
+        tasks = await task_service.find_tasks(sort_by='runtime', sort_order='desc')
+
+        # Then
+        runtimes = [task.finished_at - task.started_at for task in tasks]  # type: ignore[operator]
+        assert runtimes == sorted(runtimes, reverse=True)
+
+    async def test_when_finding_tasks_sorted_by_runtime_ascending__then_return_shortest_running_tasks_first(
+        self,
+        task_service: AbstractTaskRepository,
+        session_provider: AsyncPostgresSessionProvider,
+    ) -> None:
+        # Given
+        started_at = dt.datetime.now(dt.UTC)
+        for minutes in range(5):
+            await PostgresTaskFactory.create_async(
+                started_at=started_at,
+                finished_at=started_at + dt.timedelta(minutes=minutes),
+            )
+
+        # When
+        tasks = await task_service.find_tasks(sort_by='runtime', sort_order='asc')
+
+        # Then
+        runtimes = [task.finished_at - task.started_at for task in tasks]  # type: ignore[operator]
+        assert runtimes == sorted(runtimes)
+
+    async def test_when_finding_tasks_sorted_by_runtime__then_tasks_without_finished_at_sort_last(
+        self,
+        task_service: AbstractTaskRepository,
+        session_provider: AsyncPostgresSessionProvider,
+    ) -> None:
+        # Given
+        started_at = dt.datetime.now(dt.UTC)
+        await PostgresTaskFactory.create_batch_async(
+            3, status=TaskStatus.IN_PROGRESS.value, started_at=started_at, finished_at=None
+        )
+        for minutes in range(3):
+            await PostgresTaskFactory.create_async(
+                started_at=started_at,
+                finished_at=started_at + dt.timedelta(minutes=minutes + 1),
+            )
+
+        # When
+        tasks_asc = await task_service.find_tasks(sort_by='runtime', sort_order='asc')
+        tasks_desc = await task_service.find_tasks(sort_by='runtime', sort_order='desc')
+
+        # Then
+        assert [task.finished_at is None for task in tasks_asc[-3:]] == [True, True, True]
+        assert [task.finished_at is None for task in tasks_desc[-3:]] == [True, True, True]
+
     async def test_when_finding_tasks_with_multiple_filters_applied__then_return_correct_tasks(
         self,
         task_service: AbstractTaskRepository,
