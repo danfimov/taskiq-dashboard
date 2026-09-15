@@ -26,6 +26,7 @@ class TaskiqDashboardProvider(Provider):
     ) -> tp.AsyncGenerator[AsyncPostgresSessionProvider, tp.Any]:
         session_provider = AsyncPostgresSessionProvider(
             connection_settings=settings.postgres if settings.storage_type == 'postgres' else settings.sqlite,
+            engine_parameters=settings.storage_engine_parameters,
         )
         yield session_provider
         await session_provider.close()

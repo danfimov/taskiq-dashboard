@@ -14,6 +14,7 @@ class TaskiqDashboard:
         api_token: str,
         storage_type: tp.Literal['sqlite', 'postgres'] = 'sqlite',
         database_dsn: str = 'sqlite+aiosqlite:///taskiq_dashboard.db',
+        storage_engine_parameters: dict[str, tp.Any] | None = None,
         broker: AsyncBroker | None = None,
         scheduler: TaskiqScheduler | None = None,
         root_path: str = '',
@@ -25,6 +26,7 @@ class TaskiqDashboard:
             api_token: Access token for securing the dashboard API.
             storage_type: Type of the storage backend ('sqlite' or 'postgres').
             database_dsn: URL for the database.
+            storage_engine_parameters: Additional keyword arguments to pass to sqlalchemy engine.
             broker: Optional Taskiq broker instance to integrate with the dashboard.
             scheduler: Optional Taskiq scheduler instance to integrate with the dashboard.
             root_path: ASGI root_path for deployments behind a reverse proxy at a sub-path
@@ -39,6 +41,7 @@ class TaskiqDashboard:
             self.settings.sqlite = SqliteSettings(dsn=database_dsn)  # ty: ignore[unknown-argument]
         else:
             self.settings.postgres = PostgresSettings(dsn=database_dsn)  # ty: ignore[unknown-argument]
+        self.settings.storage_engine_parameters = storage_engine_parameters or {}
 
         self.broker = broker
         self.scheduler = scheduler
