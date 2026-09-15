@@ -9,7 +9,7 @@ from taskiq_dashboard.infrastructure import PostgresSettings, SqliteSettings, ge
 
 
 class TaskiqDashboard:
-    def __init__(  # noqa: PLR0913
+    def __init__(  # noqa: PLR0913, PLR0917
         self,
         api_token: str,
         storage_type: tp.Literal['sqlite', 'postgres'] = 'sqlite',

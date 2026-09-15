@@ -21,7 +21,7 @@ class TaskRepository(AbstractTaskRepository):
         self._session_provider = session_provider
         self.task = task_model
 
-    async def find_tasks(  # noqa: PLR0913
+    async def find_tasks(  # noqa: PLR0913, PLR0917
         self,
         name: str | None = None,
         status: TaskStatus | None = None,

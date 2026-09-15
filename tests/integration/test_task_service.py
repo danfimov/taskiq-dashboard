@@ -84,7 +84,7 @@ class TestTaskService:
     ) -> None:
         # Given
         task_id = uuid.uuid4()
-        now = dt.datetime.now(dt.timezone.utc)
+        now = dt.datetime.now(dt.UTC)
         queued_task = QueuedTask(
             task_name='process_data',
             worker='worker_1',
@@ -115,7 +115,7 @@ class TestTaskService:
         # Given
         task_queued = await PostgresTaskFactory.create_async(
             status=TaskStatus.QUEUED.value,
-            queued_at=dt.datetime.now(dt.timezone.utc) - dt.timedelta(seconds=10),
+            queued_at=dt.datetime.now(dt.UTC) - dt.timedelta(seconds=10),
             started_at=None,
         )
         started_task = StartedTask(
@@ -123,7 +123,7 @@ class TestTaskService:
             worker='worker_1',
             args=['arg1', 'arg2'],
             kwargs={'key1': 'value1'},
-            started_at=dt.datetime.now(dt.timezone.utc),
+            started_at=dt.datetime.now(dt.UTC),
         )
 
         # When
@@ -146,11 +146,11 @@ class TestTaskService:
         # Given
         task_in_progress = await PostgresTaskFactory.create_async(
             status=TaskStatus.IN_PROGRESS.value,
-            queued_at=dt.datetime.now(dt.timezone.utc) - dt.timedelta(seconds=10),
-            started_at=dt.datetime.now(dt.timezone.utc) - dt.timedelta(seconds=5),
+            queued_at=dt.datetime.now(dt.UTC) - dt.timedelta(seconds=10),
+            started_at=dt.datetime.now(dt.UTC) - dt.timedelta(seconds=5),
         )
         executed_task = ExecutedTask(
-            finished_at=dt.datetime.now(dt.timezone.utc),
+            finished_at=dt.datetime.now(dt.UTC),
             execution_time=5.0,
             error=None,
             return_value={'return_value': 'success_result'},
@@ -177,11 +177,11 @@ class TestTaskService:
         # Given
         task_in_progress = await PostgresTaskFactory.create_async(
             status=TaskStatus.IN_PROGRESS.value,
-            queued_at=dt.datetime.now(dt.timezone.utc) - dt.timedelta(seconds=10),
-            started_at=dt.datetime.now(dt.timezone.utc) - dt.timedelta(seconds=5),
+            queued_at=dt.datetime.now(dt.UTC) - dt.timedelta(seconds=10),
+            started_at=dt.datetime.now(dt.UTC) - dt.timedelta(seconds=5),
         )
         executed_task = ExecutedTask(
-            finished_at=dt.datetime.now(dt.timezone.utc),
+            finished_at=dt.datetime.now(dt.UTC),
             execution_time=2.5,
             error='Task execution failed: Division by zero',
             return_value={},
@@ -286,7 +286,7 @@ class TestTaskService:
         # Given
         for minutes in range(5):
             await PostgresTaskFactory.create_async(
-                started_at=dt.datetime.now(dt.timezone.utc) + dt.timedelta(minutes=minutes)
+                started_at=dt.datetime.now(dt.UTC) + dt.timedelta(minutes=minutes)
             )
 
         # When
@@ -304,7 +304,7 @@ class TestTaskService:
         # Given
         for minutes in range(5):
             await PostgresTaskFactory.create_async(
-                started_at=dt.datetime.now(dt.timezone.utc) + dt.timedelta(minutes=minutes)
+                started_at=dt.datetime.now(dt.UTC) + dt.timedelta(minutes=minutes)
             )
 
         # When
@@ -322,7 +322,7 @@ class TestTaskService:
         # Given
         for minutes in range(5):
             await PostgresTaskFactory.create_async(
-                finished_at=dt.datetime.now(dt.timezone.utc) + dt.timedelta(minutes=minutes)
+                finished_at=dt.datetime.now(dt.UTC) + dt.timedelta(minutes=minutes)
             )
 
         # When
@@ -365,7 +365,7 @@ class TestTaskService:
             worker='worker_2',
             args=['arg1'],
             kwargs={'key': 'value'},
-            started_at=dt.datetime.now(dt.timezone.utc),
+            started_at=dt.datetime.now(dt.UTC),
         )
 
         # When
@@ -391,7 +391,7 @@ class TestTaskService:
         # Given
         task_id = uuid.uuid4()
         executed_task = ExecutedTask(
-            finished_at=dt.datetime.now(dt.timezone.utc),
+            finished_at=dt.datetime.now(dt.UTC),
             execution_time=3.5,
             error=None,
             return_value={'return_value': 'quick_result'},
@@ -419,7 +419,7 @@ class TestTaskService:
         # Given
         task_id = uuid.uuid4()
         executed_task = ExecutedTask(
-            finished_at=dt.datetime.now(dt.timezone.utc),
+            finished_at=dt.datetime.now(dt.UTC),
             execution_time=1.0,
             error=None,
             return_value={'return_value': 'immediate_result'},
@@ -444,7 +444,7 @@ class TestTaskService:
         # Given
         task_id = uuid.uuid4()
         executed_task = ExecutedTask(
-            finished_at=dt.datetime.now(dt.timezone.utc),
+            finished_at=dt.datetime.now(dt.UTC),
             execution_time=0.5,
             error='Task failed immediately',
             return_value={},
@@ -469,7 +469,7 @@ class TestTaskService:
         # Given
         task_id = uuid.uuid4()
         executed_task = ExecutedTask(
-            finished_at=dt.datetime.now(dt.timezone.utc),
+            finished_at=dt.datetime.now(dt.UTC),
             execution_time=2.0,
             error=None,
             return_value={'return_value': 'completed_result'},
@@ -479,7 +479,7 @@ class TestTaskService:
             worker='worker_3',
             args=[],
             kwargs={},
-            started_at=dt.datetime.now(dt.timezone.utc) - dt.timedelta(seconds=3),
+            started_at=dt.datetime.now(dt.UTC) - dt.timedelta(seconds=3),
         )
 
         # When - executed event arrives first
@@ -504,7 +504,7 @@ class TestTaskService:
     ) -> None:
         # Given
         task_id = uuid.uuid4()
-        now = dt.datetime.now(dt.timezone.utc)
+        now = dt.datetime.now(dt.UTC)
 
         # Simulate events arriving in wrong order: executed -> started -> executed
         executed_task_1 = ExecutedTask(
@@ -554,7 +554,7 @@ class TestTaskService:
             worker='worker_1',
             args=['arg1'],
             kwargs={'key': 'value'},
-            started_at=dt.datetime.now(dt.timezone.utc),
+            started_at=dt.datetime.now(dt.UTC),
         )
         queued_task = QueuedTask(
             task_name='delayed_task',
@@ -562,7 +562,7 @@ class TestTaskService:
             args=['arg1'],
             kwargs={'key': 'value'},
             labels={'priority': 'high'},
-            queued_at=dt.datetime.now(dt.timezone.utc) - dt.timedelta(seconds=5),
+            queued_at=dt.datetime.now(dt.UTC) - dt.timedelta(seconds=5),
         )
 
         # When - started event arrives first
@@ -590,7 +590,7 @@ class TestTaskService:
         # Given
         task_id = uuid.uuid4()
         executed_task = ExecutedTask(
-            finished_at=dt.datetime.now(dt.timezone.utc),
+            finished_at=dt.datetime.now(dt.UTC),
             execution_time=2.0,
             error=None,
             return_value={'return_value': 'result'},
@@ -601,7 +601,7 @@ class TestTaskService:
             args=[],
             kwargs={},
             labels={},
-            queued_at=dt.datetime.now(dt.timezone.utc) - dt.timedelta(seconds=3),
+            queued_at=dt.datetime.now(dt.UTC) - dt.timedelta(seconds=3),
         )
 
         # When - executed event arrives first
@@ -628,7 +628,7 @@ class TestTaskService:
     ) -> None:
         # Given
         task_id = uuid.uuid4()
-        now = dt.datetime.now(dt.timezone.utc)
+        now = dt.datetime.now(dt.UTC)
 
         # Events arrive in wrong order: executed -> started -> queued
         executed_task = ExecutedTask(

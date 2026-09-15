@@ -184,7 +184,7 @@ def create_error_notification(request: fastapi.Request, message: str) -> Respons
     '/{schedule_id}',
     name='Edit schedule',
 )
-async def handle_schedule_edit(  # noqa: PLR0911, PLR0913, C901, PLR0912 Too
+async def handle_schedule_edit(  # noqa: PLR0911, PLR0913, C901, PLR0912, PLR0917
     request: fastapi.Request,
     schedule_id: str,
     cron: tp.Annotated[str | None, fastapi.Form()] = None,

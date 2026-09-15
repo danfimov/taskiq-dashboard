@@ -38,7 +38,7 @@
     </td>
     <td class="px-6 py-4 whitespace-nowrap text-sm group-hover:bg-ctp-blue-100/20 w-auto">
         {% if schedule.time is not none %}
-            {{ schedule.time.strftime('%Y-%m-%d %H:%M:%S') }}
+            {{ schedule.time | format_datetime }}
         {% else %}
             -
         {% endif %}

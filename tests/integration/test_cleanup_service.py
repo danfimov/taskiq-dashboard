@@ -35,7 +35,7 @@ class TestCleanupService:
         await PostgresTaskFactory.create_batch_async(
             5,
             status=TaskStatus.COMPLETED.value,
-            finished_at=dt.datetime.now(dt.timezone.utc) - dt.timedelta(days=60),
+            finished_at=dt.datetime.now(dt.UTC) - dt.timedelta(days=60),
         )
 
         # When
@@ -65,14 +65,14 @@ class TestCleanupService:
         old_tasks = await PostgresTaskFactory.create_batch_async(
             3,
             status=TaskStatus.COMPLETED.value,
-            finished_at=dt.datetime.now(dt.timezone.utc) - dt.timedelta(days=45),
+            finished_at=dt.datetime.now(dt.UTC) - dt.timedelta(days=45),
         )
 
         # Create recent tasks (within 30 days)
         recent_tasks = await PostgresTaskFactory.create_batch_async(
             2,
             status=TaskStatus.COMPLETED.value,
-            finished_at=dt.datetime.now(dt.timezone.utc) - dt.timedelta(days=5),
+            finished_at=dt.datetime.now(dt.UTC) - dt.timedelta(days=5),
         )
 
         # When
@@ -111,7 +111,7 @@ class TestCleanupService:
         # Create old task with only queued_at (simulating stuck task)
         old_stuck_task = await PostgresTaskFactory.create_async(
             status=TaskStatus.QUEUED.value,
-            queued_at=dt.datetime.now(dt.timezone.utc) - dt.timedelta(days=45),
+            queued_at=dt.datetime.now(dt.UTC) - dt.timedelta(days=45),
             started_at=None,
             finished_at=None,
         )
@@ -119,7 +119,7 @@ class TestCleanupService:
         # Create recent task with only queued_at
         recent_stuck_task = await PostgresTaskFactory.create_async(
             status=TaskStatus.QUEUED.value,
-            queued_at=dt.datetime.now(dt.timezone.utc) - dt.timedelta(days=5),
+            queued_at=dt.datetime.now(dt.UTC) - dt.timedelta(days=5),
             started_at=None,
             finished_at=None,
         )
@@ -157,8 +157,8 @@ class TestCleanupService:
         # Create old in-progress task (should be deleted - prevents DB bloat from stuck tasks)
         old_in_progress_task = await PostgresTaskFactory.create_async(
             status=TaskStatus.IN_PROGRESS.value,
-            queued_at=dt.datetime.now(dt.timezone.utc) - dt.timedelta(days=45),
-            started_at=dt.datetime.now(dt.timezone.utc) - dt.timedelta(days=44),
+            queued_at=dt.datetime.now(dt.UTC) - dt.timedelta(days=45),
+            started_at=dt.datetime.now(dt.UTC) - dt.timedelta(days=44),
             finished_at=None,
         )
 
@@ -190,23 +190,23 @@ class TestCleanupService:
         # Create 5 tasks with different ages
         old_task_1 = await PostgresTaskFactory.create_async(
             status=TaskStatus.COMPLETED.value,
-            finished_at=dt.datetime.now(dt.timezone.utc) - dt.timedelta(days=10),
+            finished_at=dt.datetime.now(dt.UTC) - dt.timedelta(days=10),
         )
         old_task_2 = await PostgresTaskFactory.create_async(
             status=TaskStatus.COMPLETED.value,
-            finished_at=dt.datetime.now(dt.timezone.utc) - dt.timedelta(days=8),
+            finished_at=dt.datetime.now(dt.UTC) - dt.timedelta(days=8),
         )
         recent_task_1 = await PostgresTaskFactory.create_async(
             status=TaskStatus.COMPLETED.value,
-            finished_at=dt.datetime.now(dt.timezone.utc) - dt.timedelta(days=3),
+            finished_at=dt.datetime.now(dt.UTC) - dt.timedelta(days=3),
         )
         recent_task_2 = await PostgresTaskFactory.create_async(
             status=TaskStatus.COMPLETED.value,
-            finished_at=dt.datetime.now(dt.timezone.utc) - dt.timedelta(days=2),
+            finished_at=dt.datetime.now(dt.UTC) - dt.timedelta(days=2),
         )
         recent_task_3 = await PostgresTaskFactory.create_async(
             status=TaskStatus.COMPLETED.value,
-            finished_at=dt.datetime.now(dt.timezone.utc) - dt.timedelta(days=1),
+            finished_at=dt.datetime.now(dt.UTC) - dt.timedelta(days=1),
         )
 
         # When
@@ -247,7 +247,7 @@ class TestCleanupService:
         tasks = await PostgresTaskFactory.create_batch_async(
             3,
             status=TaskStatus.COMPLETED.value,
-            finished_at=dt.datetime.now(dt.timezone.utc) - dt.timedelta(days=5),
+            finished_at=dt.datetime.now(dt.UTC) - dt.timedelta(days=5),
         )
 
         # When
@@ -281,25 +281,25 @@ class TestCleanupService:
         await PostgresTaskFactory.create_batch_async(
             2,
             status=TaskStatus.COMPLETED.value,
-            finished_at=dt.datetime.now(dt.timezone.utc) - dt.timedelta(days=45),
+            finished_at=dt.datetime.now(dt.UTC) - dt.timedelta(days=45),
         )
 
         # Create 4 recent tasks (2 will be deleted by count after TTL cleanup)
         await PostgresTaskFactory.create_async(
             status=TaskStatus.COMPLETED.value,
-            finished_at=dt.datetime.now(dt.timezone.utc) - dt.timedelta(days=10),
+            finished_at=dt.datetime.now(dt.UTC) - dt.timedelta(days=10),
         )
         await PostgresTaskFactory.create_async(
             status=TaskStatus.COMPLETED.value,
-            finished_at=dt.datetime.now(dt.timezone.utc) - dt.timedelta(days=8),
+            finished_at=dt.datetime.now(dt.UTC) - dt.timedelta(days=8),
         )
         await PostgresTaskFactory.create_async(
             status=TaskStatus.COMPLETED.value,
-            finished_at=dt.datetime.now(dt.timezone.utc) - dt.timedelta(days=3),
+            finished_at=dt.datetime.now(dt.UTC) - dt.timedelta(days=3),
         )
         await PostgresTaskFactory.create_async(
             status=TaskStatus.COMPLETED.value,
-            finished_at=dt.datetime.now(dt.timezone.utc) - dt.timedelta(days=1),
+            finished_at=dt.datetime.now(dt.UTC) - dt.timedelta(days=1),
         )
 
         # When
@@ -324,7 +324,7 @@ class TestCleanupService:
         await PostgresTaskFactory.create_batch_async(
             3,
             status=TaskStatus.COMPLETED.value,
-            finished_at=dt.datetime.now(dt.timezone.utc) - dt.timedelta(days=15),
+            finished_at=dt.datetime.now(dt.UTC) - dt.timedelta(days=15),
         )
 
         # When - call cleanup_by_ttl directly with 10 days
@@ -348,7 +348,7 @@ class TestCleanupService:
         await PostgresTaskFactory.create_batch_async(
             5,
             status=TaskStatus.COMPLETED.value,
-            finished_at=dt.datetime.now(dt.timezone.utc),
+            finished_at=dt.datetime.now(dt.UTC),
         )
 
         # When - call cleanup_by_count directly with max_tasks=2

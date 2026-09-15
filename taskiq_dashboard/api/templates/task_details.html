@@ -21,6 +21,7 @@
                 <!-- Actions -->
                 {% if enable_actions %}
                     <button
+                        type="button"
                         class="px-3 py-1.5 bg-ctp-green rounded cursor-pointer hover:bg-ctp-green-600 transition focus:outline-2 focus:outline-offset-2 focus:outline-ctp-green-500 active:bg-ctp-green-700"
                         hx-post="{{ url_for('Rerun task', task_id=task.id) }}"
                         hx-target="#notification-list"
@@ -36,6 +37,7 @@
                 {% if enable_additional_actions %}
                   <div class="relative">
                     <button
+                      type="button"
                       class="px-2 py-1.5 bg-ctp-lavender rounded hover:bg-ctp-lavender-600 transition focus:outline-2 focus:outline-offset-2 focus:outline-ctp-lavender-500 active:bg-ctp-lavender-700"
                       id="actions-menu-button"
                     >
@@ -46,6 +48,7 @@
                       id="actions-menu"
                     >
                       <button
+                        type="button"
                         class="w-full text-left px-4 py-2 hover:bg-ctp-mauve-600 transition active:bg-ctp-mauve-700"
                       >
                           Rerun with different arguments
@@ -117,7 +120,7 @@
                 <div>
                     <h3 class="mb-2">Started at</h3>
                     {% if task.started_at %}
-                        <p class="font-light">{{ task.started_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                        <p class="font-light">{{ task.started_at | format_datetime }}</p>
                     {% else %}
                         <p class="font-light">-</p>
                     {% endif %}
@@ -126,7 +129,7 @@
                     <h3 class="mb-2">Finished at</h3>
                     <p class="font-light">
                         {% if task.finished_at %}
-                            {{ task.finished_at.strftime('%Y-%m-%d %H:%M:%S') }}
+                            {{ task.finished_at | format_datetime }}
                         {% else %}
                             <span class="font-light">-</span>
                         {% endif %}

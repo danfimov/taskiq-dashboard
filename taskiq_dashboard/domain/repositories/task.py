@@ -8,7 +8,7 @@ from taskiq_dashboard.domain.dto.task_status import TaskStatus
 
 class AbstractTaskRepository(ABC):
     @abstractmethod
-    async def find_tasks(  # noqa: PLR0913
+    async def find_tasks(  # noqa: PLR0913, PLR0917
         self,
         name: str | None = None,
         status: TaskStatus | None = None,
