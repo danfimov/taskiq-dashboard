@@ -1,3 +1,4 @@
+import datetime
 import typing as tp
 import uuid
 from abc import ABC, abstractmethod
@@ -12,6 +13,8 @@ class AbstractTaskRepository(ABC):
         self,
         name: str | None = None,
         status: TaskStatus | None = None,
+        start_date: datetime.datetime | None = None,
+        end_date: datetime.datetime | None = None,
         sort_by: tp.Literal['started_at', 'finished_at'] | None = None,
         sort_order: tp.Literal['asc', 'desc'] = 'desc',
         limit: int = 30,
@@ -23,6 +26,8 @@ class AbstractTaskRepository(ABC):
         Args:
             status: Filter by task status
             name: Filter by task name (fuzzy search)
+            start_date: Filter by tasks started at or after this datetime (inclusive)
+            end_date: Filter by tasks started at or before this datetime (inclusive)
             sort_by: Column to sort by ('started_at' or 'finished_at')
             sort_order: Sort order ('asc' or 'desc')
             limit: Number of tasks to retrieve

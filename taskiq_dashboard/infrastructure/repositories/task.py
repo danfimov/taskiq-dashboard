@@ -1,3 +1,4 @@
+import datetime
 import typing as tp
 import uuid
 from contextlib import suppress
@@ -25,6 +26,8 @@ class TaskRepository(AbstractTaskRepository):
         self,
         name: str | None = None,
         status: TaskStatus | None = None,
+        start_date: datetime.datetime | None = None,
+        end_date: datetime.datetime | None = None,
         sort_by: tp.Literal['started_at', 'finished_at'] | None = None,
         sort_order: tp.Literal['asc', 'desc'] = 'desc',
         limit: int = 30,
@@ -42,6 +45,10 @@ class TaskRepository(AbstractTaskRepository):
             )
         if status is not None:
             query = query.where(self.task.status == status.value)
+        if start_date is not None:
+            query = query.where(self.task.started_at >= start_date)
+        if end_date is not None:
+            query = query.where(self.task.started_at <= end_date)
         if sort_by:
             if sort_by == 'finished_at':
                 sort_column = self.task.finished_at

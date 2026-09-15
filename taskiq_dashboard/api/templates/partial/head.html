@@ -1,5 +1,6 @@
 <meta charset="utf-8" />
-<link rel="stylesheet" href="{{ url_for('static', path='css/tailwind.css') }}" />
+<link rel="stylesheet" href="{{ url_for('static', path='css/flatpickr.min.css') }}?v={{ static_version('css/flatpickr.min.css') }}" />
+<link rel="stylesheet" href="{{ url_for('static', path='css/tailwind.css') }}?v={{ static_version('css/tailwind.css') }}" />
 <style>
     [x-cloak] {
         display: none !important;
@@ -7,6 +8,7 @@
 </style>
 <script defer src="{{ url_for('static', path='htmx.js') }}"></script>
 <script defer src="{{ url_for('static', path='alpine.js') }}"></script>
+<script defer src="{{ url_for('static', path='flatpickr.min.js') }}"></script>
 {% if is_auto_timezone %}
 <script defer>{% include "scripts/local-time.js" %}</script>
 {% endif %}

@@ -338,20 +338,99 @@ class TestTaskService:
         session_provider: AsyncPostgresSessionProvider,
     ) -> None:
         # Given
-        await PostgresTaskFactory.create_batch_async(2, name='send_email_task', status=TaskStatus.COMPLETED.value)
+        in_range = dt.datetime(2024, 6, 1, 12, 0, tzinfo=dt.UTC)
+        await PostgresTaskFactory.create_batch_async(
+            2, name='send_email_task', status=TaskStatus.COMPLETED.value, started_at=in_range
+        )
         await PostgresTaskFactory.create_batch_async(2, name='publish_data', status=TaskStatus.COMPLETED.value)
         await PostgresTaskFactory.create_batch_async(2, name='send_progress', status=TaskStatus.IN_PROGRESS.value)
+        await PostgresTaskFactory.create_async(
+            name='send_old_task',
+            status=TaskStatus.COMPLETED.value,
+            started_at=dt.datetime(2020, 1, 1, tzinfo=dt.UTC),
+        )
 
         # When
         tasks = await task_service.find_tasks(
             status=TaskStatus.COMPLETED,
             name='send',
+            start_date=dt.datetime(2024, 5, 1, tzinfo=dt.UTC),
+            end_date=dt.datetime(2024, 7, 1, tzinfo=dt.UTC),
         )
 
         # Then
         assert len(tasks) == 2
         assert all(task.status == TaskStatus.COMPLETED for task in tasks)
         assert all('send' in task.name for task in tasks)
+
+    async def test_when_finding_tasks_with_date_range__then_return_only_tasks_started_within_range(
+        self,
+        task_service: AbstractTaskRepository,
+        session_provider: AsyncPostgresSessionProvider,
+    ) -> None:
+        # Given
+        await PostgresTaskFactory.create_async(started_at=dt.datetime(2024, 1, 1, tzinfo=dt.UTC))
+        await PostgresTaskFactory.create_async(started_at=dt.datetime(2024, 6, 15, tzinfo=dt.UTC))
+        await PostgresTaskFactory.create_async(started_at=dt.datetime(2024, 12, 31, tzinfo=dt.UTC))
+
+        # When
+        tasks = await task_service.find_tasks(
+            start_date=dt.datetime(2024, 3, 1, tzinfo=dt.UTC),
+            end_date=dt.datetime(2024, 9, 1, tzinfo=dt.UTC),
+        )
+
+        # Then
+        assert len(tasks) == 1
+        assert tasks[0].started_at == dt.datetime(2024, 6, 15, tzinfo=dt.UTC)
+
+    async def test_when_finding_tasks_with_date_range_boundaries__then_include_tasks_on_boundary(
+        self,
+        task_service: AbstractTaskRepository,
+        session_provider: AsyncPostgresSessionProvider,
+    ) -> None:
+        # Given
+        start = dt.datetime(2024, 3, 1, tzinfo=dt.UTC)
+        end = dt.datetime(2024, 9, 1, tzinfo=dt.UTC)
+        await PostgresTaskFactory.create_async(started_at=start)
+        await PostgresTaskFactory.create_async(started_at=end)
+
+        # When
+        tasks = await task_service.find_tasks(start_date=start, end_date=end)
+
+        # Then
+        assert len(tasks) == 2
+
+    async def test_when_finding_tasks_with_open_ended_start_date__then_return_tasks_after_start(
+        self,
+        task_service: AbstractTaskRepository,
+        session_provider: AsyncPostgresSessionProvider,
+    ) -> None:
+        # Given
+        await PostgresTaskFactory.create_async(started_at=dt.datetime(2024, 1, 1, tzinfo=dt.UTC))
+        await PostgresTaskFactory.create_async(started_at=dt.datetime(2024, 6, 15, tzinfo=dt.UTC))
+
+        # When
+        tasks = await task_service.find_tasks(start_date=dt.datetime(2024, 3, 1, tzinfo=dt.UTC))
+
+        # Then
+        assert len(tasks) == 1
+        assert tasks[0].started_at == dt.datetime(2024, 6, 15, tzinfo=dt.UTC)
+
+    async def test_when_finding_tasks_with_open_ended_end_date__then_return_tasks_before_end(
+        self,
+        task_service: AbstractTaskRepository,
+        session_provider: AsyncPostgresSessionProvider,
+    ) -> None:
+        # Given
+        await PostgresTaskFactory.create_async(started_at=dt.datetime(2024, 1, 1, tzinfo=dt.UTC))
+        await PostgresTaskFactory.create_async(started_at=dt.datetime(2024, 6, 15, tzinfo=dt.UTC))
+
+        # When
+        tasks = await task_service.find_tasks(end_date=dt.datetime(2024, 3, 1, tzinfo=dt.UTC))
+
+        # Then
+        assert len(tasks) == 1
+        assert tasks[0].started_at == dt.datetime(2024, 1, 1, tzinfo=dt.UTC)
 
     async def test_when_updating_non_existent_task_with_started_task__then_create_and_update_task(
         self,
