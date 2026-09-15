@@ -5,7 +5,7 @@ from urllib.parse import quote, urlparse
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 import pydantic_settings
-from pydantic import SecretStr, field_validator, model_validator
+from pydantic import Field, SecretStr, field_validator, model_validator
 
 
 class PostgresSettings(pydantic_settings.BaseSettings):
@@ -131,6 +131,7 @@ class Settings(pydantic_settings.BaseSettings):
     storage_type: tp.Literal['postgres', 'sqlite'] = 'sqlite'
     postgres: PostgresSettings = PostgresSettings()
     sqlite: SqliteSettings = SqliteSettings()
+    storage_engine_parameters: dict[str, tp.Any] = Field(default_factory=dict)
 
     cleanup: CleanupSettings = CleanupSettings()
     timezone: tp.Literal['auto'] | str = 'auto'  # noqa: PYI051
