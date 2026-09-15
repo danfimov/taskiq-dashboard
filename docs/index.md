@@ -216,6 +216,7 @@ You can also configure the database connection or API parameters using environme
     TASKIQ_DASHBOARD__API__PORT=8000
     TASKIQ_DASHBOARD__API__TOKEN=supersecret
     TASKIQ_DASHBOARD__API__TRUSTED_HOSTS=*
+    TASKIQ_DASHBOARD__API__ROOT_PATH=
     ```
 
 === "sqlite"
@@ -229,7 +230,63 @@ You can also configure the database connection or API parameters using environme
     TASKIQ_DASHBOARD__API__PORT=8000
     TASKIQ_DASHBOARD__API__TOKEN=supersecret
     TASKIQ_DASHBOARD__API__TRUSTED_HOSTS=*
+    TASKIQ_DASHBOARD__API__ROOT_PATH=
     ```
+
+### Running behind a reverse proxy at a sub-path
+
+If you serve the dashboard behind a reverse proxy (Nginx, Traefik, an Ingress controller, ...) at a path prefix
+(e.g. `https://company.com/taskiq-dashboard/` instead of the domain root), set `root_path` so that static assets and 
+internal links are generated with the correct prefix.
+
+You can pass it directly to the constructor:
+
+```python
+app = TaskiqDashboard(
+    api_token='supersecret',
+    storage_type='postgres',
+    database_dsn="postgresql://taskiq-dashboard:look_in_vault@postgres:5432/taskiq-dashboard",
+    root_path='/taskiq-dashboard',
+)
+```
+
+Or set it via an environment variable, which is handy when running inside Docker:
+
+```dotenv
+TASKIQ_DASHBOARD__API__ROOT_PATH=/taskiq-dashboard
+```
+
+```yaml
+services:
+  dashboard:
+    image: ghcr.io/danfimov/taskiq-dashboard:latest
+    environment:
+      TASKIQ_DASHBOARD__STORAGE_TYPE: postgres
+      TASKIQ_DASHBOARD__POSTGRES__HOST: postgres
+      TASKIQ_DASHBOARD__API__TOKEN: supersecret
+      TASKIQ_DASHBOARD__API__ROOT_PATH: /taskiq-dashboard
+    ports:
+      - "8000:8000"
+```
+
+Your reverse proxy still needs to strip the prefix before forwarding the request to the dashboard and pass the
+`X-Forwarded-*` headers, for example with Nginx:
+
+```nginx
+location /taskiq-dashboard/ {
+    rewrite ^/taskiq-dashboard/(.*)$ /$1 break;
+    proxy_pass http://127.0.0.1:8000;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+}
+```
+
+!!! note
+    When mounting the dashboard into an existing FastAPI/Starlette app with `app.mount('/admin', admin_dashboard.application)`
+    (see [Run as a mounted app](./tutorial/run_as_mounted_app.md)), Starlette derives `root_path` automatically from the
+    mount, so you don't need to set it manually in that case.
 
 
 ## Dashboard information

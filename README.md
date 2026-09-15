@@ -127,6 +127,8 @@ Taskiq-dashboard can run with PostgreSQL or SQLite.
 
 You can configure it using environment variables or by passing parameters directly to the `TaskiqDashboard` class. For a full list of configuration options, please refer to the [Configuration article](https://danfimov.github.io/taskiq-dashboard/#configuration) in documentation.
 
+If you run the dashboard behind a reverse proxy at a path prefix (e.g. `/taskiq-dashboard/`), set `TASKIQ_DASHBOARD__API__ROOT_PATH` (or pass `root_path=` to `TaskiqDashboard`) — see [Running behind a reverse proxy](https://danfimov.github.io/taskiq-dashboard/#running-behind-a-reverse-proxy-at-a-sub-path) in documentation.
+
 ## Development
 
 For development and contributing instructions, please refer to the [Contribution guide](https://danfimov.github.io/taskiq-dashboard/contributing/) in documentation.
