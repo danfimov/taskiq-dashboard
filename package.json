@@ -5,7 +5,7 @@
   },
   "devDependencies": {
     "@catppuccin/tailwindcss": "^1.0.0",
-    "@tailwindcss/cli": "^4.1.13",
-    "tailwindcss": "^4.1.13"
+    "@tailwindcss/cli": "^4.3.3",
+    "tailwindcss": "^4.3.3"
   }
 }
