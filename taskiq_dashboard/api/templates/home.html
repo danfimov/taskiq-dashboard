@@ -207,6 +207,21 @@
             <!-- Right side: Bulk actions -->
             <div class="relative" id="bulk-actions-container">
                 <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-2" id="auto-refresh-controls">
+                        <label class="flex items-center gap-2 text-sm text-ctp-subtext0 whitespace-nowrap">
+                            <input type="checkbox" id="auto-refresh-toggle" class="w-4 h-4 text-ctp-blue bg-ctp-base border-ctp-subtext0 rounded focus:ring-ctp-blue focus:ring-2">
+                            Auto-refresh
+                        </label>
+                        <select
+                            id="auto-refresh-interval"
+                            class="px-2 py-2 border rounded text-sm border-ctp-subtext0 bg-ctp-base text-ctp-text appearance-none"
+                        >
+                            <option value="5">5s</option>
+                            <option value="10" selected>10s</option>
+                            <option value="30">30s</option>
+                            <option value="60">60s</option>
+                        </select>
+                    </div>
                     <span id="selected-count" class="text-sm text-ctp-subtext0 whitespace-nowrap">0 selected</span>
                     <div class="relative">
                         <select
@@ -237,7 +252,10 @@
 
     <!-- Task table section -->
     <section class="overflow-x-auto mb-6 p-5">
-        <table id="task-list" class="min-w-full divide-y divide-ctp-blue/20 table-auto">
+        <table id="task-list" class="min-w-full divide-y divide-ctp-blue/20 table-auto"
+            data-list-url="{{ url_for('Task list view') }}"
+            data-sort-by="{{ sort_by }}"
+            data-sort-order="{{ sort_order }}">
             <thead>
                 <tr class="sticky top-0">
                     <th scope="col" class="px-6 py-3 text-left font-normal text-ctp-text tracking-wider w-min">
@@ -420,6 +438,89 @@
 
             // Initial UI update
             updateUI();
+        })();
+    </script>
+
+    <script>
+        // Auto-refresh management
+        (function() {
+            const STORAGE_ENABLED_KEY = 'taskiq-dashboard:auto-refresh-enabled';
+            const STORAGE_INTERVAL_KEY = 'taskiq-dashboard:auto-refresh-interval';
+
+            const toggle = document.getElementById('auto-refresh-toggle');
+            const intervalSelect = document.getElementById('auto-refresh-interval');
+            const taskList = document.getElementById('task-list');
+
+            let timerId = null;
+
+            function refresh() {
+                const params = new URLSearchParams();
+                const q = document.getElementById('search');
+                const status = document.getElementById('status');
+                const startDate = document.getElementById('start_date');
+                const endDate = document.getElementById('end_date');
+
+                params.set('q', q ? q.value : '');
+                params.set('status', status ? status.value : 'null');
+                if (startDate && startDate.value) params.set('start_date', startDate.value);
+                if (endDate && endDate.value) params.set('end_date', endDate.value);
+                params.set('sort_by', taskList.dataset.sortBy);
+                params.set('sort_order', taskList.dataset.sortOrder);
+                params.set('limit', '30');
+                params.set('offset', '0');
+
+                htmx.ajax('GET', taskList.dataset.listUrl + '?' + params.toString(), {
+                    target: '#task-list-body',
+                    swap: 'innerHTML',
+                    headers: { 'X-Auto-Refresh': 'true' },
+                });
+            }
+
+            function stopTimer() {
+                if (timerId !== null) {
+                    clearInterval(timerId);
+                    timerId = null;
+                }
+            }
+
+            function startTimer() {
+                stopTimer();
+                if (!toggle.checked || document.hidden) {
+                    return;
+                }
+                const seconds = parseInt(intervalSelect.value, 10) || 10;
+                timerId = setInterval(refresh, seconds * 1000);
+            }
+
+            toggle.addEventListener('change', () => {
+                localStorage.setItem(STORAGE_ENABLED_KEY, toggle.checked ? 'true' : 'false');
+                startTimer();
+            });
+
+            intervalSelect.addEventListener('change', () => {
+                localStorage.setItem(STORAGE_INTERVAL_KEY, intervalSelect.value);
+                startTimer();
+            });
+
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                    stopTimer();
+                } else {
+                    startTimer();
+                }
+            });
+
+            document.addEventListener('DOMContentLoaded', () => {
+                const storedEnabled = localStorage.getItem(STORAGE_ENABLED_KEY);
+                const storedInterval = localStorage.getItem(STORAGE_INTERVAL_KEY);
+
+                toggle.checked = storedEnabled === 'true';
+                if (storedInterval && Array.from(intervalSelect.options).some((opt) => opt.value === storedInterval)) {
+                    intervalSelect.value = storedInterval;
+                }
+
+                startTimer();
+            });
         })();
     </script>
 </body>

@@ -81,12 +81,13 @@ class TaskFilter(pydantic.BaseModel):
     name='Task list view',
     response_class=HTMLResponse,
 )
-async def search_tasks(
+async def search_tasks(  # noqa: PLR0913, PLR0917
     request: fastapi.Request,
     repository: dishka_fastapi.FromDishka[AbstractTaskRepository],
     settings: dishka_fastapi.FromDishka[Settings],
     query: tp.Annotated[TaskFilter, fastapi.Query(...)],
     hx_request: tp.Annotated[bool, fastapi.Header(description='Request from htmx')] = False,  # noqa: FBT002
+    x_auto_refresh: tp.Annotated[bool, fastapi.Header(description='Background auto-refresh poll')] = False,  # noqa: FBT002
 ) -> HTMLResponse:
     tasks = await repository.find_tasks(
         name=query.q,
@@ -101,11 +102,11 @@ async def search_tasks(
     headers: dict[str, str] = {}
     template_name = 'home.html'
     if hx_request:
-        headers = {
-            'HX-Push-Url': (
-                str(request.url_for('Task list view')) + '?' + urlencode(query.model_dump(exclude={'limit', 'offset'}))
-            ),
-        }
+        if not x_auto_refresh:
+            query_params = urlencode(query.model_dump(exclude={'limit', 'offset'}))
+            headers = {
+                'HX-Push-Url': str(request.url_for('Task list view')) + '?' + query_params,
+            }
         template_name = 'partial/task_list.html'
     return jinja_templates.TemplateResponse(
         request,
