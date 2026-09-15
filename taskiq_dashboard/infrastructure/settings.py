@@ -133,9 +133,6 @@ class Settings(pydantic_settings.BaseSettings):
     sqlite: SqliteSettings = SqliteSettings()
 
     cleanup: CleanupSettings = CleanupSettings()
-
-    # timezone used to display task/schedule times in the dashboard;
-    # 'auto' detects it in the browser, otherwise a valid IANA zone name (e.g. 'Europe/Moscow')
     timezone: tp.Literal['auto'] | str = 'auto'  # noqa: PYI051
 
     @field_validator('timezone')
