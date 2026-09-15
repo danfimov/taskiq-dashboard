@@ -42,6 +42,8 @@
             <td class="px-6 py-4 group-hover:bg-ctp-blue-100/20 w-min">{{ task.started_at | format_datetime if task.started_at else '-' }}</td>
         {% elif column.key == 'finished_at' %}
             <td class="px-6 py-4 group-hover:bg-ctp-blue-100/20 w-min">{{ task.finished_at | format_datetime if task.finished_at else '-' }}</td>
+        {% elif column.key == 'runtime' %}
+            <td class="px-6 py-4 group-hover:bg-ctp-blue-100/20 w-min">{{ task.started_at | format_duration(task.finished_at) if task.started_at and task.finished_at else '-' }}</td>
         {% endif %}
     {% endfor %}
 </tr>

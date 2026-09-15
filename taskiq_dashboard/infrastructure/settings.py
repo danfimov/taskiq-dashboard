@@ -127,7 +127,7 @@ class CleanupSettings(pydantic_settings.BaseSettings):
 class ColumnSettings(pydantic_settings.BaseSettings):
     """Settings for the columns shown in the task list view."""
 
-    visible: list[str] = ['id', 'name', 'status', 'worker', 'started_at', 'finished_at']
+    visible: list[str] = ['id', 'name', 'status', 'worker', 'started_at', 'finished_at', 'runtime']
     labels: dict[str, str] = Field(default_factory=dict)
     """Maps a task label key to the column title shown for it, e.g. {"foo": "Foo"}."""
 

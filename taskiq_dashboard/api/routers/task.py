@@ -30,7 +30,7 @@ class TaskFilter(pydantic.BaseModel):
     end_date: datetime.datetime | None = None
     limit: int = 30
     offset: int = 0
-    sort_by: tp.Literal['started_at', 'finished_at'] = 'started_at'
+    sort_by: tp.Literal['started_at', 'finished_at', 'runtime'] = 'started_at'
     sort_order: tp.Literal['asc', 'desc'] = 'desc'
 
     @pydantic.field_validator('status', mode='before')

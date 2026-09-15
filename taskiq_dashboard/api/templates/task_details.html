@@ -138,7 +138,10 @@
                 <div>
                     <h3 class="mb-2">Duration</h3>
                     {% if task.finished_at and task.started_at %}
-                        <p class="font-light">{{ (task.finished_at - task.started_at).total_seconds() | round(3) }} seconds</p>
+                        <p class="font-light">
+                            {{ (task.finished_at - task.started_at).total_seconds() | round(3) }} seconds
+                            ({{ task.started_at | format_duration(task.finished_at) }})
+                        </p>
                     {% else %}
                         <p class="font-light">-</p>
                     {% endif %}

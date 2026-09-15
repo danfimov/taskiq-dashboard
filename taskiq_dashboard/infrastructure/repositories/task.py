@@ -28,7 +28,7 @@ class TaskRepository(AbstractTaskRepository):
         status: TaskStatus | None = None,
         start_date: datetime.datetime | None = None,
         end_date: datetime.datetime | None = None,
-        sort_by: tp.Literal['started_at', 'finished_at'] | None = None,
+        sort_by: tp.Literal['started_at', 'finished_at', 'runtime'] | None = None,
         sort_order: tp.Literal['asc', 'desc'] = 'desc',
         limit: int = 30,
         offset: int = 0,
@@ -54,9 +54,15 @@ class TaskRepository(AbstractTaskRepository):
                 sort_column = self.task.finished_at
             elif sort_by == 'started_at':
                 sort_column = self.task.started_at
+            elif sort_by == 'runtime':
+                if self.task is PostgresTask:
+                    sort_column = self.task.finished_at - self.task.started_at
+                else:
+                    sort_column = sa.func.unixepoch(self.task.finished_at) - sa.func.unixepoch(self.task.started_at)
             else:
                 raise ValueError('Unsupported sort_by value: %s', sort_by)
-            query = query.order_by(sort_column.asc()) if sort_order == 'asc' else query.order_by(sort_column.desc())
+            order_fn = sort_column.asc() if sort_order == 'asc' else sort_column.desc()
+            query = query.order_by(order_fn.nulls_last())
         query = query.limit(limit).offset(offset)
         async with self._session_provider.session() as session:
             result = await session.execute(query)
