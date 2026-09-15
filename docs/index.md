@@ -300,7 +300,3 @@ Let's assume we have a task `do_smth`, there are all states it can embrace:
 - `success` - the task is fully processed without any errors;
 - `failure` - an error occurred during the task processing;
 - `abandoned` - taskiq dashboard was shut down while the task was still in `queued` or `running` state, so it probably missed an event on task success/failure.
-
-### Task list filters
-
-The task list can be filtered by name/id search, status, and a `started_at` date range (both bounds are optional and inclusive), so you can quickly narrow down to tasks that ran in a specific time window.
