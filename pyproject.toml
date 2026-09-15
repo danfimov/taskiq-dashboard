@@ -12,7 +12,6 @@ classifiers = [
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
@@ -30,27 +29,27 @@ authors = [
     {name = "Anfimov Dima", email = "lovesolaristics@gmail.com"}
 ]
 dynamic = ["version"]
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 dependencies = [
     # api
     "fastapi>=0.134.0",
-    "python-multipart>=0.0.22",
+    "python-multipart>=0.0.32",
     # html templates
     "jinja2>=3.1.6",
     # db
-    "sqlalchemy[asyncio,postgresql-asyncpg]>=2.0.45",
+    "sqlalchemy[asyncio,postgresql-asyncpg]>=2.0.53",
     # http client for middleware
     "httpx>=0.28.1",
     # other
-    "pydantic-settings>=2.12.0",
-    "dishka>=1.7.2",
-    "aiosqlite>=0.21.0",
-    "taskiq>=0.12.1",
+    "pydantic-settings>=2.15.0",
+    "dishka>=1.10.1",
+    "aiosqlite>=0.22.1",
+    "taskiq>=0.12.6",
 ]
 
 [project.optional-dependencies]
 server = [
-    "granian>=2.6.0",
+    "granian>=2.8.3",
 ]
 
 [project.urls]
@@ -63,33 +62,33 @@ dev = [
     {include-group = "test"},
     {include-group = "docs"},
     {include-group = "examples"},
-    "prek>=0.3.9",
+    "prek>=0.5.3",
 ]
 lint = [
-    "ruff>=0.15.11",
-    "codespell>=2.4.2",
-    "zizmor>=1.24.1",
-    "djlint>=1.36.4",
+    "ruff>=0.16.7",
+    "codespell>=2.4.3",
+    "zizmor>=1.30.1",
+    "djlint>=1.46.1",
     # type check
-    "ty>=0.0.34",
+    "ty>=0.0.81",
 ]
 test = [
     "polyfactory>=3.3.0",
-    "pytest>=9.0.3",
-    "pytest-asyncio>=1.3.0",
+    "pytest>=9.1.1",
+    "pytest-asyncio>=1.4.0",
     "pytest-cov>=7.1.0",
     "pytest-deadfixtures>=3.1.0",
     # for request mocking
     "pytest-httpx>=0.36.2",
     # for test databases management
-    "psycopg2-binary>=2.9.12",
+    "psycopg2-binary>=2.9.13",
     "sqlalchemy-utils>=0.42.1",
 ]
 docs = [
-    "zensical>=0.0.34",
+    "zensical>=0.0.62",
 ]
 examples = [
-    "taskiq-postgres[asyncpg]>=0.7.0",
+    "taskiq-postgres[asyncpg]>=0.9.0",
 ]
 
 [build-system]
@@ -143,6 +142,8 @@ ignore = [
     "TRY003",
 
     "RUF002",  # cyrillic letters
+
+    "CPY001",  # copyright
 ]
 
 [tool.ruff.lint.isort]

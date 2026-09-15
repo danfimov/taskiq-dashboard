@@ -109,7 +109,7 @@
                         <div>
                             <h3 class="mb-2">Time</h3>
                             <p x-show="!editing">
-                                {{ schedule.time.strftime('%Y-%m-%d %H:%M:%S') if schedule.time else '-' }}
+                                {{ schedule.time | format_datetime if schedule.time else '-' }}
                             </p>
                             <input
                                 x-show="editing"

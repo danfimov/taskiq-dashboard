@@ -7,6 +7,9 @@
 </style>
 <script defer src="{{ url_for('static', path='htmx.js') }}"></script>
 <script defer src="{{ url_for('static', path='alpine.js') }}"></script>
+{% if settings.timezone == 'auto' %}
+<script defer>{% include "scripts/local-time.js" %}</script>
+{% endif %}
 <script>
     (function () {
         var THEMES = {

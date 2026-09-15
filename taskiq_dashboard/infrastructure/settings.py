@@ -2,9 +2,10 @@ import os
 import typing as tp
 from functools import cache
 from urllib.parse import quote, urlparse
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 import pydantic_settings
-from pydantic import SecretStr, model_validator
+from pydantic import SecretStr, field_validator, model_validator
 
 
 class PostgresSettings(pydantic_settings.BaseSettings):
@@ -132,6 +133,22 @@ class Settings(pydantic_settings.BaseSettings):
     sqlite: SqliteSettings = SqliteSettings()
 
     cleanup: CleanupSettings = CleanupSettings()
+
+    # timezone used to display task/schedule times in the dashboard;
+    # 'auto' detects it in the browser, otherwise a valid IANA zone name (e.g. 'Europe/Moscow')
+    timezone: tp.Literal['auto'] | str = 'auto'  # noqa: PYI051
+
+    @field_validator('timezone')
+    @classmethod
+    def __validate_timezone(cls, value: str) -> str:
+        if value == 'auto':
+            return value
+        try:
+            ZoneInfo(value)
+        except ZoneInfoNotFoundError as exc:
+            msg = f"Invalid timezone {value!r}: use 'auto' or a valid IANA timezone name"
+            raise ValueError(msg) from exc
+        return value
 
     model_config = pydantic_settings.SettingsConfigDict(
         env_nested_delimiter='__',

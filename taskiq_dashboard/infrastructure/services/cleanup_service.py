@@ -46,7 +46,7 @@ class CleanupService(AbstractCleanupService):
         return result
 
     async def cleanup_by_ttl(self, ttl_days: int) -> int:
-        cutoff_date = dt.datetime.now(dt.timezone.utc) - dt.timedelta(days=ttl_days)
+        cutoff_date = dt.datetime.now(dt.UTC) - dt.timedelta(days=ttl_days)
         task_timestamp = sa.func.coalesce(
             self._task.finished_at,
             self._task.started_at,
@@ -112,7 +112,7 @@ class PeriodicCleanupRunner:
                     self._stop_event.wait(),
                     timeout=self._interval_seconds,
                 )
-            except asyncio.TimeoutError:  # noqa: PERF203
+            except TimeoutError:
                 try:
                     await self._cleanup_service.cleanup()
                 except Exception:

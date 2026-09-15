@@ -1,5 +1,5 @@
 import asyncio
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from logging import getLogger
 from typing import Any
 from urllib.parse import urljoin
@@ -47,7 +47,7 @@ class DashboardMiddleware(TaskiqMiddleware):
 
     @staticmethod
     def _now_iso() -> str:
-        return datetime.now(timezone.utc).replace(tzinfo=None).isoformat()
+        return datetime.now(UTC).replace(tzinfo=None).isoformat()
 
     def _get_client(self) -> httpx.AsyncClient:
         """Create and cache session."""

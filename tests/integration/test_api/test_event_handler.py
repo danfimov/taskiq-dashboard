@@ -12,6 +12,7 @@ from taskiq_dashboard import DashboardMiddleware
 from taskiq_dashboard.api.application import get_application
 from taskiq_dashboard.domain.dto.task_status import TaskStatus
 from taskiq_dashboard.infrastructure import get_settings
+from taskiq_dashboard.infrastructure.settings import PostgresSettings
 
 
 class TaskiqAdminWithTestClientMiddleware(DashboardMiddleware):
@@ -43,10 +44,20 @@ class TaskiqAdminWithTestClientMiddleware(DashboardMiddleware):
 
 
 @pytest.fixture
-async def test_app() -> AsyncGenerator[AsyncClient]:
+async def test_app(database: PostgresSettings) -> AsyncGenerator[AsyncClient]:
     settings = get_settings()
     settings.api.token = SecretStr('test-token')
-    async with AsyncClient(transport=ASGITransport(app=get_application()), base_url='http://test') as client:
+    settings.storage_type = 'postgres'
+
+    app = get_application()
+    app.state.broker = None
+    app.state.scheduler = None
+
+    # httpx's ASGITransport never sends ASGI `lifespan` events
+    async with (
+        app.router.lifespan_context(app),
+        AsyncClient(transport=ASGITransport(app=app), base_url='http://test') as client
+    ):
         yield client
 
 

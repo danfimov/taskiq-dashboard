@@ -36,7 +36,7 @@ scheduler = TaskiqScheduler(
     task_name='solve_all_problems',
     schedule=[
         {'cron': '*/1 * * * *'},
-        {'time': dt.datetime.now(dt.timezone.utc) + dt.timedelta(minutes=2)},
+        {'time': dt.datetime.now(dt.UTC) + dt.timedelta(minutes=2)},
     ],
 )
 async def best_task_ever(*args, **kwargs) -> dict[str, tp.Any]:
