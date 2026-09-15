@@ -1,3 +1,4 @@
+import datetime
 import json
 import typing as tp
 import uuid
@@ -25,6 +26,8 @@ router = fastapi.APIRouter(
 class TaskFilter(pydantic.BaseModel):
     q: str = ''
     status: TaskStatus | None = None
+    start_date: datetime.datetime | None = None
+    end_date: datetime.datetime | None = None
     limit: int = 30
     offset: int = 0
     sort_by: tp.Literal['started_at', 'finished_at'] = 'started_at'
@@ -40,6 +43,16 @@ class TaskFilter(pydantic.BaseModel):
             return None
         return value  # ty: ignore[invalid-return-type]
 
+    @pydantic.field_validator('start_date', 'end_date', mode='before')
+    @classmethod
+    def validate_date(
+        cls,
+        value: datetime.datetime | str | None,
+    ) -> datetime.datetime | str | None:
+        if isinstance(value, str) and value == '':
+            return None
+        return value
+
     @pydantic.field_serializer('status', mode='plain')
     def serialize_status(
         self,
@@ -48,6 +61,15 @@ class TaskFilter(pydantic.BaseModel):
         if value is None:
             return 'null'
         return str(value.value)
+
+    @pydantic.field_serializer('start_date', 'end_date', mode='plain')
+    def serialize_date(
+        self,
+        value: datetime.datetime | None,
+    ) -> str:
+        if value is None:
+            return ''
+        return value.isoformat()
 
     model_config = pydantic.ConfigDict(
         extra='ignore',
@@ -69,6 +91,8 @@ async def search_tasks(
     tasks = await repository.find_tasks(
         name=query.q,
         status=query.status,
+        start_date=query.start_date,
+        end_date=query.end_date,
         limit=query.limit,
         offset=query.offset,
         sort_by=query.sort_by,

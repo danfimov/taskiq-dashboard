@@ -21,7 +21,16 @@ def format_datetime(value: dt.datetime | None, fmt: str = '%Y-%m-%d %H:%M:%S') -
     return value.astimezone(ZoneInfo(_timezone)).strftime(fmt)
 
 
+_static_dir = pathlib.Path(__file__).parent / 'static'
+
+
+def static_version(path: str) -> int:
+    """Mtime of a static asset, used as a cache-busting query param so browsers refetch it after a rebuild."""
+    return int((_static_dir / path).stat().st_mtime)
+
+
 jinja_templates = Jinja2Templates(directory=pathlib.Path(__file__).parent / 'templates')
 jinja_templates.env.cache = None
 jinja_templates.env.filters['format_datetime'] = format_datetime
 jinja_templates.env.globals['is_auto_timezone'] = _timezone == 'auto'  # ty: ignore[invalid-assignment]
+jinja_templates.env.globals['static_version'] = static_version  # ty: ignore[invalid-assignment]

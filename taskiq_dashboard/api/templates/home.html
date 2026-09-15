@@ -30,7 +30,7 @@
                         hx-trigger="keyup changed delay:500ms"
                         hx-target="#task-list-body"
                         hx-push-url="true"
-                        hx-include="[name='status']"
+                        hx-include="[name='status'], [name='start_date'], [name='end_date']"
                     >
                     <div id="search-slash-hint"
                          class="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-center leading-5 text-xs rounded-sm bg-ctp-lavender/10 pointer-events-none"
@@ -62,7 +62,7 @@
                         hx-trigger="change"
                         hx-target="#task-list-body"
                         hx-push-url="true"
-                        hx-include="[name='q']"
+                        hx-include="[name='q'], [name='start_date'], [name='end_date']"
                     >
                         {% set status = status if status is defined else "all" %}
                         <option class="bg-ctp-base" value="null" {% if status == "null" %}selected{% endif %}>All Statuses</option>
@@ -108,6 +108,99 @@
                     });
                     </script>
                     </div>
+                </div>
+
+                <div class="relative group text-ctp-subtext0 hover:text-ctp-subtext1 focus-within:text-ctp-subtext1 md:w-auto min-w-[460px]">
+                    <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none">
+                        <use href="{{ url_for('static', path='icons.svg#calendar') }}"></use>
+                    </svg>
+                    <input
+                        type="text"
+                        id="date-range-picker"
+                        readonly
+                        placeholder="Pick dates"
+                        data-list-url="{{ url_for('Task list view') }}"
+                        class="w-full pl-12 pr-9 py-2 border rounded focus:outline-none focus:ring-2 transition-all duration-200 hover:shadow-md border-ctp-subtext0 group-hover:border-ctp-subtext1 bg-transparent text-ctp-text cursor-pointer"
+                    >
+                    <input type="hidden" name="start_date" id="start_date" value="{{ start_date if start_date is defined else '' }}">
+                    <input type="hidden" name="end_date" id="end_date" value="{{ end_date if end_date is defined else '' }}">
+                    <button
+                        type="button"
+                        id="clear-dates"
+                        title="Clear dates"
+                        aria-label="Clear dates"
+                        class="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full text-ctp-subtext0 hover:text-ctp-subtext1 hover:bg-ctp-surface0 transition-colors {% if start_date or end_date %}flex items-center justify-center{% else %}hidden{% endif %}"
+                    >
+                        <svg class="w-3.5 h-3.5 pointer-events-none">
+                            <use href="{{ url_for('static', path='icons.svg#x') }}"></use>
+                        </svg>
+                    </button>
+                    <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        var input = document.getElementById('date-range-picker');
+                        var startHidden = document.getElementById('start_date');
+                        var endHidden = document.getElementById('end_date');
+                        var clearBtn = document.getElementById('clear-dates');
+
+                        function pad(n) { return String(n).padStart(2, '0'); }
+
+                        function toParam(date) {
+                            return date.getFullYear() + '-' + pad(date.getMonth() + 1) + '-' + pad(date.getDate()) +
+                                'T' + pad(date.getHours()) + ':' + pad(date.getMinutes());
+                        }
+
+                        function requestTasks() {
+                            var params = new URLSearchParams();
+                            var q = document.getElementById('search');
+                            var status = document.getElementById('status');
+                            params.set('q', q ? q.value : '');
+                            params.set('status', status ? status.value : 'null');
+                            if (startHidden.value) params.set('start_date', startHidden.value);
+                            if (endHidden.value) params.set('end_date', endHidden.value);
+                            htmx.ajax('GET', input.dataset.listUrl + '?' + params.toString(), {
+                                target: '#task-list-body',
+                                push: 'true',
+                            });
+                        }
+
+                        function updateClearButton() {
+                            var hasValue = !!(startHidden.value || endHidden.value);
+                            clearBtn.classList.toggle('hidden', !hasValue);
+                            clearBtn.classList.toggle('flex', hasValue);
+                            clearBtn.classList.toggle('items-center', hasValue);
+                            clearBtn.classList.toggle('justify-center', hasValue);
+                        }
+
+                        var initialDates = [startHidden.value, endHidden.value]
+                            .filter(Boolean)
+                            .map(function (v) { return new Date(v); });
+
+                        var picker = flatpickr(input, {
+                            mode: 'range',
+                            enableTime: true,
+                            dateFormat: 'M j, Y h:i K',
+                            defaultDate: initialDates,
+                            onChange: function (selectedDates) {
+                                startHidden.value = selectedDates[0] ? toParam(selectedDates[0]) : '';
+                                endHidden.value = selectedDates[1] ? toParam(selectedDates[1]) : '';
+                                updateClearButton();
+                            },
+                            onClose: function (selectedDates) {
+                                if (selectedDates.length !== 1) {
+                                    requestTasks();
+                                }
+                            },
+                        });
+
+                        clearBtn.addEventListener('click', function () {
+                            picker.clear();
+                            startHidden.value = '';
+                            endHidden.value = '';
+                            updateClearButton();
+                            requestTasks();
+                        });
+                    });
+                    </script>
                 </div>
             </div>
 
@@ -158,7 +251,7 @@
                     {% for column in columns %}
                         {% if column.sortable %}
                             <th scope="col" class="px-6 py-3 text-left font-normal text-ctp-text tracking-wider">
-                                <a href="{{ url_for('Task list view') }}?status={{ status }}&q={{ q }}&sort_by={{ column.key }}&sort_order={%- if sort_by == column.key and sort_order == 'asc' -%}desc{%- else -%}asc{%- endif -%}"
+                                <a href="{{ url_for('Task list view') }}?status={{ status }}&q={{ q }}&start_date={{ start_date }}&end_date={{ end_date }}&sort_by={{ column.key }}&sort_order={%- if sort_by == column.key and sort_order == 'asc' -%}desc{%- else -%}asc{%- endif -%}"
                                    class="flex items-center gap-2 hover:text-ctp-subtext0 transition-colors">
                                     {{ column.title }}
                                     <span class="inline-flex">
