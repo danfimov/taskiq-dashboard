@@ -3,8 +3,8 @@ from collections.abc import AsyncGenerator
 from typing import Any
 
 import pytest
-from fastapi.testclient import TestClient
-from httpx import ASGITransport, AsyncClient
+import sqlalchemy as sa
+import zapros
 from pydantic import SecretStr
 from taskiq import TaskiqMessage
 
@@ -12,11 +12,13 @@ from taskiq_dashboard import DashboardMiddleware
 from taskiq_dashboard.api.application import get_application
 from taskiq_dashboard.domain.dto.task_status import TaskStatus
 from taskiq_dashboard.infrastructure import get_settings
+from taskiq_dashboard.infrastructure.database.schemas import PostgresTask
+from taskiq_dashboard.infrastructure.database.session_provider import AsyncPostgresSessionProvider
 from taskiq_dashboard.infrastructure.settings import PostgresSettings
 
 
 class TaskiqAdminWithTestClientMiddleware(DashboardMiddleware):
-    """Test middleware where I replace httpx client with test client."""
+    """Test middleware where I replace client with test one."""
 
     def __init__(
         self,
@@ -24,7 +26,7 @@ class TaskiqAdminWithTestClientMiddleware(DashboardMiddleware):
         api_token: str,
         timeout: float = 5,
         broker_name: str = 'default_broker',
-        test_client: AsyncClient | None = None,
+        test_client: zapros.AsyncClient | None = None,
     ) -> None:
         super().__init__(
             url=url,
@@ -40,11 +42,29 @@ class TaskiqAdminWithTestClientMiddleware(DashboardMiddleware):
             headers={'access-token': self.api_token},
             json=payload,
         )
-        assert response.status_code == 204
+        assert response.status == 204
+
+
+@pytest.fixture(autouse=True)
+async def cleanup_app_writes(database: PostgresSettings) -> AsyncGenerator[None]:
+    """
+    Delete rows written by the app under test.
+
+    The app builds its own DB connection (via DI) rather than the shared,
+    rolled-back transaction the other integration tests use, so its writes are
+    real commits that need explicit cleanup instead of an automatic rollback.
+    """
+    yield
+    provider = AsyncPostgresSessionProvider(connection_settings=database)
+    try:
+        async with provider.session() as session:
+            await session.execute(sa.delete(PostgresTask))
+    finally:
+        await provider.close()
 
 
 @pytest.fixture
-async def test_app(database: PostgresSettings) -> AsyncGenerator[AsyncClient]:
+async def test_app(database: PostgresSettings) -> AsyncGenerator[zapros.AsyncClient]:
     settings = get_settings()
     settings.api.token = SecretStr('test-token')
     settings.storage_type = 'postgres'
@@ -53,16 +73,12 @@ async def test_app(database: PostgresSettings) -> AsyncGenerator[AsyncClient]:
     app.state.broker = None
     app.state.scheduler = None
 
-    # httpx's ASGITransport never sends ASGI `lifespan` events
-    async with (
-        app.router.lifespan_context(app),
-        AsyncClient(transport=ASGITransport(app=app), base_url='http://test') as client
-    ):
+    async with zapros.AsyncClient(handler=zapros.AsgiHandler(app=app), base_url='http://test') as client:
         yield client
 
 
 @pytest.fixture
-async def middleware(test_app: AsyncClient) -> TaskiqAdminWithTestClientMiddleware:
+async def middleware(test_app: zapros.AsyncClient) -> TaskiqAdminWithTestClientMiddleware:
     return TaskiqAdminWithTestClientMiddleware(
         url='http://test',
         api_token='test-token',
@@ -75,7 +91,7 @@ async def middleware(test_app: AsyncClient) -> TaskiqAdminWithTestClientMiddlewa
 class TestAppHandlesMiddlewareRequests:
     async def test_when_post_send_event_send__then_creates_task_with_status_queued(
         self,
-        test_app: TestClient,
+        test_app: zapros.AsyncClient,
         middleware: TaskiqAdminWithTestClientMiddleware,
         task_service,
     ) -> None:

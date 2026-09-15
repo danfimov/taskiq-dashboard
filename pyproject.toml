@@ -39,7 +39,7 @@ dependencies = [
     # db
     "sqlalchemy[asyncio,postgresql-asyncpg]>=2.0.53",
     # http client for middleware
-    "httpx>=0.28.1",
+    "zapros>=0.17.0",
     # other
     "pydantic-settings>=2.15.0",
     "dishka>=1.10.1",
@@ -78,10 +78,8 @@ test = [
     "pytest-asyncio>=1.4.0",
     "pytest-cov>=7.1.0",
     "pytest-deadfixtures>=3.1.0",
-    # for request mocking
-    "pytest-httpx>=0.36.2",
     # for test databases management
-    "psycopg2-binary>=2.9.13",
+    "psycopg[binary,pool]>=3.3.5",
     "sqlalchemy-utils>=0.42.1",
 ]
 docs = [

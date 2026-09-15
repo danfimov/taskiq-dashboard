@@ -1,11 +1,12 @@
+import asyncio
 import os
 import uuid
 from collections.abc import AsyncGenerator, Generator
 from contextlib import suppress
 
 import pytest
-import sqlalchemy as sa
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.ext import asyncio as sa_async
+from sqlalchemy.ext.asyncio import AsyncConnection, AsyncSession, create_async_engine
 from sqlalchemy_utils import create_database, database_exists, drop_database
 
 from tests.integration.factories import PostgresTaskFactory
@@ -19,6 +20,19 @@ from taskiq_dashboard.infrastructure.services.schema_service import SchemaServic
 from taskiq_dashboard.infrastructure.settings import PostgresSettings
 
 
+class _TransactionalSessionProvider(AsyncPostgresSessionProvider):
+    """Test-only variant bound to a connection with an already-open transaction."""
+
+    def __init__(self, connection: sa_async.AsyncConnection, storage_type: str) -> None:
+        self.storage_type = storage_type
+        self._session_factory = sa_async.async_sessionmaker(
+            bind=connection,
+            join_transaction_mode='create_savepoint',
+            expire_on_commit=False,
+            class_=sa_async.AsyncSession,
+        )
+
+
 @pytest.fixture(scope='session')
 def postgres() -> Generator[PostgresSettings]:
     """
@@ -29,7 +43,7 @@ def postgres() -> Generator[PostgresSettings]:
     tmp_name = f'{uuid.uuid4().hex}.pytest'
     settings.postgres.database = tmp_name
     os.environ['POSTGRES__DATABASE'] = tmp_name
-    settings.postgres.driver = 'postgresql'
+    settings.postgres.driver = 'postgresql+psycopg'
     tmp_url = settings.postgres.dsn.get_secret_value()
     settings.postgres.driver = 'postgresql+asyncpg'
 
@@ -42,18 +56,44 @@ def postgres() -> Generator[PostgresSettings]:
             drop_database(tmp_url)
 
 
+@pytest.fixture(scope='session')
+def _schema_ready(postgres: PostgresSettings) -> None:
+    """Create the schema once per test session."""
+
+    async def _create_schema() -> None:
+        provider = AsyncPostgresSessionProvider(connection_settings=postgres)
+        try:
+            await SchemaService(provider).create_schema()
+        finally:
+            await provider.close()
+
+    asyncio.run(_create_schema())
+
+
 @pytest.fixture
-async def database(postgres: PostgresSettings) -> PostgresSettings:
-    session_provider = AsyncPostgresSessionProvider(connection_settings=postgres)
-    await SchemaService(session_provider).create_schema()
+def database(postgres: PostgresSettings, _schema_ready: None) -> PostgresSettings:
+    """Settings pointing at a temp database whose schema is ready to use."""
     return postgres
 
 
 @pytest.fixture
-async def session_provider(database: PostgresSettings) -> AsyncGenerator[AsyncPostgresSessionProvider]:
-    session_provider = AsyncPostgresSessionProvider(connection_settings=database)
-    yield session_provider
-    await session_provider.close()
+async def db_connection(postgres: PostgresSettings, _schema_ready: None) -> AsyncGenerator[AsyncConnection]:
+    """A single connection with an open transaction, rolled back after the test."""
+    engine = create_async_engine(postgres.dsn.get_secret_value())
+    try:
+        async with engine.connect() as connection:
+            transaction = await connection.begin()
+            try:
+                yield connection
+            finally:
+                await transaction.rollback()
+    finally:
+        await engine.dispose()
+
+
+@pytest.fixture
+def session_provider(db_connection: AsyncConnection) -> AsyncPostgresSessionProvider:
+    return _TransactionalSessionProvider(db_connection, storage_type='postgres')
 
 
 @pytest.fixture
@@ -67,14 +107,6 @@ async def session(session_provider: AsyncPostgresSessionProvider) -> AsyncGenera
 async def setup_factory_session(session: AsyncSession) -> None:
     """Automatically wire the shared session into PostgresTaskFactory."""
     PostgresTaskFactory.__async_session__ = session
-
-
-@pytest.fixture(autouse=True)
-async def cleanup_database(session_provider: AsyncPostgresSessionProvider) -> AsyncGenerator[None]:
-    """Clean up database before each test"""
-    yield
-    async with session_provider.session() as session:
-        await session.execute(sa.delete(PostgresTask))
 
 
 @pytest.fixture

@@ -4,7 +4,7 @@ from logging import getLogger
 from typing import Any
 from urllib.parse import urljoin
 
-import httpx
+import zapros
 from taskiq.abc.middleware import TaskiqMiddleware
 from taskiq.compat import model_dump
 from taskiq.message import TaskiqMessage
@@ -27,7 +27,7 @@ class DashboardMiddleware(TaskiqMiddleware):
         timeout (float): Timeout (in seconds) for API requests.
         broker_name (str): Name of the broker instance to include in the payload. Defaults to 'default_broker'.
         _pending (set[asyncio.Task]): Set of currently running background request tasks.
-        _client (httpx.AsyncClient | None): HTTP client session used for sending requests.
+        _client (zapros.AsyncClient | None): HTTP client session used for sending requests.
     """
 
     def __init__(
@@ -43,20 +43,22 @@ class DashboardMiddleware(TaskiqMiddleware):
         self.api_token = api_token
         self.broker_name = broker_name
         self._pending: set[asyncio.Task[Any]] = set()
-        self._client: httpx.AsyncClient | None = None
+        self._client: zapros.AsyncClient | None = None
 
     @staticmethod
     def _now_iso() -> str:
         return datetime.now(UTC).replace(tzinfo=None).isoformat()
 
-    def _get_client(self) -> httpx.AsyncClient:
+    def _get_client(self) -> zapros.AsyncClient:
         """Create and cache session."""
         if self._client is None:
-            self._client = httpx.AsyncClient(timeout=self.timeout)
+            self._client = zapros.AsyncClient(
+                handler=zapros.AsyncStdNetworkHandler(total_timeout=self.timeout),
+            )
         return self._client
 
     async def startup(self) -> None:
-        """Startup method to initialize httpx.AsyncClient."""
+        """Startup method to initialize client."""
         self._client = self._get_client()
 
     async def shutdown(self) -> None:
@@ -87,10 +89,10 @@ class DashboardMiddleware(TaskiqMiddleware):
                 )
                 resp.raise_for_status()
                 if not resp.is_success:
-                    logger.error('POST %s - %s', endpoint, resp.status_code)
-            except httpx.HTTPStatusError:
+                    logger.error('POST %s - %s', endpoint, resp.status)
+            except zapros.StatusCodeError:
                 logger.exception('POST %s failed with HTTP error', endpoint)
-            except httpx.RequestError:
+            except zapros.ZaprosError:
                 logger.exception('POST %s failed with request error', endpoint)
 
         task = asyncio.create_task(_send())
