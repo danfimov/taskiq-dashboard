@@ -124,6 +124,26 @@ class CleanupSettings(pydantic_settings.BaseSettings):
     )
 
 
+class ColumnSettings(pydantic_settings.BaseSettings):
+    """Settings for the columns shown in the task list view."""
+
+    visible: list[str] = ['id', 'name', 'status', 'worker', 'started_at', 'finished_at']
+    labels: dict[str, str] = Field(default_factory=dict)
+    """Maps a task label key to the column title shown for it, e.g. {"foo": "Foo"}."""
+
+    @field_validator('visible')
+    @classmethod
+    def __require_id_column(cls, value: list[str]) -> list[str]:
+        if 'id' not in value:
+            msg = "'id' must be present in columns.visible: it's the only link to the task details page"
+            raise ValueError(msg)
+        return value
+
+    model_config = pydantic_settings.SettingsConfigDict(
+        extra='ignore',
+    )
+
+
 class Settings(pydantic_settings.BaseSettings):
     api: APISettings = APISettings()
 
@@ -134,6 +154,7 @@ class Settings(pydantic_settings.BaseSettings):
     storage_engine_parameters: dict[str, tp.Any] = Field(default_factory=dict)
 
     cleanup: CleanupSettings = CleanupSettings()
+    columns: ColumnSettings = ColumnSettings()
     timezone: tp.Literal['auto'] | str = 'auto'  # noqa: PYI051
 
     @field_validator('timezone')

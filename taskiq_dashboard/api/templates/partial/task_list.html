@@ -4,7 +4,7 @@
 
 {% if not results %}
     <tr>
-        <td colspan="7" class="px-6 pt-20 pb-16 text-center text-ctp-subtext0">
+        <td colspan="{{ columns|length + 1 }}" class="px-6 pt-20 pb-16 text-center text-ctp-subtext0">
             {% if q or status != 'null' %}
                 No tasks for this filters
             {% else %}

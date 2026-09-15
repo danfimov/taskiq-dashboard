@@ -8,9 +8,11 @@ import pydantic
 from dishka.integrations import fastapi as dishka_fastapi
 from fastapi.responses import HTMLResponse
 
+from taskiq_dashboard.api.columns import build_columns
 from taskiq_dashboard.api.templates import jinja_templates
 from taskiq_dashboard.domain.dto.task_status import TaskStatus
 from taskiq_dashboard.domain.repositories import AbstractTaskRepository
+from taskiq_dashboard.infrastructure import Settings
 
 
 router = fastapi.APIRouter(
@@ -60,6 +62,7 @@ class TaskFilter(pydantic.BaseModel):
 async def search_tasks(
     request: fastapi.Request,
     repository: dishka_fastapi.FromDishka[AbstractTaskRepository],
+    settings: dishka_fastapi.FromDishka[Settings],
     query: tp.Annotated[TaskFilter, fastapi.Query(...)],
     hx_request: tp.Annotated[bool, fastapi.Header(description='Request from htmx')] = False,  # noqa: FBT002
 ) -> HTMLResponse:
@@ -86,6 +89,7 @@ async def search_tasks(
         {
             'request': request,
             'results': [task.model_dump() for task in tasks],
+            'columns': build_columns(settings.columns),
             **query.model_dump(),
         },
         headers=headers,

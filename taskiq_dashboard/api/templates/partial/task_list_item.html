@@ -7,37 +7,41 @@
             value="{{ task.id }}"
         >
     </td>
-    <td class="px-6 py-4 group-hover:bg-ctp-blue-100/20 w-min">
-        <a href="{{ url_for('Task details view', task_id=task.id) }}" class="text-ctp-text hover:text-ctp-subtext0 block w-full h-full">
-            {{ task.id }}
-        </a>
-    </td>
-    <td class="px-6 py-4 whitespace-nowrap text-sm group-hover:bg-ctp-blue-100/20 w-auto">{{ task.name }}</td>
-    <td class="px-6 py-3 whitespace-nowrap group-hover:bg-ctp-blue-100/20 w-min">
-        <span
-            class="px-2 py-1 inline-flex text-sm leading-5 rounded text-ctp-base bg-linear-to-br
-                {% if task.status == 0 %} from-ctp-teal to-ctp-teal-600
-                {% elif task.status == 1 %}from-ctp-green to-ctp-green-600
-                {% elif task.status == 2 %}from-ctp-red to-ctp-red-600
-                {% elif task.status == 3 %}from-ctp-blue to-ctp-blue-600
-                {% elif task.status == 4 %}from-ctp-mauve to-ctp-mauve-600{% endif %}"
-        >
-            {% if task.status == 0 %}In progress
-            {% elif task.status == 1 %}Completed
-            {% elif task.status == 2 %}Failure
-            {% elif task.status == 3 %}Queued
-            {% elif task.status == 4 %}Abandoned
-            {% else %}Unknown{% endif %}
-        </span>
-    </td>
-    <td class="px-6 py-4 group-hover:bg-ctp-blue-100/20 w-auto">{{ task.worker }}</td>
-
-    {% if task.started_at %}
-        <td class="px-6 py-4 group-hover:bg-ctp-blue-100/20 w-min">{{ task.started_at | format_datetime }}</td>
-    {% else %}
-        <td class="px-6 py-4 group-hover:bg-ctp-blue-100/20 w-min">-</td>
-    {% endif %}
-    <td class="px-6 py-4 group-hover:bg-ctp-blue-100/20 w-min">
-        {{ task.finished_at | format_datetime if task.finished_at else '-' }}
-    </td>
+    {% for column in columns %}
+        {% if column.kind == 'label' %}
+            <td class="px-6 py-4 group-hover:bg-ctp-blue-100/20 w-auto">{{ task.labels.get(column.key, '-') }}</td>
+        {% elif column.key == 'id' %}
+            <td class="px-6 py-4 group-hover:bg-ctp-blue-100/20 w-min">
+                <a href="{{ url_for('Task details view', task_id=task.id) }}" class="text-ctp-text hover:text-ctp-subtext0 block w-full h-full">
+                    {{ task.id }}
+                </a>
+            </td>
+        {% elif column.key == 'name' %}
+            <td class="px-6 py-4 whitespace-nowrap text-sm group-hover:bg-ctp-blue-100/20 w-auto">{{ task.name }}</td>
+        {% elif column.key == 'status' %}
+            <td class="px-6 py-3 whitespace-nowrap group-hover:bg-ctp-blue-100/20 w-min">
+                <span
+                    class="px-2 py-1 inline-flex text-sm leading-5 rounded text-ctp-base bg-linear-to-br
+                        {% if task.status == 0 %} from-ctp-teal to-ctp-teal-600
+                        {% elif task.status == 1 %}from-ctp-green to-ctp-green-600
+                        {% elif task.status == 2 %}from-ctp-red to-ctp-red-600
+                        {% elif task.status == 3 %}from-ctp-blue to-ctp-blue-600
+                        {% elif task.status == 4 %}from-ctp-mauve to-ctp-mauve-600{% endif %}"
+                >
+                    {% if task.status == 0 %}In progress
+                    {% elif task.status == 1 %}Completed
+                    {% elif task.status == 2 %}Failure
+                    {% elif task.status == 3 %}Queued
+                    {% elif task.status == 4 %}Abandoned
+                    {% else %}Unknown{% endif %}
+                </span>
+            </td>
+        {% elif column.key == 'worker' %}
+            <td class="px-6 py-4 group-hover:bg-ctp-blue-100/20 w-auto">{{ task.worker }}</td>
+        {% elif column.key == 'started_at' %}
+            <td class="px-6 py-4 group-hover:bg-ctp-blue-100/20 w-min">{{ task.started_at | format_datetime if task.started_at else '-' }}</td>
+        {% elif column.key == 'finished_at' %}
+            <td class="px-6 py-4 group-hover:bg-ctp-blue-100/20 w-min">{{ task.finished_at | format_datetime if task.finished_at else '-' }}</td>
+        {% endif %}
+    {% endfor %}
 </tr>
