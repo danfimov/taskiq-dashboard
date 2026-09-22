@@ -46,6 +46,7 @@ def static_version(path: str) -> int:
 
 jinja_templates = Jinja2Templates(directory=pathlib.Path(__file__).parent / 'templates')
 jinja_templates.env.cache = None
+jinja_templates.env.policies['json.dumps_kwargs'] = {'sort_keys': True, 'ensure_ascii': False}
 jinja_templates.env.filters['format_datetime'] = format_datetime
 jinja_templates.env.filters['format_duration'] = format_duration
 jinja_templates.env.globals['is_auto_timezone'] = _timezone == 'auto'  # ty: ignore[invalid-assignment]

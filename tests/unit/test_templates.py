@@ -1,6 +1,6 @@
 import datetime as dt
 
-from taskiq_dashboard.api.templates import format_duration
+from taskiq_dashboard.api.templates import format_duration, jinja_templates
 
 
 class TestFormatDuration:
@@ -24,3 +24,9 @@ class TestFormatDuration:
         started_at = dt.datetime(2026, 9, 15, 12, 0, 0, tzinfo=dt.UTC)
         finished_at = started_at + dt.timedelta(seconds=3725)
         assert format_duration(started_at, finished_at) == '1h 2m'
+
+
+class TestToJsonFilter:
+    def test_when_value_contains_non_ascii__then_render_it_unescaped(self) -> None:
+        template = jinja_templates.env.from_string('{{ value | tojson }}')
+        assert template.render(value=['Добрый день. Чем могу помочь?']) == '["Добрый день. Чем могу помочь?"]'
