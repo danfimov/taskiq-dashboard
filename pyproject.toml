@@ -44,7 +44,7 @@ dependencies = [
     "pydantic-settings>=2.15.0",
     "dishka>=1.10.1",
     "aiosqlite>=0.22.1",
-    "taskiq>=0.12.6",
+    "taskiq>=0.13.0",
 ]
 
 [project.optional-dependencies]

@@ -1667,19 +1667,18 @@ wheels = [
 
 [[package]]
 name = "taskiq"
-version = "0.12.6"
+version = "0.13.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiohttp" },
     { name = "anyio" },
-    { name = "packaging" },
     { name = "pycron" },
     { name = "pydantic" },
     { name = "taskiq-dependencies" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/dd/6b/a7df3a5d1e7bbfe75a41f378f71c16e89ac19fbab931f8e8d76a8e339357/taskiq-0.12.6.tar.gz", hash = "sha256:4667db6366cfda24d23f0e34151b118d71b0907229f8ff00db9dbc2465f7baf8", size = 408574, upload-time = "2026-08-29T08:07:44.052Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/09/c6/a6e5a15158e1db35b458f68f40b3e44c32134d7edad6bfcdb5bbd4128174/taskiq-0.13.0.tar.gz", hash = "sha256:7d56609a6c5a20b0c9da67e9f310ec9640266f620b8f81880bccd5f16913e687", size = 411167, upload-time = "2026-09-26T14:45:16.997Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/68/89/949d2d26ae24a5282b37d39e7e05b714f960840166458c7bc78cfade83b5/taskiq-0.12.6-py3-none-any.whl", hash = "sha256:fa8c5071ecafc6a1891e5ede1dc580093d99bccaf0d258b1848d2e5f35d22250", size = 94895, upload-time = "2026-08-29T08:07:42.591Z" },
+    { url = "https://files.pythonhosted.org/packages/59/9c/c4fb8085424ef1c5479877f0f16f8dc4b406dcf6f367d51464bbf134d086/taskiq-0.13.0-py3-none-any.whl", hash = "sha256:b51e1961d8919bc897caa6f5484ac08d812341413a20a3704b69c597c4c154d2", size = 94856, upload-time = "2026-09-26T14:45:15.768Z" },
 ]
 
 [[package]]
@@ -1753,7 +1752,7 @@ requires-dist = [
     { name = "pydantic-settings", specifier = ">=2.15.0" },
     { name = "python-multipart", specifier = ">=0.0.32" },
     { name = "sqlalchemy", extras = ["asyncio", "postgresql-asyncpg"], specifier = ">=2.0.53" },
-    { name = "taskiq", specifier = ">=0.12.6" },
+    { name = "taskiq", specifier = ">=0.13.0" },
     { name = "zapros", specifier = ">=0.17.0" },
 ]
 provides-extras = ["server"]
