@@ -1,0 +1,51 @@
+{% set filter_active = filter_values.get(header_filter.param) or (header_filter.end_param and filter_values.get(header_filter.end_param)) %}
+<div class="column-filter">
+    <button
+        type="button"
+        class="column-filter-toggle inline-flex items-center justify-center rounded p-0.5 hover:bg-ctp-surface0"
+        aria-label="Filter {{ header_filter.title }}"
+        title="Filter {{ header_filter.title }}"
+        aria-expanded="false"
+    >
+        <svg class="column-filter-icon w-4 h-4 {% if filter_active %}text-ctp-blue{% else %}text-ctp-subtext0{% endif %}">
+            <use href="{{ url_for('static', path='icons.svg') }}?v={{ static_version('icons.svg') }}#filter"></use>
+        </svg>
+    </button>
+    <div class="column-filter-panel hidden fixed z-50 rounded border border-ctp-surface0 bg-ctp-base p-2 shadow-lg {% if header_filter.kind == 'datetime' %}w-72{% else %}w-56{% endif %}">
+        {% if header_filter.kind == 'text' %}
+            <input
+                type="text"
+                name="{{ header_filter.param }}"
+                class="task-filter w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 transition-all duration-200 border-ctp-subtext0 bg-ctp-base text-ctp-text"
+                placeholder="{{ header_filter.placeholder }}"
+                value="{{ filter_values.get(header_filter.param, '') }}"
+                hx-get="{{ url_for('Task list view') }}"
+                hx-trigger="keyup changed delay:500ms"
+                hx-target="#task-list-body"
+                hx-push-url="true"
+                hx-include=".task-filter"
+            >
+        {% elif header_filter.kind == 'datetime' %}
+            <div class="date-range relative text-ctp-subtext0" data-list-url="{{ url_for('Task list view') }}">
+                <input
+                    type="text"
+                    readonly
+                    placeholder="{{ header_filter.placeholder }}"
+                    class="date-range-display w-full pl-3 pr-8 py-2 border rounded focus:outline-none focus:ring-2 border-ctp-subtext0 bg-transparent text-ctp-text cursor-pointer"
+                >
+                <input type="hidden" name="{{ header_filter.param }}" value="{{ filter_values.get(header_filter.param, '') }}" class="task-filter date-range-start">
+                <input type="hidden" name="{{ header_filter.end_param }}" value="{{ filter_values.get(header_filter.end_param, '') }}" class="task-filter date-range-end">
+                <button
+                    type="button"
+                    title="Clear dates"
+                    aria-label="Clear dates"
+                    class="date-range-clear absolute right-2 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full text-ctp-subtext0 hover:text-ctp-subtext1 hover:bg-ctp-surface0 transition-colors {% if filter_values.get(header_filter.param) or filter_values.get(header_filter.end_param) %}flex items-center justify-center{% else %}hidden{% endif %}"
+                >
+                    <svg class="w-3.5 h-3.5 pointer-events-none">
+                        <use href="{{ url_for('static', path='icons.svg#x') }}"></use>
+                    </svg>
+                </button>
+            </div>
+        {% endif %}
+    </div>
+</div>
