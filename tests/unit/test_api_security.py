@@ -79,6 +79,24 @@ async def test_event_requires_valid_token(test_app, app_path, event, token, expe
         assert task.status == (expected_task_status[event] if expected_status == 204 else TaskStatus.QUEUED)
 
 
+@pytest.mark.parametrize('token', [None, '', 'bad-token'])
+async def test_empty_configured_token_rejects_requests(test_app, app_path, monkeypatch, token) -> None:
+    monkeypatch.setattr(get_settings().api, 'token', SecretStr(''))
+    task_id = uuid.uuid4()
+    headers = {} if token is None else {'access-token': token}
+
+    response = await test_app.post(
+        f'{app_path[1]}/api/tasks/{task_id}/queued',
+        headers=headers,
+        json={'taskName': 'security-test', 'worker': 'test-worker', 'queuedAt': '2026-10-01T12:00:00Z'},
+    )
+
+    assert response.status == 401
+    assert response.json == {'detail': 'Invalid access token'}
+    repository = await dependencies.container.get(AbstractTaskRepository)
+    assert await repository.get_task_by_id(task_id) is None
+
+
 async def test_ui_and_health_checks_do_not_require_token(test_app, app_path) -> None:
     for path in ['/', '/liveness', '/readiness']:
         response = await test_app.get(f'{app_path[1]}{path}')

@@ -11,5 +11,5 @@ async def verify_access_token(
 ) -> None:
     """Reject requests unless the access-token header matches the configured token."""
     expected = get_settings().api.token.get_secret_value()
-    if access_token is None or not hmac.compare_digest(access_token.encode(), expected.encode()):
+    if not access_token or not hmac.compare_digest(access_token.encode(), expected.encode()):
         raise fastapi.HTTPException(status_code=401, detail='Invalid access token')
