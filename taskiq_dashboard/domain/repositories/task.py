@@ -2,6 +2,7 @@ import datetime
 import typing as tp
 import uuid
 from abc import ABC, abstractmethod
+from collections.abc import Collection
 
 from taskiq_dashboard.domain.dto.task import ExecutedTask, QueuedTask, StartedTask, Task
 from taskiq_dashboard.domain.dto.task_status import TaskStatus
@@ -15,23 +16,33 @@ class AbstractTaskRepository(ABC):
         status: TaskStatus | None = None,
         start_date: datetime.datetime | None = None,
         end_date: datetime.datetime | None = None,
-        sort_by: tp.Literal['started_at', 'finished_at', 'runtime'] | None = None,
+        sort_by: str | None = None,
         sort_order: tp.Literal['asc', 'desc'] = 'desc',
         limit: int = 30,
         offset: int = 0,
+        finished_start: datetime.datetime | None = None,
+        finished_end: datetime.datetime | None = None,
+        text_filters: dict[str, str] | None = None,
+        label_filters: dict[str, str] | None = None,
+        search_fields: Collection[str] | None = None,
     ) -> list[Task]:
         """
         Retrieve tasks with pagination and filtering.
 
         Args:
             status: Filter by task status
-            name: Filter by task name (fuzzy search)
+            name: Case-insensitive contains search. Which columns it hits depends on search_fields.
             start_date: Filter by tasks started at or after this datetime (inclusive)
             end_date: Filter by tasks started at or before this datetime (inclusive)
-            sort_by: Column to sort by ('started_at', 'finished_at' or 'runtime')
+            sort_by: Built-in column name, or a label key when it is not a built-in column
             sort_order: Sort order ('asc' or 'desc')
             limit: Number of tasks to retrieve
             offset: Number of tasks to skip
+            finished_start: Filter by tasks finished at or after this datetime (inclusive)
+            finished_end: Filter by tasks finished at or before this datetime (inclusive)
+            text_filters: Contains filters for built-in text columns, currently worker
+            label_filters: Contains filters for task label keys
+            search_fields: Columns the name search covers. None searches id and name.
 
         Returns:
             List of tasks matching the criteria.

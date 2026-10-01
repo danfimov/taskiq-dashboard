@@ -285,9 +285,7 @@ class TestTaskService:
     ) -> None:
         # Given
         for minutes in range(5):
-            await PostgresTaskFactory.create_async(
-                started_at=dt.datetime.now(dt.UTC) + dt.timedelta(minutes=minutes)
-            )
+            await PostgresTaskFactory.create_async(started_at=dt.datetime.now(dt.UTC) + dt.timedelta(minutes=minutes))
 
         # When
         tasks = await task_service.find_tasks(sort_by='started_at', sort_order='desc')
@@ -303,9 +301,7 @@ class TestTaskService:
     ) -> None:
         # Given
         for minutes in range(5):
-            await PostgresTaskFactory.create_async(
-                started_at=dt.datetime.now(dt.UTC) + dt.timedelta(minutes=minutes)
-            )
+            await PostgresTaskFactory.create_async(started_at=dt.datetime.now(dt.UTC) + dt.timedelta(minutes=minutes))
 
         # When
         tasks = await task_service.find_tasks(sort_by='started_at', sort_order='asc')
@@ -321,9 +317,7 @@ class TestTaskService:
     ) -> None:
         # Given
         for minutes in range(5):
-            await PostgresTaskFactory.create_async(
-                finished_at=dt.datetime.now(dt.UTC) + dt.timedelta(minutes=minutes)
-            )
+            await PostgresTaskFactory.create_async(finished_at=dt.datetime.now(dt.UTC) + dt.timedelta(minutes=minutes))
 
         # When
         tasks = await task_service.find_tasks(sort_by='finished_at', sort_order='desc')
@@ -816,3 +810,86 @@ class TestTaskService:
         assert task_row.result == 'success'
         assert task_row.args == ['a', 'b']
         assert task_row.labels == {'retry': 'true'}
+
+    async def test_when_finding_tasks_with_worker_contains_filter__then_match_case_insensitively(
+        self,
+        task_service: AbstractTaskRepository,
+        session_provider: AsyncPostgresSessionProvider,
+    ) -> None:
+        await PostgresTaskFactory.create_async(worker='demo_worker')
+        await PostgresTaskFactory.create_async(worker='other_worker')
+
+        tasks = await task_service.find_tasks(text_filters={'worker': 'DEMO'})
+
+        assert len(tasks) == 1
+        assert tasks[0].worker == 'demo_worker'
+
+    async def test_when_worker_filter_is_shorter_than_two_characters__then_it_is_ignored(
+        self,
+        task_service: AbstractTaskRepository,
+        session_provider: AsyncPostgresSessionProvider,
+    ) -> None:
+        await PostgresTaskFactory.create_async(worker='demo_worker')
+        await PostgresTaskFactory.create_async(worker='other_worker')
+
+        tasks = await task_service.find_tasks(text_filters={'worker': 'd'})
+
+        assert len(tasks) == 2
+
+    async def test_when_finding_tasks_with_label_contains_filter__then_return_matching_tasks(
+        self,
+        task_service: AbstractTaskRepository,
+        session_provider: AsyncPostgresSessionProvider,
+    ) -> None:
+        await PostgresTaskFactory.create_async(labels={'env': 'prod'})
+        await PostgresTaskFactory.create_async(labels={'env': 'staging'})
+
+        tasks = await task_service.find_tasks(label_filters={'env': 'pro'})
+
+        assert len(tasks) == 1
+        assert tasks[0].labels['env'] == 'prod'
+
+    async def test_when_finding_tasks_sorted_by_worker__then_return_tasks_in_order(
+        self,
+        task_service: AbstractTaskRepository,
+        session_provider: AsyncPostgresSessionProvider,
+    ) -> None:
+        for worker in ('b_worker', 'a_worker', 'c_worker'):
+            await PostgresTaskFactory.create_async(worker=worker)
+
+        tasks = await task_service.find_tasks(sort_by='worker', sort_order='asc')
+
+        assert [task.worker for task in tasks] == ['a_worker', 'b_worker', 'c_worker']
+
+    async def test_when_finding_tasks_sorted_by_label__then_return_tasks_in_order(
+        self,
+        task_service: AbstractTaskRepository,
+        session_provider: AsyncPostgresSessionProvider,
+    ) -> None:
+        await PostgresTaskFactory.create_async(labels={'env': 'b'})
+        await PostgresTaskFactory.create_async(labels={'env': 'a'})
+
+        tasks = await task_service.find_tasks(sort_by='env', sort_order='asc')
+
+        assert [task.labels['env'] for task in tasks] == ['a', 'b']
+
+    async def test_when_finding_tasks_with_finished_at_range__then_return_tasks_in_range(
+        self,
+        task_service: AbstractTaskRepository,
+        session_provider: AsyncPostgresSessionProvider,
+    ) -> None:
+        await PostgresTaskFactory.create_async(
+            name='early',
+            finished_at=dt.datetime(2024, 1, 1, tzinfo=dt.UTC),
+        )
+        await PostgresTaskFactory.create_async(
+            name='late',
+            finished_at=dt.datetime(2024, 6, 1, tzinfo=dt.UTC),
+        )
+
+        tasks = await task_service.find_tasks(
+            finished_start=dt.datetime(2024, 5, 1, tzinfo=dt.UTC),
+            finished_end=dt.datetime(2024, 7, 1, tzinfo=dt.UTC),
+        )
+
+        assert [task.name for task in tasks] == ['late']

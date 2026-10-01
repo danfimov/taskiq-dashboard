@@ -12,197 +12,7 @@
     <main class="container mx-auto pb-8">
     <section class="mb-6 p-5">
         <div id="filter-form" class="flex flex-col md:flex-row gap-4 items-end">
-            <!-- Left side: Search and Status filters -->
-            <div class="flex flex-col md:flex-row gap-4 flex-1">
-                <!-- Name Search -->
-                <div class="relative group text-ctp-subtext0 hover:text-ctp-subtext1 focus:text-ctp-subtext1 md:w-auto min-w-[200px]">
-                    <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none">
-                        <use href="{{ url_for('static', path='icons.svg#search') }}"></use>
-                    </svg>
-                    <input
-                        type="text"
-                        name="q"
-                        id="search"
-                        class=" w-full pl-12 pr-4 py-2 border rounded focus:outline-none focus:ring-2 transition-all duration-200 hover:shadow-md border-ctp-subtext0 group-hover:border-ctp-subtext1 "
-                        placeholder="Search by id or name"
-                        value="{{ q if q is defined else '' }}"
-                        hx-get="{{ url_for('Task list view') }}"
-                        hx-trigger="keyup changed delay:500ms"
-                        hx-target="#task-list-body"
-                        hx-push-url="true"
-                        hx-include="[name='status'], [name='start_date'], [name='end_date']"
-                    >
-                    <div id="search-slash-hint"
-                         class="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-center leading-5 text-xs rounded-sm bg-ctp-lavender/10 pointer-events-none"
-                         title="Focus on search field">/</div>
-                    <script>
-                    (function() {
-                        const input = document.getElementById('search');
-                        const hint = document.getElementById('search-slash-hint');
-                        if (!input || !hint) return;
-                        function update() {
-                            hint.style.display = (document.activeElement === input || input.value !== '') ? 'none' : '';
-                        }
-                        input.addEventListener('focus', update);
-                        input.addEventListener('blur', update);
-                        input.addEventListener('input', update);
-                        update();
-                    })();
-                    </script>
-                </div>
-
-                <!-- Status Filter -->
-                <div class="text-ctp-subtext0 hover:text-ctp-subtext1 focus:text-ctp-subtext1 md:w-auto min-w-[150px]">
-                    <div class="relative">
-                    <select
-                        id="status"
-                        name="status"
-                        class=" w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 transition-all duration-200 hover:shadow-md border-ctp-subtext0 group-hover:border-ctp-subtext1 appearance-none"
-                        hx-get="{{ url_for('Task list view') }}"
-                        hx-trigger="change"
-                        hx-target="#task-list-body"
-                        hx-push-url="true"
-                        hx-include="[name='q'], [name='start_date'], [name='end_date']"
-                    >
-                        {% set status = status if status is defined else "all" %}
-                        <option class="bg-ctp-base" value="null" {% if status == "null" %}selected{% endif %}>All Statuses</option>
-                        <option class="bg-ctp-base" value="0" {% if status == "0" %}selected{% endif %}>In Progress</option>
-                        <option class="bg-ctp-base" value="1" {% if status == "1" %}selected{% endif %}>Completed</option>
-                        <option class="bg-ctp-base" value="2" {% if status == "2" %}selected{% endif %}>Failure</option>
-                        <option class="bg-ctp-base" value="3" {% if status == "3" %}selected{% endif %}>Queued</option>
-                        <option class="bg-ctp-base" value="4" {% if status == "4" %}selected{% endif %}>Abandoned</option>
-                    </select>
-                    <svg id="status-chevron"
-                         class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-ctp-mauve-100 transform transition-transform duration-200"
-                         aria-hidden="true">
-                        <use href="{{ url_for('static', path='icons.svg#chevron-left') }}"></use>
-                    </svg>
-                    <script>
-                    const selectEl = document.getElementById("status");
-                    const chevronEl = document.getElementById("status-chevron");
-                    const openChevron = () => {
-                        chevronEl && chevronEl.classList.add("-rotate-90");
-                        selectEl.setAttribute("aria-expanded", "true");
-                    };
-                    const closeChevron = () => {
-                        chevronEl && chevronEl.classList.remove("-rotate-90");
-                        selectEl.setAttribute("aria-expanded", "false");
-                    };
-
-                    // opening cases
-                    selectEl.addEventListener("pointerdown", openChevron);
-                    selectEl.addEventListener("click", openChevron);
-                    selectEl.addEventListener("keydown", (e) => {
-                        if (["ArrowUp", "ArrowDown", " ", "Enter"].includes(e.key)) openChevron();
-                    });
-                    // closing cases
-                    selectEl.addEventListener("blur", closeChevron);
-                    selectEl.addEventListener("change", closeChevron);
-                    selectEl.addEventListener("keyup", (e) => {
-                        if (e.key === "Escape") closeChevron();
-                    });
-                    document.addEventListener("pointerdown", (e) => {
-                        if (!selectEl.contains(e.target)) {
-                            closeChevron();
-                        }
-                    });
-                    </script>
-                    </div>
-                </div>
-
-                <div class="relative group text-ctp-subtext0 hover:text-ctp-subtext1 focus-within:text-ctp-subtext1 md:w-auto min-w-[460px]">
-                    <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none">
-                        <use href="{{ url_for('static', path='icons.svg#calendar') }}"></use>
-                    </svg>
-                    <input
-                        type="text"
-                        id="date-range-picker"
-                        readonly
-                        placeholder="Pick dates"
-                        data-list-url="{{ url_for('Task list view') }}"
-                        class="w-full pl-12 pr-9 py-2 border rounded focus:outline-none focus:ring-2 transition-all duration-200 hover:shadow-md border-ctp-subtext0 group-hover:border-ctp-subtext1 bg-transparent text-ctp-text cursor-pointer"
-                    >
-                    <input type="hidden" name="start_date" id="start_date" value="{{ start_date if start_date is defined else '' }}">
-                    <input type="hidden" name="end_date" id="end_date" value="{{ end_date if end_date is defined else '' }}">
-                    <button
-                        type="button"
-                        id="clear-dates"
-                        title="Clear dates"
-                        aria-label="Clear dates"
-                        class="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full text-ctp-subtext0 hover:text-ctp-subtext1 hover:bg-ctp-surface0 transition-colors {% if start_date or end_date %}flex items-center justify-center{% else %}hidden{% endif %}"
-                    >
-                        <svg class="w-3.5 h-3.5 pointer-events-none">
-                            <use href="{{ url_for('static', path='icons.svg#x') }}"></use>
-                        </svg>
-                    </button>
-                    <script>
-                    document.addEventListener('DOMContentLoaded', function () {
-                        var input = document.getElementById('date-range-picker');
-                        var startHidden = document.getElementById('start_date');
-                        var endHidden = document.getElementById('end_date');
-                        var clearBtn = document.getElementById('clear-dates');
-
-                        function pad(n) { return String(n).padStart(2, '0'); }
-
-                        function toParam(date) {
-                            return date.getFullYear() + '-' + pad(date.getMonth() + 1) + '-' + pad(date.getDate()) +
-                                'T' + pad(date.getHours()) + ':' + pad(date.getMinutes());
-                        }
-
-                        function requestTasks() {
-                            var params = new URLSearchParams();
-                            var q = document.getElementById('search');
-                            var status = document.getElementById('status');
-                            params.set('q', q ? q.value : '');
-                            params.set('status', status ? status.value : 'null');
-                            if (startHidden.value) params.set('start_date', startHidden.value);
-                            if (endHidden.value) params.set('end_date', endHidden.value);
-                            htmx.ajax('GET', input.dataset.listUrl + '?' + params.toString(), {
-                                target: '#task-list-body',
-                                push: 'true',
-                            });
-                        }
-
-                        function updateClearButton() {
-                            var hasValue = !!(startHidden.value || endHidden.value);
-                            clearBtn.classList.toggle('hidden', !hasValue);
-                            clearBtn.classList.toggle('flex', hasValue);
-                            clearBtn.classList.toggle('items-center', hasValue);
-                            clearBtn.classList.toggle('justify-center', hasValue);
-                        }
-
-                        var initialDates = [startHidden.value, endHidden.value]
-                            .filter(Boolean)
-                            .map(function (v) { return new Date(v); });
-
-                        var picker = flatpickr(input, {
-                            mode: 'range',
-                            enableTime: true,
-                            dateFormat: 'M j, Y h:i K',
-                            defaultDate: initialDates,
-                            onChange: function (selectedDates) {
-                                startHidden.value = selectedDates[0] ? toParam(selectedDates[0]) : '';
-                                endHidden.value = selectedDates[1] ? toParam(selectedDates[1]) : '';
-                                updateClearButton();
-                            },
-                            onClose: function (selectedDates) {
-                                if (selectedDates.length !== 1) {
-                                    requestTasks();
-                                }
-                            },
-                        });
-
-                        clearBtn.addEventListener('click', function () {
-                            picker.clear();
-                            startHidden.value = '';
-                            endHidden.value = '';
-                            updateClearButton();
-                            requestTasks();
-                        });
-                    });
-                    </script>
-                </div>
-            </div>
+            {% include "partial/task_filters.html" %}
 
             <!-- Right side: Bulk actions -->
             <div class="relative" id="bulk-actions-container">
@@ -267,27 +77,34 @@
                         >
                     </th>
                     {% for column in columns %}
-                        {% if column.sortable %}
-                            <th scope="col" class="px-6 py-3 text-left font-normal text-ctp-text tracking-wider">
-                                <a href="{{ url_for('Task list view') }}?status={{ status }}&q={{ q }}&start_date={{ start_date }}&end_date={{ end_date }}&sort_by={{ column.key }}&sort_order={%- if sort_by == column.key and sort_order == 'asc' -%}desc{%- else -%}asc{%- endif -%}"
-                                   class="flex items-center gap-2 hover:text-ctp-subtext0 transition-colors">
-                                    {{ column.title }}
-                                    <span class="inline-flex">
-                                    {% if sort_by == column.key %}
-                                        {% if sort_order == 'asc' %}
-                                            <svg class="w-4 h-4 rotate-90"><use href="{{ url_for('static', path='icons.svg#chevron-left') }}"></use></svg>
+                        <th scope="col" class="px-6 py-3 text-left font-normal text-ctp-text tracking-wider">
+                            <div class="flex items-center gap-2">
+                                {% if column.sortable %}
+                                    <a href="{{ url_for('Task list view') }}?{{ list_query(sort_by=column.key, sort_order='desc' if sort_by == column.key and sort_order == 'asc' else 'asc') }}"
+                                       data-sort-link
+                                       class="flex items-center gap-2 hover:text-ctp-subtext0 transition-colors">
+                                        {{ column.title }}
+                                        <span class="inline-flex">
+                                        {% if sort_by == column.key %}
+                                            {% if sort_order == 'asc' %}
+                                                <svg class="w-4 h-4 rotate-90"><use href="{{ url_for('static', path='icons.svg#chevron-left') }}"></use></svg>
+                                            {% else %}
+                                                <svg class="w-4 h-4 -rotate-90"><use href="{{ url_for('static', path='icons.svg#chevron-left') }}"></use></svg>
+                                            {% endif %}
                                         {% else %}
-                                            <svg class="w-4 h-4 -rotate-90"><use href="{{ url_for('static', path='icons.svg#chevron-left') }}"></use></svg>
+                                            <svg class="w-4 h-4"><use href="{{ url_for('static', path='icons.svg#arrow-up-down') }}"></use></svg>
                                         {% endif %}
-                                    {% else %}
-                                        <svg class="w-4 h-4"><use href="{{ url_for('static', path='icons.svg#arrow-up-down') }}"></use></svg>
-                                    {% endif %}
-                                    </span>
-                                </a>
-                            </th>
-                        {% else %}
-                            <th scope="col" class="px-6 py-3 text-left font-normal text-ctp-text tracking-wider">{{ column.title }}</th>
-                        {% endif %}
+                                        </span>
+                                    </a>
+                                {% else %}
+                                    <span>{{ column.title }}</span>
+                                {% endif %}
+                                {% set header_filter = header_filters.get(column.key) %}
+                                {% if header_filter %}
+                                    {% include "partial/column_header_filter.html" %}
+                                {% endif %}
+                            </div>
+                        </th>
                     {% endfor %}
                 </tr>
             </thead>
@@ -296,6 +113,85 @@
             </tbody>
         </table>
     </section>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            function closeFilterPanels() {
+                document.querySelectorAll('.column-filter-panel').forEach(function (panel) {
+                    panel.classList.add('hidden');
+                    var toggle = panel.parentElement.querySelector('.column-filter-toggle');
+                    if (toggle) toggle.setAttribute('aria-expanded', 'false');
+                });
+            }
+
+            function placeFilterPanel(button, panel) {
+                var rect = button.getBoundingClientRect();
+                var width = panel.offsetWidth;
+                var left = rect.left;
+                if (left + width > window.innerWidth - 8) {
+                    left = Math.max(8, rect.right - width);
+                }
+                panel.style.top = (rect.bottom + 4) + 'px';
+                panel.style.left = left + 'px';
+            }
+
+            document.querySelectorAll('.column-filter-toggle').forEach(function (button) {
+                var panel = button.parentElement.querySelector('.column-filter-panel');
+                var icon = button.querySelector('.column-filter-icon');
+                button.addEventListener('click', function (event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    var willOpen = panel.classList.contains('hidden');
+                    closeFilterPanels();
+                    if (!willOpen) return;
+                    panel.classList.remove('hidden');
+                    button.setAttribute('aria-expanded', 'true');
+                    placeFilterPanel(button, panel);
+                    var input = panel.querySelector('input:not([type="hidden"])');
+                    if (input) input.focus();
+                });
+                panel.querySelectorAll('.task-filter').forEach(function (el) {
+                    var updateIcon = function () {
+                        var active = Array.from(panel.querySelectorAll('.task-filter')).some(function (field) {
+                            return field.value !== '';
+                        });
+                        icon.classList.toggle('text-ctp-blue', active);
+                        icon.classList.toggle('text-ctp-subtext0', !active);
+                    };
+                    el.addEventListener('input', updateIcon);
+                    el.addEventListener('change', updateIcon);
+                });
+            });
+
+            document.addEventListener('click', function (event) {
+                if (event.target.closest('.column-filter') || event.target.closest('.flatpickr-calendar')) return;
+                closeFilterPanels();
+            });
+            document.addEventListener('keydown', function (event) {
+                if (event.key === 'Escape') closeFilterPanels();
+            });
+            window.addEventListener('resize', closeFilterPanels);
+            var table = document.getElementById('task-list');
+            var scroller = table && table.closest('.overflow-x-auto');
+            if (scroller) scroller.addEventListener('scroll', closeFilterPanels);
+
+            document.querySelectorAll('a[data-sort-link]').forEach(function (link) {
+                link.addEventListener('click', function () {
+                    var url = new URL(link.href, window.location.origin);
+                    var params = new URLSearchParams();
+                    document.querySelectorAll('.task-filter').forEach(function (el) {
+                        if (!el.name || el.name === 'sort_by' || el.name === 'sort_order') return;
+                        params.set(el.name, el.value);
+                    });
+                    var sortBy = url.searchParams.get('sort_by');
+                    var sortOrder = url.searchParams.get('sort_order');
+                    if (sortBy) params.set('sort_by', sortBy);
+                    if (sortOrder) params.set('sort_order', sortOrder);
+                    url.search = params.toString();
+                    link.href = url.pathname + '?' + params.toString();
+                });
+            });
+        });
+    </script>
     </main>
 
     <!-- Notification container -->
@@ -455,17 +351,9 @@
 
             function refresh() {
                 const params = new URLSearchParams();
-                const q = document.getElementById('search');
-                const status = document.getElementById('status');
-                const startDate = document.getElementById('start_date');
-                const endDate = document.getElementById('end_date');
-
-                params.set('q', q ? q.value : '');
-                params.set('status', status ? status.value : 'null');
-                if (startDate && startDate.value) params.set('start_date', startDate.value);
-                if (endDate && endDate.value) params.set('end_date', endDate.value);
-                params.set('sort_by', taskList.dataset.sortBy);
-                params.set('sort_order', taskList.dataset.sortOrder);
+                document.querySelectorAll('.task-filter').forEach((el) => {
+                    if (el.name) params.set(el.name, el.value);
+                });
                 params.set('limit', '30');
                 params.set('offset', '0');
 

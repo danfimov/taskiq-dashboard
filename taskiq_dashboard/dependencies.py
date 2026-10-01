@@ -51,6 +51,7 @@ class TaskiqDashboardProvider(Provider):
         return SchemaService(
             session_provider=session_provider,
             table_name='taskiq_dashboard__tasks' if settings.storage_type == 'postgres' else 'tasks',
+            column_settings=settings.columns,
         )
 
     @provide
