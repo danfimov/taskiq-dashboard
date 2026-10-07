@@ -1,0 +1,207 @@
+<div class="flex flex-col md:flex-row gap-4 flex-1">
+    {% for control in filter_controls if not control.in_header %}
+        {% if control.kind == 'search' %}
+            <div class="relative group text-ctp-subtext0 hover:text-ctp-subtext1 focus:text-ctp-subtext1 md:w-auto min-w-[200px]">
+                <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none">
+                    <use href="{{ url_for('static', path='icons.svg#search') }}"></use>
+                </svg>
+                <input
+                    type="text"
+                    name="q"
+                    id="search"
+                    class="task-filter w-full pl-12 pr-4 py-2 border rounded focus:outline-none focus:ring-2 transition-all duration-200 hover:shadow-md border-ctp-subtext0 group-hover:border-ctp-subtext1"
+                    placeholder="{{ control.placeholder }}"
+                    value="{{ q if q is defined else '' }}"
+                    hx-get="{{ url_for('Task list view') }}"
+                    hx-trigger="keyup changed delay:500ms"
+                    hx-target="#task-list-body"
+                    hx-push-url="true"
+                    hx-include=".task-filter"
+                >
+                <div id="search-slash-hint"
+                     class="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-center leading-5 text-xs rounded-sm bg-ctp-lavender/10 pointer-events-none"
+                     title="Focus on search field">/</div>
+                <script>
+                    (function() {
+                        const input = document.getElementById('search');
+                        const hint = document.getElementById('search-slash-hint');
+                        if (!input || !hint) return;
+                        function update() {
+                            hint.style.display = (document.activeElement === input || input.value !== '') ? 'none' : '';
+                        }
+                        input.addEventListener('focus', update);
+                        input.addEventListener('blur', update);
+                        input.addEventListener('input', update);
+                        update();
+                    })();
+                </script>
+            </div>
+        {% elif control.kind == 'status' %}
+            <div class="text-ctp-subtext0 hover:text-ctp-subtext1 focus:text-ctp-subtext1 md:w-auto min-w-[150px]">
+                <div class="relative">
+                    <select
+                        id="status"
+                        name="status"
+                        class="task-filter w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 transition-all duration-200 hover:shadow-md border-ctp-subtext0 group-hover:border-ctp-subtext1 appearance-none"
+                        hx-get="{{ url_for('Task list view') }}"
+                        hx-trigger="change"
+                        hx-target="#task-list-body"
+                        hx-push-url="true"
+                        hx-include=".task-filter"
+                    >
+                        {% set status = status if status is defined else "all" %}
+                        <option class="bg-ctp-base" value="null" {% if status == "null" %}selected{% endif %}>All Statuses</option>
+                        <option class="bg-ctp-base" value="0" {% if status == "0" %}selected{% endif %}>In Progress</option>
+                        <option class="bg-ctp-base" value="1" {% if status == "1" %}selected{% endif %}>Completed</option>
+                        <option class="bg-ctp-base" value="2" {% if status == "2" %}selected{% endif %}>Failure</option>
+                        <option class="bg-ctp-base" value="3" {% if status == "3" %}selected{% endif %}>Queued</option>
+                        <option class="bg-ctp-base" value="4" {% if status == "4" %}selected{% endif %}>Abandoned</option>
+                    </select>
+                    <svg id="status-chevron"
+                         class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-ctp-mauve-100 transform transition-transform duration-200"
+                         aria-hidden="true">
+                        <use href="{{ url_for('static', path='icons.svg#chevron-left') }}"></use>
+                    </svg>
+                    <script>
+                        const selectEl = document.getElementById("status");
+                        const chevronEl = document.getElementById("status-chevron");
+                        const openChevron = () => {
+                            chevronEl && chevronEl.classList.add("-rotate-90");
+                            selectEl.setAttribute("aria-expanded", "true");
+                        };
+                        const closeChevron = () => {
+                            chevronEl && chevronEl.classList.remove("-rotate-90");
+                            selectEl.setAttribute("aria-expanded", "false");
+                        };
+                        selectEl.addEventListener("pointerdown", openChevron);
+                        selectEl.addEventListener("click", openChevron);
+                        selectEl.addEventListener("keydown", (e) => {
+                            if (["ArrowUp", "ArrowDown", " ", "Enter"].includes(e.key)) openChevron();
+                        });
+                        selectEl.addEventListener("blur", closeChevron);
+                        selectEl.addEventListener("change", closeChevron);
+                        selectEl.addEventListener("keyup", (e) => {
+                            if (e.key === "Escape") closeChevron();
+                        });
+                        document.addEventListener("pointerdown", (e) => {
+                            if (!selectEl.contains(e.target)) {
+                                closeChevron();
+                            }
+                        });
+                    </script>
+                </div>
+            </div>
+        {% elif control.kind == 'datetime' %}
+            <div class="date-range relative group text-ctp-subtext0 hover:text-ctp-subtext1 focus-within:text-ctp-subtext1 md:w-auto min-w-[460px]"
+                 data-list-url="{{ url_for('Task list view') }}">
+                <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none">
+                    <use href="{{ url_for('static', path='icons.svg#calendar') }}"></use>
+                </svg>
+                <input
+                    type="text"
+                    readonly
+                    placeholder="{{ control.placeholder }}"
+                    class="date-range-display w-full pl-12 pr-9 py-2 border rounded focus:outline-none focus:ring-2 transition-all duration-200 hover:shadow-md border-ctp-subtext0 group-hover:border-ctp-subtext1 bg-transparent text-ctp-text cursor-pointer"
+                >
+                <input type="hidden" name="{{ control.param }}" value="{{ filter_values.get(control.param, '') }}" class="task-filter date-range-start">
+                <input type="hidden" name="{{ control.end_param }}" value="{{ filter_values.get(control.end_param, '') }}" class="task-filter date-range-end">
+                <button
+                    type="button"
+                    title="Clear dates"
+                    aria-label="Clear dates"
+                    class="date-range-clear absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full text-ctp-subtext0 hover:text-ctp-subtext1 hover:bg-ctp-surface0 transition-colors {% if filter_values.get(control.param) or filter_values.get(control.end_param) %}flex items-center justify-center{% else %}hidden{% endif %}"
+                >
+                    <svg class="w-3.5 h-3.5 pointer-events-none">
+                        <use href="{{ url_for('static', path='icons.svg#x') }}"></use>
+                    </svg>
+                </button>
+            </div>
+        {% elif control.kind == 'text' %}
+            <div class="relative group text-ctp-subtext0 hover:text-ctp-subtext1 focus:text-ctp-subtext1 md:w-auto min-w-[180px]">
+                <input
+                    type="text"
+                    name="{{ control.param }}"
+                    class="task-filter w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 transition-all duration-200 hover:shadow-md border-ctp-subtext0 group-hover:border-ctp-subtext1"
+                    placeholder="{{ control.placeholder }}"
+                    value="{{ filter_values.get(control.param, '') }}"
+                    hx-get="{{ url_for('Task list view') }}"
+                    hx-trigger="keyup changed delay:500ms"
+                    hx-target="#task-list-body"
+                    hx-push-url="true"
+                    hx-include=".task-filter"
+                >
+            </div>
+        {% endif %}
+    {% endfor %}
+    <input type="hidden" name="sort_by" value="{{ sort_by }}" class="task-filter">
+    <input type="hidden" name="sort_order" value="{{ sort_order }}" class="task-filter">
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            function collectFilters() {
+                var params = new URLSearchParams();
+                document.querySelectorAll('.task-filter').forEach(function (el) {
+                    if (el.name) params.set(el.name, el.value);
+                });
+                return params;
+            }
+
+            function pad(n) { return String(n).padStart(2, '0'); }
+
+            function toParam(date) {
+                return date.getFullYear() + '-' + pad(date.getMonth() + 1) + '-' + pad(date.getDate()) +
+                    'T' + pad(date.getHours()) + ':' + pad(date.getMinutes());
+            }
+
+            document.querySelectorAll('.date-range').forEach(function (container) {
+                var display = container.querySelector('.date-range-display');
+                var startHidden = container.querySelector('.date-range-start');
+                var endHidden = container.querySelector('.date-range-end');
+                var clearBtn = container.querySelector('.date-range-clear');
+
+                function requestTasks() {
+                    htmx.ajax('GET', container.dataset.listUrl + '?' + collectFilters().toString(), {
+                        target: '#task-list-body',
+                        push: 'true',
+                    });
+                }
+
+                function updateClearButton() {
+                    var hasValue = !!(startHidden.value || endHidden.value);
+                    clearBtn.classList.toggle('hidden', !hasValue);
+                    clearBtn.classList.toggle('flex', hasValue);
+                    clearBtn.classList.toggle('items-center', hasValue);
+                    clearBtn.classList.toggle('justify-center', hasValue);
+                }
+
+                var initialDates = [startHidden.value, endHidden.value]
+                    .filter(Boolean)
+                    .map(function (v) { return new Date(v); });
+
+                var picker = flatpickr(display, {
+                    mode: 'range',
+                    enableTime: true,
+                    dateFormat: 'M j, Y h:i K',
+                    defaultDate: initialDates,
+                    onChange: function (selectedDates) {
+                        startHidden.value = selectedDates[0] ? toParam(selectedDates[0]) : '';
+                        endHidden.value = selectedDates[1] ? toParam(selectedDates[1]) : '';
+                        updateClearButton();
+                    },
+                    onClose: function (selectedDates) {
+                        if (selectedDates.length !== 1) {
+                            requestTasks();
+                        }
+                    },
+                });
+
+                clearBtn.addEventListener('click', function () {
+                    picker.clear();
+                    startHidden.value = '';
+                    endHidden.value = '';
+                    updateClearButton();
+                    requestTasks();
+                });
+            });
+        });
+    </script>
+</div>
