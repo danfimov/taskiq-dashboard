@@ -12,4 +12,5 @@ async def exception_handler__not_found(
         request,
         '404.html',
         {'request': request},
+        status_code=404,
     )

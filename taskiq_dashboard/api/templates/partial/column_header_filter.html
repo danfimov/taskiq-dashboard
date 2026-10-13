@@ -1,0 +1,77 @@
+{% set filter_value = filter_values.get(header_filter.param, '') %}
+{% set filter_end = filter_values.get(header_filter.end_param, '') if header_filter.end_param else '' %}
+{% set filter_match = filter_values.get(header_filter.match_param, 'contains') %}
+{% set filter_active = (filter_value and filter_value != 'null') or filter_end %}
+<div class="column-filter" data-filter-kind="{{ header_filter.kind }}" data-filter-param="{{ header_filter.param }}">
+    <button type="button"
+            class="column-filter-toggle inline-flex items-center justify-center rounded p-0.5 hover:bg-ctp-surface0"
+            aria-label="Filter {{ header_filter.title }}"
+            title="Filter {{ header_filter.title }}"
+            aria-expanded="false"
+            aria-controls="filter-panel-{{ header_filter.dom_id }}">
+        <svg class="column-filter-icon w-4 h-4 {% if filter_active %}text-ctp-blue{% else %}text-ctp-subtext0{% endif %}">
+            <use href="{{ url_for('static', path='icons.svg') }}?v={{ static_version('icons.svg') }}#filter"></use>
+        </svg>
+    </button>
+    <span class="column-filter-summary" data-filter-summary hidden></span>
+    <div id="filter-panel-{{ header_filter.dom_id }}"
+         class="column-filter-panel hidden fixed z-50 rounded border border-ctp-surface0 bg-ctp-base p-2 shadow-lg {% if header_filter.kind == 'datetime' %}w-72{% else %}w-64{% endif %}">
+        {% if header_filter.kind == 'combobox' %}
+            <div class="task-combobox" data-values-url="{{ url_for('Task filter values', column=header_filter.column_key) }}">
+                <input type="text"
+                       name="{{ header_filter.param }}"
+                       role="combobox"
+                       aria-label="{{ header_filter.title }} filter"
+                       aria-autocomplete="list"
+                       aria-expanded="false"
+                       aria-controls="filter-options-{{ header_filter.dom_id }}"
+                       autocomplete="off"
+                       class="task-filter w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 border-ctp-subtext0 bg-ctp-base text-ctp-text"
+                       placeholder="Search {{ header_filter.title | lower }}"
+                       value="{{ filter_value }}"
+                       hx-get="{{ url_for('Task list view') }}"
+                       hx-trigger="input changed delay:500ms, change"
+                       hx-target="#task-list-body"
+                       hx-push-url="true"
+                       hx-include=".task-filter">
+                <input type="hidden" name="{{ header_filter.match_param }}" value="{{ filter_match }}" class="task-filter">
+                <div id="filter-options-{{ header_filter.dom_id }}" role="listbox" aria-label="{{ header_filter.title }} suggestions" class="task-combobox-options" hidden></div>
+                <p class="task-combobox-hint">Type at least 2 characters for a partial match. Select for an exact match.</p>
+                <p class="task-combobox-state" aria-live="polite"></p>
+            </div>
+        {% elif header_filter.kind == 'status' %}
+            <select id="status" name="status" aria-label="Status filter"
+                    class="task-filter w-full px-3 py-2 border rounded border-ctp-subtext0 bg-ctp-base text-ctp-text"
+                    hx-get="{{ url_for('Task list view') }}" hx-trigger="change"
+                    hx-target="#task-list-body" hx-push-url="true" hx-include=".task-filter">
+                <option value="null" {% if filter_value == 'null' %}selected{% endif %}>All Statuses</option>
+                <option value="0" {% if filter_value == '0' %}selected{% endif %}>In Progress</option>
+                <option value="1" {% if filter_value == '1' %}selected{% endif %}>Completed</option>
+                <option value="2" {% if filter_value == '2' %}selected{% endif %}>Failure</option>
+                <option value="3" {% if filter_value == '3' %}selected{% endif %}>Queued</option>
+                <option value="4" {% if filter_value == '4' %}selected{% endif %}>Abandoned</option>
+            </select>
+        {% elif header_filter.kind == 'text' %}
+            <input type="text" name="{{ header_filter.param }}" aria-label="{{ header_filter.title }} filter"
+                   class="task-filter w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 border-ctp-subtext0 bg-ctp-base text-ctp-text"
+                   placeholder="{{ header_filter.placeholder }}" value="{{ filter_value }}"
+                   hx-get="{{ url_for('Task list view') }}" hx-trigger="input changed delay:500ms, change"
+                   hx-target="#task-list-body" hx-push-url="true" hx-include=".task-filter">
+        {% elif header_filter.kind == 'datetime' %}
+            <div class="date-range relative text-ctp-subtext0" data-list-url="{{ url_for('Task list view') }}">
+                <input type="text" readonly aria-label="{{ header_filter.title }} date range"
+                       placeholder="{{ header_filter.placeholder }}"
+                       class="date-range-display w-full pl-3 pr-8 py-2 border rounded focus:outline-none focus:ring-2 border-ctp-subtext0 bg-transparent text-ctp-text cursor-pointer">
+                <input type="hidden" name="{{ header_filter.param }}" value="{{ filter_value }}" class="task-filter date-range-start">
+                <input type="hidden" name="{{ header_filter.end_param }}" value="{{ filter_end }}" class="task-filter date-range-end">
+                <button type="button" title="Clear dates" aria-label="Clear dates"
+                        class="date-range-clear absolute right-2 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full text-ctp-subtext0 hover:bg-ctp-surface0 flex items-center justify-center {% if not filter_active %}hidden{% endif %}">
+                    <svg class="w-3.5 h-3.5 pointer-events-none"><use href="{{ url_for('static', path='icons.svg#x') }}"></use></svg>
+                </button>
+            </div>
+        {% endif %}
+        {% if header_filter.kind != 'datetime' %}
+            <button type="button" class="column-filter-clear text-sm text-ctp-blue mt-2" aria-label="Clear {{ header_filter.title }} filter">Clear filter</button>
+        {% endif %}
+    </div>
+</div>

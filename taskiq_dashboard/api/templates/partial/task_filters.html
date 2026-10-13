@@ -1,0 +1,27 @@
+<div class="flex flex-col md:flex-row gap-4 flex-1 min-w-0 w-full">
+    {% for control in filter_controls if control.kind == 'search' %}
+        <div class="relative group text-ctp-subtext0 hover:text-ctp-subtext1 focus:text-ctp-subtext1 md:w-auto min-w-[200px]">
+            <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none">
+                <use href="{{ url_for('static', path='icons.svg#search') }}"></use>
+            </svg>
+            <input type="text"
+                   name="q"
+                   id="search"
+                   class="task-filter w-full pl-12 pr-4 py-2 border rounded focus:outline-none focus:ring-2 transition-all duration-200 hover:shadow-md border-ctp-subtext0 group-hover:border-ctp-subtext1"
+                   placeholder="{{ control.placeholder }}"
+                   aria-label="{{ control.placeholder }}"
+                   value="{{ q }}"
+                   hx-get="{{ url_for('Task list view') }}"
+                   hx-trigger="input changed delay:500ms"
+                   hx-target="#task-list-body"
+                   hx-sync="#task-list:replace"
+                   hx-push-url="true"
+                   hx-include=".task-filter">
+            <div id="search-slash-hint"
+                 class="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-center leading-5 text-xs rounded-sm bg-ctp-lavender/10 pointer-events-none"
+                 title="Focus on search field">/</div>
+        </div>
+    {% endfor %}
+    <input type="hidden" name="sort_by" value="{{ sort_by }}" class="task-filter">
+    <input type="hidden" name="sort_order" value="{{ sort_order }}" class="task-filter">
+</div>

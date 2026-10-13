@@ -3,6 +3,58 @@
 
 @source "../templates";
 
+.column-filter-summary {
+    display: inline-block;
+    max-width: 10rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: middle;
+    color: var(--catppuccin-color-blue);
+    font-size: 0.75rem;
+    margin-left: 0.25rem;
+}
+
+.task-combobox-options {
+    max-height: 14rem;
+    overflow-y: auto;
+    margin-top: 0.5rem;
+    border: 1px solid var(--catppuccin-color-surface0);
+    border-radius: 0.25rem;
+}
+
+.task-combobox-options button {
+    display: block;
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+    overflow-wrap: anywhere;
+    color: var(--catppuccin-color-text);
+    cursor: pointer;
+}
+
+.task-combobox-options button:hover,
+.task-combobox-options button[aria-selected="true"] {
+    background: var(--catppuccin-color-surface0);
+}
+
+.column-filter-summary[hidden],
+.task-combobox-options[hidden] {
+    display: none;
+}
+
+.task-combobox-hint,
+.task-combobox-state,
+.task-combobox-empty {
+    white-space: normal;
+    color: var(--catppuccin-color-subtext0);
+    font-size: 0.75rem;
+    margin-top: 0.5rem;
+}
+
+.task-combobox-empty { padding: 0.5rem; }
+.column-filter-clear:disabled { opacity: 0.5; cursor: default; }
+
 .flatpickr-calendar {
     background: var(--catppuccin-color-base);
     border: 1px solid var(--catppuccin-color-surface0);

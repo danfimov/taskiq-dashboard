@@ -2,14 +2,19 @@ import datetime
 import json
 import typing as tp
 import uuid
-from urllib.parse import urlencode
 
 import fastapi
 import pydantic
 from dishka.integrations import fastapi as dishka_fastapi
 from fastapi.responses import HTMLResponse
 
-from taskiq_dashboard.api.columns import build_columns
+from taskiq_dashboard.api.columns import (
+    FilterControl,
+    build_columns,
+    build_filter_controls,
+    encode_list_query,
+    resolve_sort,
+)
 from taskiq_dashboard.api.templates import jinja_templates
 from taskiq_dashboard.domain.dto.task_status import TaskStatus
 from taskiq_dashboard.domain.repositories import AbstractTaskRepository
@@ -24,13 +29,19 @@ router = fastapi.APIRouter(
 
 
 class TaskFilter(pydantic.BaseModel):
-    q: str = ''
+    q: tp.Annotated[str, pydantic.StringConstraints(strip_whitespace=True)] = ''
+    name: str = ''
+    worker: str = ''
+    name_match: tp.Literal['contains', 'exact'] = 'contains'
+    worker_match: tp.Literal['contains', 'exact'] = 'contains'
     status: TaskStatus | None = None
     start_date: datetime.datetime | None = None
     end_date: datetime.datetime | None = None
+    finished_start: datetime.datetime | None = None
+    finished_end: datetime.datetime | None = None
     limit: int = 30
     offset: int = 0
-    sort_by: tp.Literal['started_at', 'finished_at', 'runtime'] = 'started_at'
+    sort_by: str = 'started_at'
     sort_order: tp.Literal['asc', 'desc'] = 'desc'
 
     @pydantic.field_validator('status', mode='before')
@@ -43,7 +54,7 @@ class TaskFilter(pydantic.BaseModel):
             return None
         return value  # ty: ignore[invalid-return-type]
 
-    @pydantic.field_validator('start_date', 'end_date', mode='before')
+    @pydantic.field_validator('start_date', 'end_date', 'finished_start', 'finished_end', mode='before')
     @classmethod
     def validate_date(
         cls,
@@ -62,7 +73,7 @@ class TaskFilter(pydantic.BaseModel):
             return 'null'
         return str(value.value)
 
-    @pydantic.field_serializer('start_date', 'end_date', mode='plain')
+    @pydantic.field_serializer('start_date', 'end_date', 'finished_start', 'finished_end', mode='plain')
     def serialize_date(
         self,
         value: datetime.datetime | None,
@@ -74,6 +85,65 @@ class TaskFilter(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(
         extra='ignore',
     )
+
+
+def _form_values(
+    query: TaskFilter,
+    controls: list[FilterControl],
+    text_filters: dict[str, str],
+    label_filters: dict[str, str],
+    resolved_sort: str | None,
+) -> dict[str, str]:
+    dumped = query.model_dump()
+    values: dict[str, str] = {}
+    for control in controls:
+        if control.kind == 'search':
+            values['q'] = dumped['q']
+        elif control.kind == 'status':
+            values['status'] = dumped['status']
+        elif control.kind == 'datetime':
+            values[control.param] = dumped[control.param]
+            values[control.end_param] = dumped[control.end_param]
+        elif control.kind in ('text', 'combobox'):
+            if control.param.startswith('label.'):
+                values[control.param] = label_filters.get(control.param.removeprefix('label.'), '')
+            else:
+                values[control.param] = text_filters.get(control.param, '')
+            if control.kind == 'combobox':
+                values[control.match_param] = getattr(query, control.match_param)
+    if resolved_sort is not None:
+        values['sort_by'] = resolved_sort
+        values['sort_order'] = query.sort_order
+    return values
+
+
+def _has_filters(
+    query: TaskFilter,
+    controls: list[FilterControl],
+    text_filters: dict[str, str],
+    label_filters: dict[str, str],
+) -> bool:
+    for control in controls:
+        if control.kind == 'search' and len(query.q) > 1:
+            return True
+        if control.kind == 'status' and query.status is not None:
+            return True
+        if control.kind == 'datetime' and (
+            getattr(query, control.param) is not None or getattr(query, control.end_param) is not None
+        ):
+            return True
+        if control.kind not in ('text', 'combobox'):
+            continue
+        raw = (
+            label_filters.get(control.param.removeprefix('label.'), '')
+            if control.param.startswith('label.')
+            else text_filters.get(control.param, '')
+        )
+        if control.kind == 'combobox' and getattr(query, control.match_param) == 'exact' and raw:
+            return True
+        if len(raw.strip()) > 1:
+            return True
+    return False
 
 
 @router.get(
@@ -89,36 +159,91 @@ async def search_tasks(  # noqa: PLR0913, PLR0917
     hx_request: tp.Annotated[bool, fastapi.Header(description='Request from htmx')] = False,  # noqa: FBT002
     x_auto_refresh: tp.Annotated[bool, fastapi.Header(description='Background auto-refresh poll')] = False,  # noqa: FBT002
 ) -> HTMLResponse:
+    columns = build_columns(settings.columns)
+    controls = build_filter_controls(settings.columns, columns)
+    resolved_sort = resolve_sort(query.sort_by, settings.columns)
+    search_control = next((control for control in controls if control.kind == 'search'), None)
+    status_enabled = any(control.kind == 'status' for control in controls)
+    started_enabled = any(control.kind == 'datetime' and control.param == 'start_date' for control in controls)
+    finished_enabled = any(control.kind == 'datetime' and control.param == 'finished_start' for control in controls)
+    text_filters: dict[str, str] = {}
+    label_filters: dict[str, str] = {}
+    exact_filters: dict[str, str] = {}
+    for control in controls:
+        if control.kind not in ('text', 'combobox'):
+            continue
+        raw = request.query_params.get(control.param, '')
+        if control.param.startswith('label.'):
+            label_filters[control.param.removeprefix('label.')] = raw
+        else:
+            text_filters[control.param] = getattr(query, control.param)
+            if getattr(query, control.match_param) == 'exact' and text_filters[control.param]:
+                exact_filters[control.param] = text_filters[control.param]
     tasks = await repository.find_tasks(
-        name=query.q,
-        status=query.status,
-        start_date=query.start_date,
-        end_date=query.end_date,
+        name=query.q if search_control is not None else None,
+        status=query.status if status_enabled else None,
+        start_date=query.start_date if started_enabled else None,
+        end_date=query.end_date if started_enabled else None,
+        finished_start=query.finished_start if finished_enabled else None,
+        finished_end=query.finished_end if finished_enabled else None,
+        text_filters=text_filters,
+        label_filters=label_filters,
+        search_fields=set(search_control.search_fields) if search_control is not None else set(),
+        exact_filters=exact_filters,
+        sort_by=resolved_sort,
+        sort_order=query.sort_order,
         limit=query.limit,
         offset=query.offset,
-        sort_by=query.sort_by,
-        sort_order=query.sort_order,
+    )
+
+    form_values = _form_values(
+        query,
+        controls,
+        text_filters,
+        label_filters,
+        resolved_sort,
     )
     headers: dict[str, str] = {}
     template_name = 'home.html'
     if hx_request:
         if not x_auto_refresh:
-            query_params = urlencode(query.model_dump(exclude={'limit', 'offset'}))
             headers = {
-                'HX-Push-Url': str(request.url_for('Task list view')) + '?' + query_params,
+                'HX-Push-Url': str(request.url_for('Task list view')) + '?' + encode_list_query(form_values),
             }
         template_name = 'partial/task_list.html'
+
+    def list_query(**overrides: object) -> str:
+        return encode_list_query(form_values, **overrides)
+
     return jinja_templates.TemplateResponse(
         request,
         template_name,
         {
             'request': request,
             'results': [task.model_dump() for task in tasks],
-            'columns': build_columns(settings.columns),
+            'columns': columns,
+            'filter_controls': controls,
+            'header_filters': {control.column_key: control for control in controls if control.in_header},
+            'filter_values': form_values,
+            'has_filters': _has_filters(query, controls, text_filters, label_filters),
+            'list_query': list_query,
             **query.model_dump(),
+            'sort_by': resolved_sort or '',
         },
         headers=headers,
     )
+
+
+@router.get('/filters/{column}/values', name='Task filter values')
+async def task_filter_values(
+    column: tp.Literal['name', 'worker'],
+    repository: dishka_fastapi.FromDishka[AbstractTaskRepository],
+    settings: dishka_fastapi.FromDishka[Settings],
+    q: str = '',
+) -> list[str]:
+    if column not in settings.columns.filterable:
+        raise fastapi.HTTPException(status_code=404, detail='Column filter is not configured')
+    return await repository.suggest_values(column, query=q, limit=20)
 
 
 @router.get(

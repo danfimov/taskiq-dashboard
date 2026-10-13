@@ -2,6 +2,7 @@ import typing as tp
 import uuid
 from contextlib import asynccontextmanager
 
+import sqlalchemy as sa
 from sqlalchemy.ext import asyncio as sa_async
 
 from taskiq_dashboard.infrastructure import PostgresSettings, SqliteSettings
@@ -16,6 +17,12 @@ class AsyncPostgresSessionProvider:
         default_engine_parameters: dict[str, tp.Any] = {
             'echo': False,
         }
+        self.has_index_management_connection = (
+            isinstance(connection_settings, PostgresSettings) and connection_settings.index_management_dsn is not None
+        )
+        self._index_management_dsn = (
+            connection_settings.index_management_dsn if isinstance(connection_settings, PostgresSettings) else None
+        )
 
         if isinstance(connection_settings, PostgresSettings):
             default_engine_parameters.update(
@@ -39,10 +46,10 @@ class AsyncPostgresSessionProvider:
         else:
             self.storage_type = 'sqlite'
 
+        self._engine_parameters = default_engine_parameters | (engine_parameters or {})
         self._engine = sa_async.create_async_engine(
             connection_settings.dsn.get_secret_value(),
-            **default_engine_parameters,
-            **(engine_parameters or {}),
+            **self._engine_parameters,
         )
         self._session_factory = sa_async.async_sessionmaker(
             bind=self._engine,
@@ -73,3 +80,35 @@ class AsyncPostgresSessionProvider:
     async def close(self) -> None:
         """Close the engine and release all connections."""
         await self._engine.dispose()
+
+    @asynccontextmanager
+    async def autocommit_connection(self) -> tp.AsyncGenerator[sa_async.AsyncConnection, None]:
+        """Open a dedicated connection for DDL that cannot run in a transaction."""
+        async with self._engine.connect() as connection:
+            yield await connection.execution_options(isolation_level='AUTOCOMMIT')
+
+    @asynccontextmanager
+    async def index_management_connection(self) -> tp.AsyncGenerator[sa_async.AsyncConnection, None]:
+        """Use the explicit session-scoped DDL endpoint and close its connection after use."""
+        if self._index_management_dsn is None:
+            raise ValueError('A direct or session-pooled index_management_dsn is required for index DDL')
+        # A separate, unpooled connection keeps advisory locks out of the application's pool.
+        parameters = {
+            key: value
+            for key, value in self._engine_parameters.items()
+            if key not in {'pool', 'poolclass', 'max_overflow', 'creator', 'async_creator'}
+            and not key.startswith('pool_')
+        }
+        parameters['connect_args'] = {
+            key: value
+            for key, value in parameters.get('connect_args', {}).items()
+            if key
+            not in {'dsn', 'host', 'hostaddr', 'port', 'database', 'dbname', 'user', 'password', 'async_creator_fn'}
+        }
+        parameters['poolclass'] = sa.pool.NullPool
+        engine = sa_async.create_async_engine(self._index_management_dsn.get_secret_value(), **parameters)
+        try:
+            async with engine.connect() as connection:
+                yield await connection.execution_options(isolation_level='AUTOCOMMIT')
+        finally:
+            await engine.dispose()

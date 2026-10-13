@@ -17,6 +17,8 @@ class PostgresSettings(pydantic_settings.BaseSettings):
     user: str = 'taskiq-dashboard'
     password: SecretStr = SecretStr('look_in_vault')
     database: str = 'taskiq-dashboard'
+    index_management_dsn: SecretStr | None = None
+    """Direct or session-pooled endpoint for optional index DDL; never a transaction pool."""
 
     min_pool_size: int = 1
     max_pool_size: int = 5
@@ -124,12 +126,21 @@ class CleanupSettings(pydantic_settings.BaseSettings):
     )
 
 
+BUILTIN_COLUMN_KEYS = frozenset({'id', 'name', 'status', 'worker', 'started_at', 'finished_at', 'runtime'})
+
+
 class ColumnSettings(pydantic_settings.BaseSettings):
     """Settings for the columns shown in the task list view."""
 
     visible: list[str] = ['id', 'name', 'status', 'worker', 'started_at', 'finished_at', 'runtime']
     labels: dict[str, str] = Field(default_factory=dict)
     """Maps a task label key to the column title shown for it, e.g. {"foo": "Foo"}."""
+    filterable: list[str] = ['id', 'name', 'status', 'started_at']
+    """Displayed columns with filters; id and name also enable the global search."""
+    sortable: list[str] = ['started_at', 'finished_at', 'runtime']
+    """Displayed columns whose headers can be sorted."""
+    manage_indexes: bool = False
+    """Opt in to creating PostgreSQL indexes at startup; existing indexes are retained."""
 
     @field_validator('visible')
     @classmethod
@@ -138,6 +149,35 @@ class ColumnSettings(pydantic_settings.BaseSettings):
             msg = "'id' must be present in columns.visible: it's the only link to the task details page"
             raise ValueError(msg)
         return value
+
+    @model_validator(mode='after')
+    def __require_displayed_filter_and_sort_columns(self) -> tp.Self:
+        displayed = {key for key in self.visible if key in BUILTIN_COLUMN_KEYS} | {
+            key for key in self.labels if key not in BUILTIN_COLUMN_KEYS
+        }
+        for name in ('filterable', 'sortable'):
+            if name not in self.model_fields_set:
+                # Keep these as defaults so revalidation can adapt them to visible columns again.
+                default = type(self).model_fields[name].get_default()
+                object.__setattr__(self, name, [key for key in default if key in displayed])
+        for key in self.filterable:
+            if key == 'runtime':
+                msg = "'runtime' cannot be filtered; it is computed from started_at and finished_at"
+                raise ValueError(msg)
+            if key not in displayed:
+                msg = (
+                    f'{key!r} in columns.filterable is not a displayed column. '
+                    'Add it to columns.visible or columns.labels'
+                )
+                raise ValueError(msg)
+        for key in self.sortable:
+            if key not in displayed:
+                msg = (
+                    f'{key!r} in columns.sortable is not a displayed column. '
+                    'Add it to columns.visible or columns.labels'
+                )
+                raise ValueError(msg)
+        return self
 
     model_config = pydantic_settings.SettingsConfigDict(
         extra='ignore',
