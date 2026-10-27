@@ -7,6 +7,7 @@ from dishka.integrations import fastapi as dishka_fastapi
 from fastapi.responses import Response
 from starlette import status
 
+from taskiq_dashboard.api.security import verify_access_token
 from taskiq_dashboard.domain.dto.task import ExecutedTask, QueuedTask, StartedTask
 from taskiq_dashboard.domain.repositories import AbstractTaskRepository
 
@@ -15,6 +16,7 @@ router = fastapi.APIRouter(
     prefix='/api/tasks',
     tags=['Event'],
     route_class=dishka_fastapi.DishkaRoute,
+    dependencies=[fastapi.Depends(verify_access_token)],
 )
 logger = getLogger(__name__)
 
